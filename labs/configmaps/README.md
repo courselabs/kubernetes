@@ -12,7 +12,7 @@ kind: ConfigMap
 metadata:
   name: configurable-env
 data:
-  CONFIGURABLE__ENVIRONMENT: uat
+  Configurable__Environment: uat
 ```
 
 The metadata is standard - you'll reference the name of the ConfigMap in the Pod spec to load settings.
@@ -88,7 +88,7 @@ Volumes are defined at the Pod level - they are storage units which are part of 
 kubectl delete deploy,service,pod --all
 ```
 
-> This is dangerous. From now on we'll use labels for all objects, so we can be selective about deletes
+> This is dangerous. You should use labels for all top-level objects (Deployments, Services etc.), so you can be selective about deletes
 
 ## Check the default app configuration
 
