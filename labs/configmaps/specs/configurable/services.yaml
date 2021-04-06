@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: configurable-np
+  labels: 
+    k8s-fundamentals: part-2
+    app: configurable
+spec:
+  selector:
+    app: configurable
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30010
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configurable-lb
+  labels: 
+    k8s-fundamentals: part-2
+    app: configurable
+spec:
+  selector:
+    app: configurable
+  ports:
+    - name: http
+      port: 8010
+      targetPort: 80
+  type: LoadBalancer
