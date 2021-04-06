@@ -57,8 +57,8 @@ kubectl describe cm configurable-env
 
 This YAML creates a Secret from an encoded value, and loads it into environment variables:
 
-- []()
-- []()
+- [secret-encoded.yaml](labs/secrets/specs/configurable/secrets-encoded/secret-encoded.yaml)
+- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-encoded/deployment-env.yaml)
 
 ```
 kubectl apply -f labs/secrets/specs/configurable/secrets-encoded
@@ -70,21 +70,63 @@ kubectl apply -f labs/secrets/specs/configurable/secrets-encoded
 
 Encoding to base-64 is awkward and it gives you the illusion your data is safe. Encoding is not encryption, and you can easily decode base-64.
 
-If you want to store sensitive data in plain-text YAML, you can do that instead. You'd only do this when your YAML is locked down:
+If you want to store sensitive data in plaintext YAML, you can do that instead. You'd only do this when your YAML is locked down:
 
-- []() - uses `stringData` to store values in plain text
-- []()
+- [secret-plain.yaml](labs/secrets/specs/configurable/secrets-plain/secret-plain.yaml) - uses `stringData` to store values in plain text
+- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-plain/deployment-env.yaml)
 
 ```
 kubectl apply -f labs/secrets/specs/configurable/secrets-plain
 ```
 
-
-
+> Refresh the site and you'll see the updated config value
 
 ## Working with base-64 Secret values
 
-## Creating Secrets from literals
+Secrets are always surfaced as plaintext inside the container environment.
+
+They **may** be encrypted in the Kubernetes database, but that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault.
+
+Kubectl always shows Secrets encoded as base-64, but that's just a basic safety measure.
+
+_Windows doesn't have a base64 command, so run this PowerShell script if you're on Windows:_
+
+```
+. ./labs/secrets/base64.ps1
+```
+
+Now you can fetch the data item from a Secret, and decode it into plaintext:
+
+```
+kubectl describe secret configurable-env-plain
+
+kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Environment}"
+
+kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Environment}" | base64 -d
+```
+
+> In production you'll need to understand how your cluster secures Secrets at rest. You'll also use [Role-Based Access Control]() to limit who can work with Secrets in Kubectl.
+
+## Creating Secrets from files
+
+Some organizations have separate configuration management teams. They have access to the raw sensitive data, and in Kuberneted they would own the management of Secrets. 
+
+The product team would own the Deployment YAML which references the Secrets and ConfigMaps. The workflow is decoupled, so the DevOps team can deploy and manage the app without having access to the sensitive data.
+
+Play the cnfig management team and create secrets from your local store:
+
+```
+kubectl create secret generic configurable-env-file --from-env-file ./labs/secrets/secrets/configurable.env 
+
+kubectl create secret generic configurable-secret-file --from-file ./labs/secrets/secrets/secret.json
+```
+
+And play the DevOps team, now that the secrets are there:
+
+```
+kubectl apply -f ./labs/secrets/specs/configurable/secrets-file
+```
+
 
 ## Environment variable overrides in Pods
 
