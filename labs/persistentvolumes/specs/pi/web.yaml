@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pi-web-internal
+  labels:
+    app: pi-web
+    co.courselabs.k8s: persistentvolumes
+spec:
+  ports:
+    - port: 80
+      name: http
+  selector:
+    app: pi-web
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pi-web
+  labels:
+    app: pi-web
+    co.courselabs.k8s: persistentvolumes
+spec:
+  selector:
+    matchLabels:
+      app: pi-web
+  template:
+    metadata:
+      labels:
+        app: pi-web
+    spec:
+      containers:
+        - image: sixeyed/pi:2002
+          command: ["dotnet", "Pi.Web.dll", "-m", "web"]
+          name: pi-web
+          ports:
+            - containerPort: 80
+              name: http

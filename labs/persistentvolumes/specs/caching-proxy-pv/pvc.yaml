@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pi-proxy-pvc-local
+  labels:
+    app: pi-proxy
+    co.courselabs.k8s: persistentvolumes
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi
+  storageClassName: ""
+  volumeName: pi-proxy-pv

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sleep
+spec:
+  containers:
+    - name: sleep
+      image: kiamol/ch03-sleep
+      volumeMounts:
+        - name: node-root
+          mountPath: /node-root
+  volumes:
+    - name: node-root
+      hostPath:
+        path: /
+        type: Directory
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: k8sfun
+              operator: Exists
+      
