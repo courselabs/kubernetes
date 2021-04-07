@@ -1,7 +1,9 @@
 # Lab Hints
 
-You can **create** objects with Kubectl as well as applying them with YAML. The command follows the same syntax as `get` and `describe`, passing the type of object you want to use.
+There are other [types of volume](https://kubernetes.io/docs/concepts/storage/volumes/) you can use in a Pod spec.
 
-And you can always add `--help` to the end of the command to get detailed help. That should guide you through here.
+If you can find one which gives you access to a path on the host node, then you can use that with the sleep image to run a container which can access the node's disk.
+
+Then you just need to execute the `mkdir` command.
 
 > Need more? Here's the [solution](solution.md).
