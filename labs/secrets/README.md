@@ -19,7 +19,7 @@ data:
 
 The metadata is standard - you'll reference the name of the Secret in the Pod spec to load settings.
 
-* `data` - list of settings as key-value pairs, separated with colons
+* `data` - list of settings as key-value pairs, separated with colons and with values base-64 encoded
 
 In the Pod spec you add a reference:
 
@@ -57,8 +57,8 @@ kubectl describe cm configurable-env
 
 This YAML creates a Secret from an encoded value, and loads it into environment variables:
 
-- [secret-encoded.yaml](labs/secrets/specs/configurable/secrets-encoded/secret-encoded.yaml)
-- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-encoded/deployment-env.yaml)
+- [secret-encoded.yaml](labs/secrets/specs/configurable/secrets-encoded/secret-encoded.yaml) - uses `data` with encoded values
+- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-encoded/deployment-env.yaml) - loads the Secret into environment variables
 
 ```
 kubectl apply -f labs/secrets/specs/configurable/secrets-encoded
@@ -72,8 +72,8 @@ Encoding to base-64 is awkward and it gives you the illusion your data is safe. 
 
 If you want to store sensitive data in plaintext YAML, you can do that instead. You'd only do this when your YAML is locked down:
 
-- [secret-plain.yaml](labs/secrets/specs/configurable/secrets-plain/secret-plain.yaml) - uses `stringData` to store values in plain text
-- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-plain/deployment-env.yaml)
+- [secret-plain.yaml](labs/secrets/specs/configurable/secrets-plain/secret-plain.yaml) - uses `stringData` with values in plain text
+- [deployment-env.yaml](labs/secrets/specs/configurable/secrets-plain/deployment-env.yaml) - loads the Secret into environment variables
 
 ```
 kubectl apply -f labs/secrets/specs/configurable/secrets-plain
@@ -85,11 +85,11 @@ kubectl apply -f labs/secrets/specs/configurable/secrets-plain
 
 Secrets are always surfaced as plaintext inside the container environment.
 
-They **may** be encrypted in the Kubernetes database, but that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault.
+They **may** be encrypted in the Kubernetes database, but that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault ([external-secrets](https://github.com/external-secrets/kubernetes-external-secrets) is one option).
 
 Kubectl always shows Secrets encoded as base-64, but that's just a basic safety measure.
 
-_Windows doesn't have a base64 command, so run this PowerShell script if you're on Windows:_
+_Windows doesn't have a base64 command, so run this PowerShell script **if you're on Windows**:_
 
 ```
 . ./labs/secrets/base64.ps1
@@ -109,11 +109,14 @@ kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Envi
 
 ## Creating Secrets from files
 
-Some organizations have separate configuration management teams. They have access to the raw sensitive data, and in Kuberneted they would own the management of Secrets. 
+Some organizations have separate configuration management teams. They have access to the raw sensitive data, and in Kubernetes they would own the management of Secrets. 
 
 The product team would own the Deployment YAML which references the Secrets and ConfigMaps. The workflow is decoupled, so the DevOps team can deploy and manage the app without having access to the sensitive data.
 
-Play the cnfig management team and create secrets from your local store:
+Play the ocnfig management team and create secrets from your local store:
+
+- [configurable.env](secrets/configurable.env ) - a .env file for loading environment variables
+- [secret.json](secrets/secret.json) - a JSON file for loading as a volume mount
 
 ```
 kubectl create secret generic configurable-env-file --from-env-file ./labs/secrets/secrets/configurable.env 
@@ -121,27 +124,83 @@ kubectl create secret generic configurable-env-file --from-env-file ./labs/secre
 kubectl create secret generic configurable-secret-file --from-file ./labs/secrets/secrets/secret.json
 ```
 
-And play the DevOps team, now that the secrets are there:
+And play the DevOps team, deploying the app now that the secrets are there:
+
+- [deployment.yaml](labs/secrets/specs/configurable/secrets-file/deployment.yaml) - references those Secrets
 
 ```
 kubectl apply -f ./labs/secrets/specs/configurable/secrets-file
 ```
 
+> Browse to the app and now you can see another config source - the `secret.json` file
 
 ## Environment variable overrides in Pods
 
 You'll often have multiple configuration sources in your Pod spec. Config quickly sprawls and it makes sense to centralize it as much as possible - if all your apps use the same logging config, then store that in one ConfigMap and use it in all the Deployments.
 
-Breaking down configuration makes it easier to manage, but you need to understand how different sources get merged so you know the priority order.
+Breaking down configuration makes it easier to manage, but you need to understand how different sources get merged so you know the priority order. Your app logic decides the priority of different sources, but Kubernetes decides the priority for overlapping environment variables.
+
+If the same key appears in `env` and `envFrom`, this is the order of precedence:
+
+- `env` in Pod spec > `envFrom` Secrets > `envFrom` ConfigMaps
+
+- [configmap-env.yaml](specs/configurable/secrets-overlapping/configmap-env.yaml) has two settings, one will be replaced by
+- [secret-plain.yaml](specs/configurable/secrets-overlapping/secret-plain.yaml) also has two settings, one will be replaced by
+- [deployment-env.yaml](specs/configurable/secrets-overlapping/deployment-env.yaml)
+
+```
+kubectl apply -f ./labs/secrets/specs/configurable/secrets-overlapping
+```
+
+Browse and you'll see the precedence order in action.
+
+## Managing config updates
+
+Some apps support **hot reloads** of configuration - they watch the config files, and if the contents change they automatically reload settings.
+
+Others only load settings at startup, and if you change the file contents in a ConfigMap or Secret the app won't reload.
+
+> This is only for config you load with volume mounts - environment variables are static for the life of the Pod
+
+If you know your app does hot reloads then your update process is simple, just apply the changed ConfigMap or Secret and wait. 
+
+Kubernetes caches the contents so it will take a few minutes for all the nodes to get the latest content, and for the app to see the change in the filesystem.
+
+Deploy the web app with a new setting:
+
+```
+kubectl apply -f labs/secrets/specs/configurable/secrets-update
+```
+
+> Check the value in your web app - in the secrets.json section you should see `Configurable__ConfigVersion=v1`
+
+Now deploy the updated config in [v1-update](specs/configurable/secrets-update/v1-update/secret-plain.yaml):
+
+```
+kubectl apply -f labs/secrets/specs/configurable/secrets-update/v1-update
+```
+
+Refresh the app and it will still show the old value. The time taken to update depends on the Kubernetes [Secret cache policy](https://kubernetes.io/docs/concepts/configuration/secret/#mounted-secrets-are-updated-automatically) **and** on any caching the app does.
+
+Check if the file contents are updated in the Pod:
+
+```
+kubectl exec deploy/configurable -- cat /app/secrets/secret.json
+```
+
+If the file contents are updated but the app doesn't change, it may not support hot reloads, or it's caching too agressively. You can force an update to all the Pods in a Deployment with the `rollout restart` command:
+
+```
+kubectl rollout restart deploy/configurable 
+```
+
+> Now the site will show the latest version
 
 ## Lab
 
-Mapping configuration in ConfigMap YAML works well and it means you can deploy your whole app with `kubectl apply`. But it won't suit every organization, and Kubernetes also supports creating ConfigMaps directly from values and config files.
+Manually forcing a rollout when your config changes isn't a great option - it makes for a multi-stage update process, with the risk that steps get forgotten.
 
-Create two new ConfigMaps to support the Deployment in [deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) and set these values:
-
-- Environment variable `Configuration__Release=21.04-lab`
-- JSON setting `Features.DarkMode=true`
+Come up with an alternative approach so when you apply changes to a Secret in YAML, the Deployment rollout happens as part of the same update.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
