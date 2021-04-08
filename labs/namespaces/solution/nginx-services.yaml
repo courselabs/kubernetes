@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pi-proxy-lb
+  namespace: front-end
+  labels:
+    co.courselabs.k8s: persistentvolumes
+spec:
+  ports:
+    - port: 8040
+      targetPort: http
+      name: http
+  selector:
+    app: pi-proxy
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pi-proxy-np
+  namespace: front-end
+  labels:
+    co.courselabs.k8s: persistentvolumes
+spec:
+  ports:
+    - port: 8040   
+      targetPort: http 
+      name: http
+      nodePort: 30040
+  selector:
+    app: pi-proxy
+  type: NodePort

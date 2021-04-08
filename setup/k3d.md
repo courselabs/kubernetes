@@ -23,7 +23,7 @@ k3d --version
 Create a simple one-node cluster:
 
 ```
-k3d cluster create kubefun -p "30000-30030:30000-30030@server[0]"
+k3d cluster create k8sfun -p "30000-30040:30000-30040@server[0]"
 
-kubectl config use-context k3d-kubefun
+kubectl config use-context k3d-k8sfun
 ```
