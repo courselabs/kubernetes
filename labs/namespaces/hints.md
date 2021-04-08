@@ -8,6 +8,6 @@ The original Nginx config in [nginx-configMap.yaml](../persistentvolumes/specs/p
 proxy_pass             http://pi-web-internal;
 ```
 
-, but that won't do when the Nginx is in a different namespace from the app it's proxying.
+That won't do when the Nginx is in a different namespace from the app it's proxying.
 
 > Need more? Here's the [solution](solution.md).
