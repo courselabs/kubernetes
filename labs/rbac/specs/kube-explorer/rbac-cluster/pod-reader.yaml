@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader 
+  namespace: default # where the clusterrole is create - does not affect scope
+  labels:
+    co.courselabs.k8sfun: rbac
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-explorer-system
+  namespace: default # needs to match the ns in the clusterrole 
+  labels:
+    co.courselabs.k8sfun: rbac
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-reader
+subjects:
+- kind: ServiceAccount
+  name: kube-explorer
+  namespace: default # can be a different ns
