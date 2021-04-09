@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whoami
+  labels:
+    co.courselabs.k8sfun: ingress
+spec:
+  rules:
+  - host: whoami.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: whoami-internal
+            port: 
+              name: http
