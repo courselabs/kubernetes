@@ -1,49 +1,28 @@
 
+## Part 1 - Core Kubernetes
 
-Intro
-Why Kubernetes?
-Containers and microservices refresh
+- [Nodes](labs/nodes)
+- [Pods](labs/pods)
+- [Services](labs/services)
+- [Deployments](labs/deployments)
 
-Part 1
-Working with Kubernetes
-Clusters, YAML and the CLI
-Core Kubernetes resources
-Pods, Services and Deployments
+## Part 2 - Application Modelling
 
-Part 2
-Managing application data
-ConfigMaps, Secrets and volumes
-Environments - namespaces
+- [ConfigMaps](labs/configmaps)
+- [Secrets](labs/secrets)
+- [PersistentVolumes](labs/persistentvolumes)
+- [Namespaces](labs/namespaces)
 
-Part 3
+## Part 3 - Advanced Application Modelling
 
-Advanced topics
-Self-healing, resource management, auto-scaling
-Security, background workers, stateful apps
+- [Role-based Access Control (RBAC)](labs/rbac)
+- [DaemonSets](labs/damonsets)
+- Ingress
+- Jobs and CronJobs
+- StatefulSets
 
-Part four
-Troubleshooting
+## Part 4 - Real Kubernetes
 
-* scale =0
-* errimagepull
-* crashloopbackoff - wrong commans
-* label selector wrong
-* no logs - sidecar container
-
-Hackathon
-
-- widgetario rebrand; plus nats for order + order message handler
-* image names
-* diagram
-* ports
-* config settings
-
-* extra - scale, security
-
-Next steps
-
-- ingress
-- kustomize/helm
-- statefulsets
-
-
+- Production readiness
+- Troubleshooting
+- Hackathon
