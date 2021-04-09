@@ -4,6 +4,9 @@ nodes:
 - role: control-plane
   image: kindest/node:v1.20.2@sha256:8f7ea6e7642c0da54f04a7ee10431549c0257315b3a634f6ef2fecaaedb19bab
   extraPortMappings:
+  - containerPort: 30000
+    hostPort: 30000
+    protocol: TCP
   - containerPort: 30010
     hostPort: 30010
     protocol: TCP
