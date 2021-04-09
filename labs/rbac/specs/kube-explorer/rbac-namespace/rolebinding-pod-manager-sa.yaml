@@ -1,16 +1,4 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: pod-manager
-  namespace: default # this is the scope where the role applies
-  labels:  
-    co.courselabs.k8sfun: rbac
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "delete"]
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: kube-explorer-pod-manager
