@@ -117,7 +117,7 @@ The label selector in your Service matches that label:
 
 ```
 # apply the LoadBalancer and NodePort Services:
-kubectl apply -f labs/services/specs/services/whoami-nodeport.yaml -f labs/services/specs/services/whoami-loadbalancer.yaml
+kubectl apply -f labs/deployments/specs/services/
 
 kubectl get endpoints whoami-np whoami-lb
 ```
