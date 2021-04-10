@@ -58,7 +58,7 @@ spec:
     app.kubernetes.io/component: controller
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
