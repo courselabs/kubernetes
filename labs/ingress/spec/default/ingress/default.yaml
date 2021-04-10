@@ -4,11 +4,13 @@ metadata:
   name: default
   labels:
     co.courselabs.k8sfun: ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /*
         pathType: Prefix
         backend:
           service:
