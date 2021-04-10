@@ -6,7 +6,7 @@ metadata:
   labels:
     co.courselabs.k8sfun: jobs
 spec:
-  schedule: "*/2 * * * *"        # every 2 minutes - see https://crontab.guru
+  schedule: "*/1 * * * *"        # every minute - see https://crontab.guru
   concurrencyPolicy: Forbid
   jobTemplate:
     metadata:

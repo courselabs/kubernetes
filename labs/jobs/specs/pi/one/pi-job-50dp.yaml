@@ -1,10 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pi-job
+  name: pi-job-one
   labels:
     co.courselabs.k8s: jobs
-    app: pi-one    
+    app: pi-one
+    dp: '50'    
 spec:
   template:
     spec:
