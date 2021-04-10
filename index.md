@@ -1,7 +1,11 @@
+Welcome to the Kubernetes Fundamentals labs.
+
+These are hands-on resources to help you learn Kubernetes.
+
 ## Pre-reqs
 
  - [Set up Kubernetes](setup)
- - Clone the repo: `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
+ - `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
 
 ## Part 1 - Core Kubernetes
 
@@ -22,7 +26,7 @@
 - [Role-based Access Control (RBAC)](labs/rbac)
 - [DaemonSets](labs/damonsets)
 - [Ingress](labs/ingress)
-- Jobs and CronJobs
+- [Jobs and CronJobs](labs/jobs)
 - StatefulSets
 
 ## Part 4 - Real Kubernetes
