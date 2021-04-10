@@ -1,3 +1,7 @@
+## Pre-reqs
+
+ - [Set up Kubernetes](setup)
+ - Clone the repo: `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
 
 ## Part 1 - Core Kubernetes
 
@@ -17,7 +21,7 @@
 
 - [Role-based Access Control (RBAC)](labs/rbac)
 - [DaemonSets](labs/damonsets)
-- Ingress
+- [Ingress](labs/ingress)
 - Jobs and CronJobs
 - StatefulSets
 
