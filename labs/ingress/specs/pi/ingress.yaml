@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: pi
   labels:
-    co.courselabs.k8s: ingress
+    co.courselabs.k8sfun: ingress
 spec:
   rules:
   - host: pi.local

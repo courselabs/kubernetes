@@ -46,16 +46,16 @@ It's not a good name, because an ingress controller isn't a specific type of Kub
 
 An ingress controller is a logical thing, composed of a Service, a Pod controller and a set of RBAC rules:
 
-- [01_namespace.yaml](spec/ingress-controller/01_namespace.yaml) - ingress controllers are shared for all apps, so they usuall have their own namespace
-- [02_rbac.yaml](spec/ingress-controller/02_rbac.yaml) - RBAC rules so the ingress controller can query the Kubernetes API for Service endpoints, Ingress objects and more
-- [configmap.yaml](spec/ingress-controller/configmap.yaml) - additional config for Nginx, to enable proxy caching
-- [daemonset.yaml](spec/ingress-controller/daemonset.yaml) - DaemonSet to run the ingress controller Pods; contains a few fields you haven't seen yet
-- [services.yaml](spec/ingress-controller/services.yaml) - Services for external access
+- [01_namespace.yaml](specs/ingress-controller/01_namespace.yaml) - ingress controllers are shared for all apps, so they usuall have their own namespace
+- [02_rbac.yaml](specs/ingress-controller/02_rbac.yaml) - RBAC rules so the ingress controller can query the Kubernetes API for Service endpoints, Ingress objects and more
+- [configmap.yaml](specs/ingress-controller/configmap.yaml) - additional config for Nginx, to enable proxy caching
+- [daemonset.yaml](specs/ingress-controller/daemonset.yaml) - DaemonSet to run the ingress controller Pods; contains a few fields you haven't seen yet
+- [services.yaml](specs/ingress-controller/services.yaml) - Services for external access
 
 Deploy the controller:
 
 ```
-kubectl apply -f labs/ingress/spec/ingress-controller
+kubectl apply -f labs/ingress/specs/ingress-controller
 
 kubectl get all -n ingress-nginx
 
@@ -70,24 +70,24 @@ The ingress controller is powered by Nginx, but you don't need to configure rout
 
 We'll start with a default app which will be a catch-all, so users won't ever see the 404 response from the ingress controller.
 
-- [default/deployment.yaml](spec/default/deployment.yaml) - a simple Nginx deployment, using the standard Nginx image not the ingress controller
-- [default/configmap.yaml](spec/default/configmap.yaml) - configuration containing HTML file for Nginx to show
-- [default/service.yaml](spec/default/service.yaml) - ClusterIP Service
+- [default/deployment.yaml](specs/default/deployment.yaml) - a simple Nginx deployment, using the standard Nginx image not the ingress controller
+- [default/configmap.yaml](specs/default/configmap.yaml) - configuration containing HTML file for Nginx to show
+- [default/service.yaml](specs/default/service.yaml) - ClusterIP Service
 
 Deploy the default web app:
 
 ```
-kubectl apply -f labs/ingress/spec/default
+kubectl apply -f labs/ingress/specs/default
 ```
 
 Nothing happens yet. Services aren't automatically wired up to the ingress controller - you do that by specifying routing rules in an Ingress object:
 
-- [ingress/default.yaml](spec/default/ingress/default.yaml) - Ingress rule with no host specified, so all requests will go here by default
+- [ingress/default.yaml](specs/default/ingress/default.yaml) - Ingress rule with no host specified, so all requests will go here by default
 
 Now deploy the ingress rule:
 
 ```
-kubectl apply -f labs/ingress/spec/default/ingress
+kubectl apply -f labs/ingress/specs/default/ingress
 
 kubectl get ingress
 ```
@@ -106,13 +106,13 @@ To publish all of your apps through the ingress controller it's the same pattern
 
 Here's the spec for the whoami app, which will publish to a specific host name:
 
-- [whoami.yaml](spec/whoami/whoami.yaml) - Deployment and ClusterIP Service for the app, nothing ingress-specific
-- [whoami/ingress.yaml](spec/whoami/ingress.yaml) - Ingress which routes traffic with the host domain `whoami.local` to the ClusterIP Service
+- [whoami.yaml](specs/whoami/whoami.yaml) - Deployment and ClusterIP Service for the app, nothing ingress-specific
+- [whoami/ingress.yaml](specs/whoami/ingress.yaml) - Ingress which routes traffic with the host domain `whoami.local` to the ClusterIP Service
 
 Deploy the app with the Ingress rule:
 
 ```
-kubectl apply -f labs/ingress/spec/whoami
+kubectl apply -f labs/ingress/specs/whoami
 
 kubectl get ingress
 ```
@@ -135,13 +135,13 @@ The Ingress API doesn't support all the features of every ingress controller, so
 
 We'll publish the Pi web app on the hostname `pi.local`, first using a simple Ingress with no response cache:
 
-- [pi.yaml](spec/pi/pi.yaml) - Deployment and Service for the app
-- [pi/ingress.yaml](spec/pi/ingress.yaml) - Ingress which routes `pi.local` to the Service
+- [pi.yaml](specs/pi/pi.yaml) - Deployment and Service for the app
+- [pi/ingress.yaml](specs/pi/ingress.yaml) - Ingress which routes `pi.local` to the Service
 
 Deploy the app:
 
 ```
-kubectl apply -f labs/ingress/spec/pi
+kubectl apply -f labs/ingress/specs/pi
 
 kubectl get ingress
 
@@ -162,12 +162,12 @@ And add another DNS entry in your hosts file:
 
 We can update the Ingress object to use response caching - which the Nginx ingress controller supports:
 
-- [ingress-with-cache.yaml](spec/pi/update/ingress-with-cache.yaml) - uses Nginx annotations to use the cache; the controller looks for this when it sets up the config for the site
+- [ingress-with-cache.yaml](specs/pi/update/ingress-with-cache.yaml) - uses Nginx annotations to use the cache; the controller looks for this when it sets up the config for the site
 
 There's no change to the app, only the Ingress:
 
 ```
-kubectl apply -f labs/ingress/spec/pi/update
+kubectl apply -f labs/ingress/specs/pi/update
 ```
 
 > Now browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000 - you'll see the cached response with every refresh.
@@ -192,12 +192,12 @@ You'll see an error because this is a self-signed certificate, which means it's 
 
 You can apply your own certificates in Ingress rules. You might buy a TLS cert from an online provider specific to your host domains, but we'll generate our own:
 
-- [cert-generator.yaml](spec/tls/cert-generator.yaml) - uses a tool to create a TLS cert for our domains
+- [cert-generator.yaml](specs/tls/cert-generator.yaml) - uses a tool to create a TLS cert for our domains
 
 Generate the certs:
 
 ```
-kubectl apply -f labs/ingress/spec/tls
+kubectl apply -f labs/ingress/specs/tls
 
 kubectl wait --for=condition=Ready pod tls-cert-generator
 
@@ -235,12 +235,12 @@ ___
 
 HTTPS is really easy to apply with Ingress - you just add the name of the Secret containing the TLS certificate to the Ingress spec:
 
-- [pi-https.yaml](spec/tls/ingress/pi-https.yaml) - uses the TLS Secret for the Pi app; the folder contains the same updates for the other Ingress objects
+- [pi-https.yaml](specs/tls/ingress/pi-https.yaml) - uses the TLS Secret for the Pi app; the folder contains the same updates for the other Ingress objects
 
 Add TLS support:
 
 ```
-kubectl apply -f labs/ingress/spec/tls/ingress
+kubectl apply -f labs/ingress/specs/tls/ingress
 
 kubectl get ingress
 ```
@@ -269,7 +269,7 @@ Two parts to this lab. First we want to take the configurable web app and publis
 The app spec is already in place to get you started:
 
 ```
-kubectl apply -f labs/ingress/spec/configurable
+kubectl apply -f labs/ingress/specs/configurable
 ```
 
 The second part is we'd like to change the ingress controller to use the standard ports - 80 for HTTP and 443 for HTTPS - so we can test the redirect. You'll only be able to do that if you're using the LoadBalancer.
