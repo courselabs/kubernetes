@@ -45,7 +45,7 @@ spec:
       volumes:
         - name: scripts
           configMap:
-            name: simple-statefulse-scripts
+            name: simple-statefulset-scripts
             defaultMode: 0500
         - name: html
           emptyDir: {}

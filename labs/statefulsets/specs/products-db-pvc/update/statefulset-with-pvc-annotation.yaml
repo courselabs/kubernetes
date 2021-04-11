@@ -3,7 +3,8 @@ kind: StatefulSet
 metadata:
   name: products-db
   labels:
-    app: widgetario
+    co.courselabs.k8sfun: statefulsets
+    app: products-db
 spec:
   selector:
     matchLabels:
@@ -12,10 +13,11 @@ spec:
   replicas: 2
   template:
     metadata:
+      annotations:
+        remarks.k8sfun.courselabs.co: "this is a new annotation"
       labels:
         app: products-db
-    spec:      
-      automountServiceAccountToken: false
+    spec:
       containers:
         - name: app
           image: widgetario/products-db:postgres-replicated
@@ -32,7 +34,7 @@ spec:
   - metadata:
       name: data
       labels:
-        app: widgetario
+        app: products-db
     spec:
       accessModes: 
        - ReadWriteOnce

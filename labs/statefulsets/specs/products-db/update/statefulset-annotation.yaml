@@ -13,9 +13,11 @@ spec:
   replicas: 2
   template:
     metadata:
+      annotations:
+        remarks.k8sfun.courselabs.co: "this is a new annotation"
       labels:
         app: products-db
-    spec:
+    spec:      
       containers:
         - name: app
           image: widgetario/products-db:postgres-replicated

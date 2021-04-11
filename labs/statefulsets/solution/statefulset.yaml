@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-statefulset
+  labels:
+    co.courselabs.k8sfun: statefulsets
+    app: nginx-statefulset
+spec:
+  selector:
+    matchLabels:
+      app: nginx-statefulset
+  serviceName: nginx-internal
+  replicas: 2
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: nginx-statefulset
+    spec: 
+      containers:
+        - name: app
+          image: nginx:1.18-alpine          
+          volumeMounts:
+            - name: config
+              mountPath: "/etc/nginx/"
+              readOnly: true
+            - name: cache
+              mountPath: /cache
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-configmap  
+  volumeClaimTemplates:
+  - metadata:
+      name: cache
+      labels:
+        app: nginx-statefulset
+    spec:
+      accessModes: 
+       - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Mi
