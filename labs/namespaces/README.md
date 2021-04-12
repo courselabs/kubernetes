@@ -162,7 +162,11 @@ kubectl exec pod/sleep -- nslookup whoami-np.whoami.svc.cluster.local
 
 > As a best-practice you should use FQDNs to communicate between components. It makes your deployment less flexible because you can't change the namespace without also changing app config, but it removes a potentially confusing failure point.
 
-## Applying resource limits
+___
+## **EXTRA** Applying resource limits
+
+<details>
+  <summary>Restrict compute across a namespace</summary>
 
 Namespaces aren't just for logically grouping components, you can also enforce quotas on a namespace to limit the resources which can be deployed.
 
@@ -213,8 +217,14 @@ kubectl -n pi describe rs -l app=pi-web,cpu=max
 
 > The new ReplicaSet never scales up to the desired count. You'll see a nice, clear error telling you that the quota has been exceeded. Kubernetes will keep trying, in case the quota changes
 
-## **EXTRA** Context switching with Kubectx and Kubens
+</details>
 
+___
+## **EXTRA** Context switching
+
+<details>
+  <summary>Learn about Kubectx and Kubens</summary>
+  
 When you work with a lot of Kubernetes clusters each with lots of namespaces, it gets very difficult to manage them.
 
 There's a great tool called [kubectx](https://kubectx.dev/) which helps with that - it's cross-platform and it lets you easily switch between clusters, along with the partner tool `kubens` for switching namespaces.
@@ -264,6 +274,10 @@ And if you set up a fancy shell with [ZSH and PowerLevel10K](https://medium.com/
 
 ![](/img/ohmyzsh.png)
 
+</details>
+
+
+___
 ## Lab
 
 That Pi service takes too long to run, it was better when it ran with a proxy to cache the responses.
