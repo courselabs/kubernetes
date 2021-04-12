@@ -27,7 +27,7 @@ These are hands-on resources to help you learn Kubernetes.
 - [DaemonSets](labs/damonsets)
 - [Ingress](labs/ingress)
 - [Jobs and CronJobs](labs/jobs)
-- StatefulSets
+- [StatefulSets](labs/statefulsets)
 
 ## Part 4 - Real Kubernetes
 

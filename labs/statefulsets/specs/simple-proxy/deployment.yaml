@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: simple-proxy
   labels:
@@ -9,9 +9,6 @@ spec:
   selector:
     matchLabels:
       app: simple-proxy
-  serviceName: simple-proxy-internal
-  replicas: 2
-  podManagementPolicy: Parallel
   template:
     metadata:
       labels:
@@ -30,14 +27,5 @@ spec:
         - name: config
           configMap:
             name: nginx-configmap  
-  volumeClaimTemplates:
-  - metadata:
-      name: cache
-      labels:
-        app: simple-proxy
-    spec:
-      accessModes: 
-       - ReadWriteOnce
-      resources:
-        requests:
-          storage: 50Mi
+        - name: cache
+          emptyDir: {}
