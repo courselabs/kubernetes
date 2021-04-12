@@ -14,7 +14,7 @@ spec:
         cpu: mid
     spec:
       containers:
-        - image: sixeyed/pi:2002
+        - image: kiamol/ch05-pi
           command: ["dotnet", "Pi.Web.dll", "-m", "web"]
           name: pi-web
           ports:
