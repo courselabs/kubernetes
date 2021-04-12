@@ -12,9 +12,9 @@ kubectl apply -f labs/ingress/solution/ingress
 It's a new domain so you need to add it to your hosts file:
 
 ```
-./labs/ingress/add-to-hosts.ps1 configurable.local 127.0.0.1
+./scripts/add-to-hosts.ps1 configurable.local 127.0.0.1
 
-./labs/ingress/add-to-hosts.sh configurable.local 127.0.01
+./scripts/add-to-hosts.sh configurable.local 127.0.01
 ```
 
 > Now you can browse to https://configurable.local:8040
@@ -24,6 +24,9 @@ But check the cert - it's the default cert from the ingress controller. Why?
 The logs will tell you:
 
 ```
+# Windows doesn't have grep, run this to add it:
+. ./scripts/windows-tools.ps1
+
 kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --tail 100 | grep Error
 ```
 

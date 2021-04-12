@@ -92,7 +92,7 @@ Kubectl always shows Secrets encoded as base-64, but that's just a basic safety 
 _Windows doesn't have a base64 command, so run this PowerShell script **if you're on Windows**:_
 
 ```
-. ./labs/secrets/base64.ps1
+. ./scripts/windows-tools.ps1
 ```
 
 Now you can fetch the data item from a Secret, and decode it into plaintext:
@@ -204,3 +204,17 @@ Come up with an alternative approach so when you apply changes to a Secret in YA
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+
+## Cleanup
+
+```
+kubectl delete all,cm,secret -l k8s-fundamentals=secrets
+```
+TODO - labels
+
+## Further reading
+
+Other Secret types:
+
+- tls
+- registry

@@ -12,4 +12,11 @@ function Convert-ToBase64 {
 	}
 }
 
+# base64
 Set-Alias base64  Convert-ToBase64
+
+# grep
+Set-Alias -Name grep -Value Select-String
+
+# use the real curl
+Remove-Item Alias:curl -ErrorAction Ignore

@@ -121,10 +121,10 @@ To access the site locally you'll need to add an entry in your [hosts file](http
 
 ```
 # using Powershell - your terminal needs to be running as Admin:
-./labs/ingress/add-to-hosts.ps1 whoami.local 127.0.0.1
+./scripts/add-to-hosts.ps1 whoami.local 127.0.0.1
 
 # on macOS or Linux - you'll be asked for your password:
-./labs/ingress/add-to-hosts.sh whoami.local 127.0.0.1
+./scripts/add-to-hosts.sh whoami.local 127.0.0.1
 ```
 
 > Browse to whoami.local:8000 / whoami.local:30000 and you'll see the site. There are multiple replicas - refresh to see load-balancing between them
@@ -152,10 +152,10 @@ And add another DNS entry in your hosts file:
 
 ```
 # Windows:
-./labs/ingress/add-to-hosts.ps1 pi.local 127.0.0.1
+./scripts/add-to-hosts.ps1 pi.local 127.0.0.1
 
 # *nix:
-./labs/ingress/add-to-hosts.sh pi.local 127.0.0.1
+./scripts/add-to-hosts.sh pi.local 127.0.0.1
 ```
 
 > Browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000; it'll take a second or so to see the response. Refresh and you'll see the request is load-balanced and the response is calculated every time.
