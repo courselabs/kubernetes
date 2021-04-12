@@ -1,14 +1,27 @@
-#
+# Preparing for Production
 
-## Self-healing apps with container probes
+It's straightforward to model your apps in Kubernetes and get them running, but there's more work to do before you get to production.
+
+Kubernetes can fix apps which have temporary failures, automatically scale up apps which are under load and add security controls around containers.
+
+These are the things you'll add to your application models to get ready for production.
+
+## Self-healing apps with readiness probes
+
+We know Kubernetes restarts Pods when the container exits, but the app inside the container could stop responding and Kubernetes won't know.
+
+The whoami app has a nice feature we can use to trigger a failure:
 
 ```
 kubectl apply -f labs/productionizing/specs/whoami
 ```
 
-TODO - curl.ps1, remove-alias
+The app is running in two Pods - make a POST command and one of them will switch to a failed state:
 
 ```
+# if you're on Windows, run this to use the correct curl:
+. ./scripts/windows-tools.ps1
+
 curl http://localhost:8010
 
 curl --data '503' http://localhost:8010/health
@@ -18,6 +31,11 @@ curl -i http://localhost:8010
 
 > Repeat and you'll get some OK responses and some 503s - the Pod with the broken app doesn't fix itself
 
+You can tell Kubernetes how to test your app is healthy with [container probes](). You define the action for the probe, and Kubernetes runs it repeatedly to make sure the app is healthy:
+
+- [deployment-with-readiness.yaml](specs/whoami/update/deployment-with-readiness.yaml) - adds a readiness probe, which makes an HTTP call to the /health endpoint of the app every 5 seconds
+
+Deploy the update and check the new Pods:
 
 ```
 kubectl apply -f labs/productionizing/specs/whoami/update
@@ -27,7 +45,9 @@ kubectl wait --for=condition=Ready pod -l app=whoami,update=readiness
 kubectl describe pod -l app=whoami
 ```
 
-> Readiness:      http-get http://:80/health delay=0s timeout=1s period=5s #success=1 #failure=3
+> You'll see the readiness check listed in the output
+
+These are new Pods so the app is healthy in both; trip one Pod into the unhealthy state and you'll see the status change:
 
 ```
 curl --data '503' http://localhost:8010/health
@@ -37,20 +57,29 @@ kubectl get po -l app=whoami --watch
 
 > One Pod changes the Ready column - now 0/1 containers are ready
 
+If a readiness check fails, the Pod is removed from the Service and it won't receive any traffic:
+
 ```
-# Ctrl-C 
+# Ctrl-C to exit the watch
 
 kubectl get endpoints whoami-np
 
 curl http://localhost:8010
 ```
 
-> Only the healthy Pod is in enlisted in the Services, so you will always get an OK response
+> Only the healthy Pod is in enlisted in the Service, so you will always get an OK response.
 
-Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app. For that you can use a liveness probe, which will restart the Pod with a new container if the probe fails:
+If this was a real app the 503 could be happening if the app is overloaded. Removing it from the Service could give it time to fix itself.
 
-- []()
+## Self-repairing apps with liveness probes
 
+Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app. 
+
+For that you can use a [liveness probe]() which will restart the Pod with a new container if the probe fails:
+
+- [deployment-with-liveness.yaml](specs/whoami/update2/deployment-with-liveness.yaml) - adds a liveness check which uses the same test as the readiness probe
+
+You'll often have the same tests for readiness and liveness, but the liveness check has more significant consequences, so you'll want it to run less frequently and have a higher failure threshold.
 
 ```
 kubectl apply -f labs/productionizing/specs/whoami/update2
@@ -58,13 +87,15 @@ kubectl apply -f labs/productionizing/specs/whoami/update2
 kubectl wait --for=condition=Ready pod -l app=whoami,update=liveness
 ```
 
+Now when you cause one of the new Pods to fail, it will be restarted:
+
 ```
 curl --data '503' http://localhost:8010/health
 
 kubectl get po -l app=whoami --watch
 ```
 
-> One Pod will become ready 0/1 -then it will restart, and then become ready again 
+> One Pod will become ready 0/1 -then it will restart, and then become ready 1/1 again 
 
 ```
 # Ctrl-C 
@@ -74,9 +105,9 @@ kubectl get endpoints whoami-np
 
 > Both Pod IPs are in the Service list - when the restarted Pod passed the readiness check it was added  
 
-Other types of probe TCP and exec:
+Other types of probe exist, so this isn't just for HTTP apps. This Postgres Pod uses a TCP probe and a command probe:
 
-- []()
+- [products-db.yaml](specs/products-db/products-db.yaml) - has a readiness probe to test Postgres is listening and a liveness probe to test the database is usable
 
 ```
 kubectl apply -f labs/productionizing/specs/products-db
@@ -84,18 +115,21 @@ kubectl apply -f labs/productionizing/specs/products-db
 kubectl describe po -l app=products-db
 ```
 
-> Liveness and readiness have `#success` and `#failure` - but these are thresholds in the spec, not the status of the probes
+> Liveness and readiness show `#success` and `#failure` numbers - but these are thresholds in the spec, not the status of the probes
 
-Sucessful probe results are not shown in Kubectl, even as events in `describe` because they would flood the database.
+Sucessful probe results are not shown in Kubectl, even as events in `describe` because they would flood the database and logs.
+
+You won't easily be able to trigger a failure in this one, but if there is a problem with Postgres, Kubernetes will take care of it.
 
 ## Autoscaling compute-intensive workloads
 
-[metrics-server](https://github.com/kubernetes-sigs/metrics-server)
+
 
 ```
 kubectl top nodes
 ```
 
+[metrics-server](https://github.com/kubernetes-sigs/metrics-server)
 > 
 
 ```
@@ -142,7 +176,11 @@ pi-cpu   Deployment/pi-web   0%/75%     1         5         3          10m
 pi-cpu   Deployment/pi-web   0%/75%     1         5         1          11m
 ```
 
-## Pod security 
+___
+## **EXTRA** Pod security 
+
+<details>
+  <summary>Restricting what Pod containers can do</summary>
 
 Container resource limits are necessary for HPAs, but you should have them in all your Pod specs because they provide a layer of security. Applying CPU and memory limits protects the nodes, and means workloads can't max out resources and starve other Pods.
 
@@ -195,6 +233,9 @@ kubectl exec deploy/pi-secure-web -- chown root:root /app/Pi.Web.dll
 
 This is not the end of security. Securing containers is a multi-layered approach which starts with your securing your images, but this is a good step up in the default Pod security.
 
+</details>
+
+___
 ## Lab
 
 Adding production concerns is often something you'll do after you've done the initial modelling and got your app running. 
