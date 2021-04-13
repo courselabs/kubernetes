@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: adminer-web-lb
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8020
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: adminer-web-np
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8020

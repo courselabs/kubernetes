@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: sleep
   labels:  
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
     app: sleep
 spec:
   containers:

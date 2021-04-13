@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: adminer-web
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   selector:
     matchLabels:

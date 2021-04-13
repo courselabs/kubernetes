@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: simple-proxy
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
     app: simple-proxy
 spec:
   selector:

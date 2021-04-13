@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: simple-statefulset
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8010
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: simple-statefulset-lb
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8010
@@ -31,7 +31,7 @@ kind: Service
 metadata:
   name: simple-statefulset-np
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8010

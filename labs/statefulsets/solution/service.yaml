@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: simple-proxy-internal
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8030

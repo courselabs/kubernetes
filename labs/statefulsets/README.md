@@ -2,11 +2,16 @@
 
 Kubernetes is a dynamic platform where objects are usually created in parallel and with random names. That's what happens with Pods when you create a Deployment, and it's a pattern which scales well.
 
-But some apps need a stable environment, where objects are created in a known order with fixed names. Think of a replicated system like a message queue or a database - there's often a primary node and multiple secondaries. The secondaries depend on the primary starting first and they need to know how to find it so they can sync data. That's where you use a [StatefulSet]().
+But some apps need a stable environment, where objects are created in a known order with fixed names. Think of a replicated system like a message queue or a database - there's often a primary node and multiple secondaries. The secondaries depend on the primary starting first and they need to know how to find it so they can sync data. That's where you use a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
 
 StatefulSets are Pod controllers which can create multiple replicas in a stable environment. Replicas have known names, start consecutively and are individually addressable within the cluster.
 
-## StatefulSet and Service API spec
+## API specs
+
+- [StatefulSet (apps/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#statefulset-v1-apps)
+
+<details>
+  <summary>YAML overview</summary>
 
 The spec is similar to Deployments - metadata, a selector and a template for the Pod spec - but with one important addition:
 
@@ -50,6 +55,8 @@ spec:
 
 The StatefulSet has a link to the Service because it manages the Service endpoints. Each Pod has its IP address added to the Service **and** a separate DNS name is created for each Pod.
 
+</details><br/>
+
 ## Deploy a simple StatefulSet
 
 We'll start with a simple(ish) example that runs multiple Nginx Pods. This app doesn't need to use a StatefulSet, but it shows the pattern without getting too complex:
@@ -58,11 +65,14 @@ We'll start with a simple(ish) example that runs multiple Nginx Pods. This app d
 - [simple/configmap-scripts.yaml](specs/simple/configmap-scripts.yaml) - ConfigMap with shell scripts the app uses for initialization
 - [simple/statefulset.yaml](specs/simple/statefulset.yaml) - StatefulSet which uses the headless Service and the scripts; init containers ensure the secondaries don't start until the primary is ready, and then create the HTML to serve
 
-This is the workflow we're modelling:
+<details>
+  <summary>ℹ We're modelling a stable startup workflow.</summary>
 
 * Pod 0 starts, the first script runs confirming this Pod is the primary, then the second script runs and creates the HTML; then the app container runs, ready to serve the page
 * Pod 1 starts, the first script runs and checks the DNS entry for Pod 0 - if it doesn't exist, then the primary isn't ready so the script waits. When the primary comes online, the next script writes HTML and the app starts.
 * Pod 2 starts - same process as Pod 1.
+
+</details><br/>
 
 Let's see it in action:
 
@@ -88,11 +98,18 @@ When they're running these are normal Pods, the StatefulSet just manages creatin
 
 ## Communication with StatefulSet Pods
 
-StatefulSets add their Pod IP addresses to the Service:
+StatefulSets add their Pod IP addresses to the Service.
+
+📋 Check both Pods are registered with the Service.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl get endpoints simple-statefulset
 ```
+
+</details><br/>
 
 There's one Service with 3 Pod IP addresses, but those Pods can also be  reached using individual domain names.
 
@@ -166,7 +183,35 @@ Both Pods should end with a log saying the database is ready to accept connectio
 kubectl logs -l app=products-db --tail 1
 ```
 
-## Test with a SQL client Deployment
+## Lab
+
+StatefulSets are complex and not as common as other controllers, but they have one big advantage over Deployments - they can dynamically provision a PVC for each Pod.
+
+Deployments don't let you do this ([yet](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes)), so you can use a StatefulSet instead to benefit from volume claim templates.
+
+The [simple-proxy/deployment.yaml](labs/statefulsets/specs/simple-proxy/deployment.yaml) is a spec to run an Nginx proxy over the StatefulSet website we have running.
+
+Deploy the proxy:
+
+```
+kubectl apply -f labs/statefulsets/specs/simple-proxy
+```
+
+Test it works at localhost:8040 / localhost:30040.
+
+Your task is to replace the Deployment which uses an emptyDir volume for cache files with a StatefulSet that uses a PVC for the cache for each Pod. 
+
+The proxy doesn't need Pods to be managed consecutively, so the spec should be set to create them in parallel.
+
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
+___
+
+
+## **EXTRA** Test the replicated database
+
+<details>
+  <summary>Deploying a SQL client in the cluster</summary>
 
 Running databases inside Kubernetes isn't always the right choice, but it's great for non-production environments.
 
@@ -211,7 +256,13 @@ Now click _Logout_ in the top right and log in again to the replica database ser
 
 Click _select_ for the Products table and you'll see the change you made to the primary server has been replicated to the secondary. If you try to edit a row here you'll get an error message because the secondary is read-only.
 
-## Updating StatefulSets
+</details><br/>
+
+
+## **EXTRA** Updating StatefulSets
+
+<details>
+  <summary>Using a known rollout order</summary>
 
 Updating StatefulSets uses a consecutive rollout, starting from the last Pod in the set and moving backwards to the first. That means secondaries are replaced before the primary.
 
@@ -219,7 +270,7 @@ Some fields in the Pod spec are fixed (like the volume claim template), so you c
 
 Other changes (container image, metadata etc.) are performed with consecutive Pod replacements:
 
-- [statefulset-with-pvc-annotation.yaml](labs/statefulsets/specs/products-db/update/statefulset-with-pvc-annotation.yaml) - adds an annotation to the Pod spec
+- [statefulset-with-pvc-annotation.yaml](specs/products-db/update/statefulset-with-pvc-annotation.yaml) - adds an annotation to the Pod spec
 
 Apply the update and watch the rollout happen in reverse:
 
@@ -242,32 +293,12 @@ The consecutive rollout is more time-consuming but safer - if there's a problem 
 
 Go back to the Adminer website and refresh your SQL query - the changes you made are still there, because the new Pods load the database files created by the previous Pods. 
 
-## Lab
+</details><br/>
 
-StatefulSets are complex and not as common as other controllers, but they have one big advantage over Deployments - they can dynamically provision a PVC for each Pod.
-
-Deployments don't let you do this ([yet](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes)), so you can use a StatefulSet instead to benefit from volume claim templates.
-
-The [simple-proxy/deployment.yaml](labs/statefulsets/specs/simple-proxy/deployment.yaml) is a spec to run an Nginx proxy over the StatefulSet website we have running.
-
-Deploy the proxy:
-
-```
-kubectl apply -f labs/statefulsets/specs/simple-proxy
-```
-
-Test it works at localhost:8040 / localhost:30040.
-
-Your task is to replace the Deployment which uses an emptyDir volume for cache files with a StatefulSet that uses a PVC for the cache for each Pod. 
-
-The proxy doesn't need Pods to be managed consecutively, so the spec should be set to create them in parallel.
-
-> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+___
 
 ## Cleanup
 
-When you're done **after you've tried the lab**, you can remove all the objects:
-
 ```
-kubectl delete svc,cm,secret,statefulset,deployment,pod -l co.courselabs.k8sfun=statefulsets
+kubectl delete svc,cm,secret,statefulset,deployment,pod -l k8sfun.courselabs.co=statefulsets
 ```

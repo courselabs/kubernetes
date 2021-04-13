@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: products-db
   labels:
-    co.courselabs.k8sfun: statefulsets
+    k8sfun.courselabs.co: statefulsets
     app: products-db
 spec:
   ports:
