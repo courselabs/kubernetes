@@ -2,6 +2,13 @@
 
 There are two ways to store configuration settings in ConfigMaps - either as key-value pairs, which you'll surface as environment variables, or as text data which you'll surface as files in the container filesystem.
 
+## API specs
+
+- [ConfigMap](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#configmap-v1-core)
+
+<details>
+  <summary>YAML overview</summary>
+
 ## ConfigMap and Pod YAML - using environment variables
 
 Key-value pairs are defined in YAML like this:
@@ -82,19 +89,13 @@ Volumes are defined at the Pod level - they are storage units which are part of 
 * `volumeMounts.mountPath` - the directory path where the volume is surfaced
 * `volumeMounts.readOnly` - flag whether the volume is read-only or editable
 
-## Clean up everything so far
+</details><br/>
 
-```
-kubectl delete deploy,service,pod --all
-```
+## Run the configurable demo app
 
-> This is dangerous. You should use labels for all top-level objects (Deployments, Services etc.), so you can be selective about deletes
+The demo app for this lab has the logic to merge config from multiple settings. 
 
-## Check the default app configuration
-
-The demo app has the logic to merge config from multiple settings. 
-
-Defaults are built into the `appsettings.json` file inside the Docker image - run a Pod with no config applied to see it:
+Defaults are built into the `appsettings.json` file inside the Docker image - run a Pod with no config applied to see the defaults:
 
 ```
 kubectl run configurable --image=sixeyed/configurable:21.04
@@ -106,21 +107,28 @@ kubectl port-forward pod/configurable 8080:80
 
 > These are useful commands for quick testing or debugging, but in real life it's all YAML
 
-Check the app at http://[node-ip]:8080.
+Check the app at http://localhost:8080 (or your node's IP address if you have a remote cluster).
 
-You see the default configuration settings from the JSON file in the image. The environment variables come from the the image and are set by Kubernetes.
+You see the default configuration settings from the JSON file in the container image. The environment variables come from Dockerfile, plus the container OS and some set by Kubernetes.
 
-Exit the port-forward and remove the Pod:
+Exit the port-forward and remove the Pod.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
-# Ctrl-C
+# Ctrl-C to exit the command
 
 kubectl delete pod configurable
 ```
 
+</details><br />
+
 ## Setting config with environment variables in the Pod spec
 
-This [deployment.yaml](specs/configurable/deployment.yaml) file applies a config setting by adding an environment variable in the Pod spec.
+The Pod spec is where you apply configuration:
+
+- [deployment.yaml](specs/configurable/deployment.yaml) adds a config setting with an environment variable in the template Pod spec.
 
 ```
 kubectl apply -f labs/configmaps/specs/configurable/
@@ -136,11 +144,21 @@ kubectl exec deploy/configurable -- printenv | grep Co
 
 Confirm that by browsing to the app from your Service.
 
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# print the Service details:
+kubectl get svc -l app=configurable
+```
+
+</details><br />
+
 ## Setting config with environment variables in ConfigMaps
 
 Environment variables in Pod specs are fine for single settings like feature flags. Typically you'll have lots of settings and you'll use a ConfigMap:
 
-- [configmap-env.yaml](specs/configurable/config-env/configmap-env.yaml) - a ConfigMap setting environment variables
+- [configmap-env.yaml](specs/configurable/config-env/configmap-env.yaml) - a ConfigMap with multiple environment variables
 - [deployment-env.yaml](specs/configurable/config-env/deployment-env.yaml) - a Deployment which loads the ConfigMap into environment variables
 
 ```
@@ -163,7 +181,7 @@ Environment variables are limited too. They're visible to all processes so there
 
 The filesystem is a more reliable store for configuration; permissions can be set for files, and it allows for more complex config with nested settings.
 
-The demo app uses JSON configuration, and it supports loading additional settings from an override file:
+The demo app can use JSON configuration as well as environment variables, and it supports loading additional settings from an override file:
 
 - [configmap-json.yaml](specs/configurable/config-json/configmap-json.yaml) - stores the config settings as a JSON data item
 - [deployment-json.yaml](specs/configurable/config-json/deployment-json.yaml) loads the JSON as a volume mount **and** loads environment variables
@@ -174,7 +192,12 @@ kubectl apply -f labs/configmaps/specs/configurable/config-json/
 
 > Refresh the web app and you'll see new settings coming from the `config/override.json` file
 
-Check the filesystem inside the container:
+Check the filesystem inside the container to see the file loaded from the ConfigMap.
+
+<details>
+  <summary>Not sure how?</summary>
+
+Explore the container filesystem with `exec` commands:
 
 ```
 kubectl exec deploy/configurable -- ls /app/
@@ -184,7 +207,9 @@ kubectl exec deploy/configurable -- ls /app/config/
 kubectl exec deploy/configurable -- cat /app/config/override.json
 ```
 
-> The first JSON file is from the container image, the second is from the ConfigMap volume mount
+> The first JSON file is from the container image, the second is from the ConfigMap volume mount.
+
+</details><br />
 
 Something's not quite right though - the release setting is still coming from the environment variable:
 
@@ -196,7 +221,22 @@ kubectl exec deploy/configurable -- printenv | grep Co
 
 > The config hierarchy in this app puts environment variables ahead of settings in files, so they get overidden. You'll need to understand the hierarchy for your apps to model config correctly.
 
-## Be careful with volume mounts
+## Lab
+
+Mapping configuration in ConfigMap YAML works well and it means you can deploy your whole app with `kubectl apply`. But it won't suit every organization, and Kubernetes also supports creating ConfigMaps directly from values and config files.
+
+Create two new ConfigMaps to support the Deployment in [deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) and set these values:
+
+- Environment variable `Configuration__Release=21.04-lab`
+- JSON setting `Features.DarkMode=true`
+
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
+___
+## **EXTRA** Be careful with volume mounts
+
+<details>
+  <summary>Volume mounts can overwrite existing directories </summary>
 
 Loading ConfigMaps into volume mounts is very powerful, but there are a couple of gotchas to be aware of:
 
@@ -232,14 +272,12 @@ kubectl get replicaset -l app=configurable
 
 > The Deployment object won't scale down the old ReplicaSet until the new one reaches desired capacity. Using a Deployment keeps your app safe from issues like this.
 
-## Lab
+___
 
-Mapping configuration in ConfigMap YAML works well and it means you can deploy your whole app with `kubectl apply`. But it won't suit every organization, and Kubernetes also supports creating ConfigMaps directly from values and config files.
+## Cleanup
 
-Create two new ConfigMaps to support the Deployment in [deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) and set these values:
+Cleanup by removing objects with this lab's label:
 
-- Environment variable `Configuration__Release=21.04-lab`
-- JSON setting `Features.DarkMode=true`
-
-> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
-
+```
+kubectl delete configmap,deploy,svc -l k8sfun.courselabs.co=configmaps
+```

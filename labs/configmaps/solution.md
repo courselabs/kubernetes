@@ -28,7 +28,7 @@ kubectl describe cm configurable-env-lab
 
 ## Create ConfigMap from config file
 
-[override.json](solution/override.json) has the required JSON settings. The filename is the same as the expected filename the app will read.
+- [override.json](solution/override.json) has the required JSON settings. The filename is the same as the expected filename the app will read.
 
 ```
 kubectl create configmap configurable-override-lab --from-file=labs/configmaps/solution/override.json
@@ -38,7 +38,7 @@ kubectl describe cm configurable-override-lab
 
 ## Deploy the app
 
-[deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) expects the same ConfigMap names we've used, so we can deploy:
+- [deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) expects the same ConfigMap names we've used, so we can deploy:
 
 ```
 kubectl apply -f labs/configmaps/specs/configurable/lab/
