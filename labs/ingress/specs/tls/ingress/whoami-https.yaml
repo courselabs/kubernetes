@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: whoami
   labels:
-    co.courselabs.k8sfun: ingress
+    k8sfun.courselabs.co: ingress
 spec:
   rules:
   - host: whoami.local

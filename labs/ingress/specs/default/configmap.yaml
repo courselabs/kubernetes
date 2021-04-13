@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: nginx-content
   labels:
-    co.courselabs.k8sfun: ingress
+    k8sfun.courselabs.co: ingress
 data:
   index.html: |-
     <!DOCTYPE html>

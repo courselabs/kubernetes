@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: tls-cert-generator
   labels:
-    co.courselabs.k8sfun: ingress
+    k8sfun.courselabs.co: ingress
 spec:
   containers:
     - name: app

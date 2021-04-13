@@ -15,5 +15,3 @@ spec:
             name: configurable-web
             port: 
               name: config-app
-  tls:
-    - secretName: https-local

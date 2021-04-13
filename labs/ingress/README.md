@@ -5,9 +5,14 @@ There are two parts to Ingress:
 - the controller, which is a reverse proxy that receives all incoming traffic
 - the Ingress objects which set up the routing rules for the controller.
 
-You can choose from different controllers. We'll use the [Nginx Ingress Controller](), but [Traefik]() is a popular alternative, and [Contour]() is a new CNCF project.
+You can choose from different controllers. We'll use the [Nginx Ingress Controller](https://kubernetes.github.io/ingress-nginx/), but [Traefik](https://doc.traefik.io/traefik/providers/kubernetes-ingress/) and [Contour - a CNCF project](https://projectcontour.io) are popular alternatives.
 
-## Ingress API spec
+## API specs
+
+- [Ingress (networking.k8s.io/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#ingress-v1-networking-k8s-io)
+
+<details>
+  <summary>YAML overview</summary>
 
 Ingress rules can have multiple mappings, but they're pretty straightforward. 
 
@@ -39,6 +44,8 @@ spec:
 - `path` - the HTTP request path, can be generic `/` or specific `/admin`
 - `pathType` - whether path matching is as a `Prefix` or `Exact`
 - `backend.service` - Service where the controller will fetch content
+
+</details><br/>
 
 ## Deploy an Ingress controller
 
@@ -96,9 +103,12 @@ When you browse to any URL you'll see the default response:
 
 > Browse to localhost:8000/a/bc.php / localhost:30000/a/bc.php
 
-___
-Ingress controllers usually have a default backend - that's where the 404 response originally came from Nginx. An alternative to running your own default app is to [customize the default backend](https://kubernetes.github.io/ingress-nginx/user-guide/default-backend/).
-___
+<details>
+  <summary>ℹ Ingress controllers usually have their own default backend.</summary>
+ 
+ That's where the 404 response originally came from Nginx. An alternative to running your own default app is to [customize the default backend](https://kubernetes.github.io/ingress-nginx/user-guide/default-backend/).
+
+</details><br/>
 
 ## Publish an app to a specific host address
 
@@ -109,7 +119,10 @@ Here's the spec for the whoami app, which will publish to a specific host name:
 - [whoami.yaml](specs/whoami/whoami.yaml) - Deployment and ClusterIP Service for the app, nothing ingress-specific
 - [whoami/ingress.yaml](specs/whoami/ingress.yaml) - Ingress which routes traffic with the host domain `whoami.local` to the ClusterIP Service
 
-Deploy the app with the Ingress rule:
+📋 Deploy the app and check the Ingress rules.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/ingress/specs/whoami
@@ -117,13 +130,15 @@ kubectl apply -f labs/ingress/specs/whoami
 kubectl get ingress
 ```
 
+</details><br/>
+
 To access the site locally you'll need to add an entry in your [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)) - this script will do it for you (replace the IP address with a node IP if you're using a remote cluster):
 
 ```
 # using Powershell - your terminal needs to be running as Admin:
 ./scripts/add-to-hosts.ps1 whoami.local 127.0.0.1
 
-# on macOS or Linux - you'll be asked for your password:
+# on macOS or Linux - you'll be asked for your sudo password:
 ./scripts/add-to-hosts.sh whoami.local 127.0.0.1
 ```
 
@@ -138,7 +153,10 @@ We'll publish the Pi web app on the hostname `pi.local`, first using a simple In
 - [pi.yaml](specs/pi/pi.yaml) - Deployment and Service for the app
 - [pi/ingress.yaml](specs/pi/ingress.yaml) - Ingress which routes `pi.local` to the Service
 
-Deploy the app:
+📋 Deploy the app, check the status and add `pi.local` to your hosts file.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/ingress/specs/pi
@@ -146,17 +164,16 @@ kubectl apply -f labs/ingress/specs/pi
 kubectl get ingress
 
 kubectl get po -l app=pi-web
-```
 
-And add another DNS entry in your hosts file:
-
-```
 # Windows:
 ./scripts/add-to-hosts.ps1 pi.local 127.0.0.1
 
 # *nix:
 ./scripts/add-to-hosts.sh pi.local 127.0.0.1
 ```
+
+
+</details><br/>
 
 > Browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000; it'll take a second or so to see the response. Refresh and you'll see the request is load-balanced and the response is calculated every time.
 
@@ -172,11 +189,34 @@ kubectl apply -f labs/ingress/specs/pi/update
 
 > Now browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000 - you'll see the cached response with every refresh.
 
-___
-Typically you can't cache all parts of your app, so you may have different Ingress rules - one for all static content which has the cache annotation, and another for dynamic content.
+
+<details>
+  <summary>ℹ Typically you won't want to cache all parts of your app.</summary>
+
+You may have different Ingress rules - one for all static content which has the cache annotation, and another for dynamic content.
+
+</details><br />
+
+## Lab
+
+Two parts to this lab. First we want to take the configurable web app and publish it through the ingress controller. 
+
+The app spec is already in place to get you started:
+
+```
+kubectl apply -f labs/ingress/specs/configurable
+```
+
+The second part is we'd like to change the ingress controller to use the standard ports - 80 for HTTP and 443 for HTTPS. You'll only be able to do that if you're using the LoadBalancer.
+
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
 ___
 
-## Create a TLS cert for HTTPS access
+## **EXTRA** Create a TLS cert for HTTPS access
+
+<details>
+  <summary>Using ingress for SSL termination</summary>
 
 Ingress controllers are the single entrypoint for all your apps. They're great for centralizing concerns like caching and HTTPS. 
 
@@ -220,20 +260,30 @@ And use them to create a Secret. Kubernetes supports TLS certificates as a speci
 ```
 kubectl create secret tls https-local --key=tls.key --cert=tls.crt
 
-kubectl label secret https-local co.courselabs.k8sfun=ingress
+kubectl label secret https-local k8sfun.courselabs.co=ingress
 
 kubectl describe secret https-local
 ```
 
 Now we have a Secret with a TLS cert that can be used for our local app domains.
 
-___
-Creating a TLS Secret is what you do if you have a manual process to get your certificates. Ideally you should use an automated process instead so your certs never expire - [cert-manager](https://cert-manager.io) is how you do that in Kubernetes.
+<details>
+  <summary>ℹ Creating a TLS Secret is what you do if you have a manual process to get your certificates. </summary>
+
+Ideally you should use an automated process instead so your certs never expire - [cert-manager](https://cert-manager.io) is how you do that in Kubernetes.
+
+</details><br />
+
+</details><br />
+
 ___
 
-## Expose apps through HTTPS
+## **EXTRA** Expose apps through HTTPS
 
-HTTPS is really easy to apply with Ingress - you just add the name of the Secret containing the TLS certificate to the Ingress spec:
+<details>
+  <summary>HTTP to HTTPS redirection with ingress</summary>
+
+HTTPS is really easy to apply with ingress - you just add the name of the Secret containing the TLS certificate to the Ingress spec:
 
 - [pi-https.yaml](specs/tls/ingress/pi-https.yaml) - uses the TLS Secret for the Pi app; the folder contains the same updates for the other Ingress objects
 
@@ -262,24 +312,12 @@ curl -v http://pi.local:8040/
 
 > We're using a non-standard port for HTTPS, so the redirect won't work. In a real cluster the Service for the Ingress controller would listen on ports 80 and 443.
 
-## Lab
+</details><br />
 
-Two parts to this lab. First we want to take the configurable web app and publish it through the ingress controller. 
-
-The app spec is already in place to get you started:
-
-```
-kubectl apply -f labs/ingress/specs/configurable
-```
-
-The second part is we'd like to change the ingress controller to use the standard ports - 80 for HTTP and 443 for HTTPS - so we can test the redirect. You'll only be able to do that if you're using the LoadBalancer.
-
-> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+___
 
 ## Cleanup
 
-When you're done **after you've tried the lab**, you can remove all the objects:
-
 ```
-kubectl delete all,secret,ingress,ns -l co.courselabs.k8sfun=ingress
+kubectl delete all,secret,ingress,ns -l k8sfun.courselabs.co=ingress
 ```
