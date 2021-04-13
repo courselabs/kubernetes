@@ -1,52 +1,21 @@
+# Troubleshooting Apps in Kubernetes
 
-## Run the app
+You'll spend a lot of your time in Kubectl troubleshooting problems.
+
+Kubernetes validates API specs for correctness when you deploy them, but it doesn't check that your app will actually work.
+
+Objects like Services and Pods are loosely-coupled, so it's easy to break your application if there are errors in your specs.
+
+## Lab
+
+This one is all lab :) Try running this app - and make whatever changes you need to get the app running.
 
 ```
 kubectl apply -f labs/troubleshooting/specs/pi-failing
 ```
 
-## Troubleshooting Deployments
+> Your goal is to browse to localhost:0820 or localhost:30020 and see the response from the Pi app
 
-1. Fix the labels in the Pod spec
+Don't go straight to the solution! These are the sort of issues you will get all the time, so it's good to start working through the steps to diagnose problems.
 
-k get po 
-
-2. Scale up :) (replicas=0 is perfectly valid)
-
-k describe po -l app=pi-web
-
-3. Reduce resource requests (large numbers will only work on powerful nodes)
-
-k get po
-
-`ErrImagePull`
-
-4. Fix image name :)
-
-k get po
-
-`RunContainerError`
-
-5. Fix command
-
-Pods run :)
-
-## Troubleshooting Services
-
-```
-curl http://localhost:8020
-```
-
-k get endpoints pi-lb
-
-> no endpoints
-
-1. Fix selector
-
-k get endpoints pi-lb
-
-> still no endpoints
-
-2. Fix target port name
-
-Works.
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).

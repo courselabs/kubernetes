@@ -11,7 +11,7 @@ spec:
     - name: http
       port: 8020
       targetPort: app
-      nodePort: 30020
+      nodePort: 8020
   type: NodePort
 ---
 apiVersion: v1
