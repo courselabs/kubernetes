@@ -3,7 +3,7 @@ kind: DaemonSet
 metadata:
   name: nginx
   labels:
-    co.courselabs.k8sfun: daemonsets
+    k8sfun.courselabs.co: daemonsets
 spec:
   selector:
     matchLabels:

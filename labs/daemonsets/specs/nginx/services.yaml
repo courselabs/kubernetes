@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: nginx-lb
   labels:
-    co.courselabs.k8sfun: daemonsets
+    k8sfun.courselabs.co: daemonsets
 spec:
   ports:
     - port: 8010
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: nginx-np
   labels:
-    co.courselabs.k8sfun: daemonsets
+    k8sfun.courselabs.co: daemonsets
 spec:
   ports:
     - port: 8010

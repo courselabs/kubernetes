@@ -7,7 +7,12 @@ They're for workloads where you want high-availabilty across multiple nodes, but
 
 Deployments are better suited to most apps and DaemonSets are less common, but you will see them used and they're not complex to work with.
 
-## DaemonSet API spec
+## API specs
+
+- [DaemonSet (apps/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps)
+
+<details>
+  <summary>YAML overview</summary>
 
 The DaemonSet is a Pod controller, so all the important details go into the Pod spec - which is exactly the same Pod API you use with Deployments:
 
@@ -32,6 +37,8 @@ spec:
 - `template.metadata` - Pod labels, which must match or be a superset of the selector
 - `template.spec` - standard Pod spec
 
+</details><br/>
+
 ## Deploy a DaemonSet with a HostPath
 
 One valid use-case for DaemonSets is where the application needs to use resources specific to the node. Multiple Pods running on the node might clash over the resources, so a DaemonSet prevents that.
@@ -49,51 +56,24 @@ kubectl get daemonset
 
 Services route to Pods in the same way, whether they're managed by a DaemonSet or a ReplicaSet. 
 
+📋 Confirm that the Pod IP address is enlisted in the Service.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl get po -l app=nginx -o wide
 
 kubectl get endpoints nginx-np
 ```
 
+</details><br />
+
 > Browse to the app localhost:30010 or localhost:8010 and you'll see the standard Nginx page
-
-## Deploy a debug Pod to the same node
-
-The Nginx Pod writes logs to a HostPath volume:
-
-```
-kubectl exec daemonset/nginx -- ls /var/log/nginx
-```
-
-You can deploy a Pod with another HostPath volume, and it will shares the same storage as the Nginx Pod. 
-
-In a multi-node cluster you need to ensure the new Pod lands on the same node as the Nginx Pod and you can do that with [Pod affinity]():
-
-- [sleep-with-hostPath.yaml](specs/sleep-with-hostPath.yaml) - defines a sleep Pod with a HostPath volume and an affinity rule, which means this Pod will be scheduled on the same node as the Nginx Pod
-
-Deploy the new Pod and verify it lands on the same node:
-
-```
-kubectl apply -f labs/daemonsets/specs/sleep-with-hostPath.yaml
-
-kubectl get po -l app -o wide
-```
-
-> In a single-node cluster, every Pod will be on that node - but this example works the same way on a multi-node cluster
-
-Now the two Pods share a part of the host node's filesystem:
-
-```
-kubectl exec daemonset/nginx -- ls -l /var/log/nginx
-
-kubectl exec pod/sleep -- ls -l /node-root/volumes/nginx-logs
-```
-
-Some container images are built `FROM scratch`, which means there is no operating system and no shell to `exec` into. This is one approach to launch a second Pod that can help debug issues with app Pods.
 
 ## Updating DaemonSets
 
-DaemonSets run exactly on Pod on each node, so the update behaviour is to remove Pods before starting replacements.
+DaemonSets run exactly one Pod on each node, so the update behaviour is to remove Pods before starting replacements.
 
 This is different from Deployments, which default to starting new Pods and checking they're healthy before removing old ones. DaemonSet updates can break your app:
 
@@ -113,13 +93,9 @@ Try the app - it's broken. With a Deployment the old Pod would not have been rem
 
 The bad update in the last exercise tried to write a new HTML page for Nginx to serve, but changing the command in the app container isn't the way to do it.
 
-All Pods support [init containers]() which you can use for startup tasks. An init container can share volumes with the app container, and it will run before the app container starts:
+All Pods support [init containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) which you can use for startup tasks. An init container can share volumes with the app container, and it will run before the app container starts:
 
 - [daemonset-init-container.yaml](specs/nginx/update-good/daemonset-init-container.yaml) - uses an init container to write a new HTML page for the Nginx app container to serve
-
-___
-Init containers aren't just for DaemonSets, but this is a shorter lab so we can fit them in here :)
-___
 
 Deploy the new update:
 
@@ -161,15 +137,22 @@ kubectl get pods -l app=nginx --watch
 
 > It got deleted. No nodes match the criteria for the DaemonSet so the desired count is 0. The Pod is removed to get to the desired count.
 
-As soon as a node matches the selector, a Pod gets scheduled for it:
+As soon as a node matches the selector, a Pod gets scheduled for it.
+
+📋 Add the missing label to your node and confirm a Pod starts.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') co.courselabs.k8sfun.ip=public
+kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') k8sfun.courselabs.co.ip=public
 
 kubectl get pods -l app=nginx --watch
 ```
 
 > A new Pod is created, and the app is working again.
+
+</details><br/>
 
 ## Lab
 
@@ -181,10 +164,56 @@ Second we want to do the reverse - delete the DaemonSet but leave the Pod intact
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
-## Cleanup
+___
 
-When you're done **after you've tried the lab**, you can remove all the objects:
+## **EXTRA** Deploy a debug Pod to a DaemonSet node
+
+<details>
+  <summary>Following Pods with affinity rules</summary>
+
+The Nginx Pod writes logs to a HostPath volume:
 
 ```
-kubectl delete svc,ds,po -l co.courselabs.k8sfun=daemonsets
+kubectl exec daemonset/nginx -- ls /var/log/nginx
+```
+
+You can deploy another Pod with the same HostPath volume spec, and it will have shared storage with the Nginx Pod. 
+
+In a multi-node cluster you need to ensure the new Pod lands on the same node as the Nginx Pod and you can do that with [Pod affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity):
+
+- [sleep-with-hostPath.yaml](specs/sleep-with-hostPath.yaml) - defines a sleep Pod with a HostPath volume and an affinity rule, which means this Pod will be scheduled on the same node as the Nginx Pod
+
+📋 Deploy the new Pod and verify it lands on the same node.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+kubectl apply -f labs/daemonsets/specs/sleep-with-hostPath.yaml
+
+kubectl get po -l app -o wide
+```
+
+</details><br/>
+
+> In a single-node cluster, every Pod will be on that node - but this example works the same way on a multi-node cluster
+
+Now the two Pods share a part of the host node's filesystem:
+
+```
+kubectl exec daemonset/nginx -- ls -l /var/log/nginx
+
+kubectl exec pod/sleep -- ls -l /node-root/volumes/nginx-logs
+```
+
+Some container images are built `FROM scratch`, which means there is no operating system and no shell to `exec` into. This is one approach to launch a second Pod that can help debug issues with app Pods.
+
+</details><br/>
+
+___
+
+## Cleanup
+
+```
+kubectl delete svc,ds,po -l k8sfun.courselabs.co=daemonsets
 ```

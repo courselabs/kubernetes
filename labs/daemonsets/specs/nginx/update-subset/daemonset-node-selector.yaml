@@ -3,7 +3,7 @@ kind: DaemonSet
 metadata:
   name: nginx
   labels:
-    co.courselabs.k8sfun: daemonsets
+    k8sfun.courselabs.co: daemonsets
 spec:
   selector:
     matchLabels:
@@ -36,4 +36,4 @@ spec:
             path: /volumes/nginx-logs
             type: DirectoryOrCreate
       nodeSelector:
-        co.courselabs.k8sfun.ip: public
+        k8sfun.courselabs.co.ip: public
