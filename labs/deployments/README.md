@@ -103,7 +103,7 @@ So it's better to make the changes **declaratively in YAML**.
 
 </details><br />
 
-- [whoami-v1-scale.yaml](deployments/specs/deployments/whoami-v1-scale.yaml) sets a replica level of 2
+- [whoami-v1-scale.yaml](specs/deployments/whoami-v1-scale.yaml) sets a replica level of 2
 
 Update the Deployment and check the Pods again.
 
