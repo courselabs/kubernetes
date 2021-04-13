@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pi-proxy-lb
-  labels:
+  labels: 
+    k8sfun.courselabs.co: persistentvolumes
     app: pi-proxy
-    co.courselabs.k8s: persistentvolumes
 spec:
   ports:
     - port: 8010

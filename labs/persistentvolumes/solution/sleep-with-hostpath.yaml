@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: sleep
-  labels:
-    co.courselabs.k8s: persistentvolumes
+  labels: 
+    k8sfun.courselabs.co: persistentvolumes
 spec:
   containers:
     - name: sleep
@@ -16,11 +16,4 @@ spec:
       hostPath:
         path: /
         type: Directory
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: k8sfun
-              operator: Exists
       

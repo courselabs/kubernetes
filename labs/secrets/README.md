@@ -6,7 +6,7 @@ For sensitive information Kubernetes has [Secrets](). The API is very similar - 
 
 ## API specs
 
-- [Secrets](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#secret-v1-coree)
+- [Secrets](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#secret-v1-core)
 
 <details>
   <summary>YAML overview</summary>
@@ -100,7 +100,7 @@ kubectl apply -f labs/secrets/specs/configurable/secrets-plain
 Secrets are always surfaced as plaintext inside the container environment.
 
 <details>
-  <summary>They **may** be encrypted in the Kubernetes database too</summary>
+  <summary>They **may** be encrypted in the Kubernetes database</summary>
 
 But that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault ([external-secrets](https://github.com/external-secrets/kubernetes-external-secrets) is one option).
 
@@ -243,5 +243,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,cm,secret -l k8s-fundamentals=secrets
+kubectl delete all,cm,secret -l k8sfun.courselabs.co=secrets
 ```

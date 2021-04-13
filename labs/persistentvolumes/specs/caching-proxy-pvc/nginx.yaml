@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pi-proxy
-  labels:
+  labels: 
+    k8sfun.courselabs.co: persistentvolumes
     app: pi-proxy
-    co.courselabs.k8s: persistentvolumes
 spec:
   selector:
     matchLabels:

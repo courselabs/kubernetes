@@ -2,9 +2,17 @@
 
 Kubernetes creates the container filesystem and it can mount multiple sources. We've seen ConfigMaps and Secrets which are typically read-only mounts, now we'll use writeable volumes.
 
-Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems. Those details are kept away from the application model using an abstraction - the [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction), which an app uses to request storage.
+Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems. 
 
-## PersistentVolumeClaims in YAML
+Those details are kept away from the application model using an abstraction - the [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction), which an app uses to request storage.
+
+## API specs
+
+- [PersistentVolumeClaim](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#persistentvolumeclaim-v1-core)
+
+<details>
+  <summary>YAML overview</summary>
+
 
 The simplest PersistentVolumeClaim (PVC) looks like this:
 
@@ -35,9 +43,11 @@ volumes:
       claimName: small-pvc
 ```
 
-Before we get to PVCs, we'll look at other options for writing application data in Kubernetes,
+</details><br />
 
 ## Data in the container's writeable layer
+
+Before we get to PVCs, we'll look at other options for writing application data in Kubernetes.
 
 Every container has a writeable layer which can be used to create and update files.
 
@@ -49,13 +59,18 @@ Deploy and try the app:
 kubectl apply -f labs/persistentvolumes/specs/pi
 ```
 
-> Browse to [node-ip]:30010/pi?dp=30000 or [node-ip]:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
+> Browse to localhost:30010/pi?dp=30000 or localhost:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
 
-Refresh and the response will be instant - the calculation response is cached in Nginx, in the `/tmp` folder:
+Refresh and the response will be instant - the calculation response is cached in Nginx, you can see it in the `/tmp` folder.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl exec deploy/pi-proxy -- ls /tmp
 ```
+
+</details><br />
 
 Now stop the container process, which forces a Pod restart:
 
@@ -65,19 +80,13 @@ kubectl exec deploy/pi-proxy -- kill 1
 kubectl get po -l app=pi-proxy
 ```
 
-Check the /tmp folder in the new container:
-
-```
-kubectl exec deploy/pi-proxy -- ls /tmp
-```
-
-Empty. Refresh your Pi app and it will take another second to load, because the cache is empty so it gets calculated again.
+Check the /tmp folder in the new container and you'll see it's empty. Refresh your Pi app and it will take another second to load, because the cache is empty so it gets calculated again.
 
 > Data in the container writeable layer has the same lifecycle as the container. When the container is replaced, the data is lost.
 
 ## Pod storage in EmptyDir volumes
 
-The simplest type of volume is called `EmptyDir` - it creates an empty directory at the Pod level, which Pod containers can mount.
+Volumes mount storage into the container filesystem from an outside source.The simplest type of volume is called `EmptyDir` - it creates an empty directory at the Pod level, which Pod containers can mount.
 
 You can use it for data which is not permanent, but which you'd like to survive a restart. It's perfect for keeping a local cache of data.
 
@@ -91,15 +100,14 @@ kubectl apply -f labs/persistentvolumes/specs/caching-proxy-emptydir
 kubectl wait --for=condition=Ready pod -l app=pi-proxy,storage=emptydir
 ```
 
-Refresh your page to see the Pi calculation happen again - the result gets cached:
-
-```
-kubectl exec deploy/pi-proxy -- ls /tmp
-```
+Refresh your page to see the Pi calculation happen again - the result gets cached and you'll see the  `/tmp` folder filling up.
 
 > The container sees the same filesystem structure, but now the /tmp folder is mounted from the EmptyDir volume
 
-Stop the Nginx process and the Pod will restart, but this time the data in the /tmp folder is available to the new container:
+Stop the Nginx process and the Pod will restart, but this time the data in the `/tmp` folder is available to the new container.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl exec deploy/pi-proxy -- kill 1
@@ -109,19 +117,9 @@ kubectl get pods -l app=pi-proxy,storage=emptydir
 kubectl exec deploy/pi-proxy -- ls /tmp
 ```
 
-Refresh the site and it loads instantly.
+</details><br />
 
-EmptyDir volumes keep their data for the life of the Pod. Force a rollout and the new Pod starts with anew EmptyDir volume:
-
-```
-kubectl rollout restart deploy/pi-proxy
-
-kubectl wait --for=condition=Ready pod -l app=pi-proxy,storage=emptydir
-
-kubectl exec deploy/pi-proxy -- ls /tmp
-```
-
-Empty. Refresh your Pi app and it will need to calculate the response again.
+Refresh the site with the new container and it loads instantly.
 
 > Data in EmptyDir volumes has the same lifecycle as the Pod. When the Pod is replaced, the data is lost.
 
@@ -145,7 +143,7 @@ You can create a PersistentVolumeClaim with a named StorageClass, or omit the cl
 kubectl apply -f labs/persistentvolumes/specs/caching-proxy-pvc/pvc.yaml
 ```
 
-Each StorageClass has a provisioner, which can create the storage unit on-demand:
+Each StorageClass has a provisioner which can create the storage unit on-demand:
 
 ```
 kubectl get pvc
@@ -167,17 +165,13 @@ kubectl get pvc,pv
 
 > Now the PVC is bound and the PersistentVolume exists with the requested size and access mode in the PVC
 
-The PVC start off empty:
+The PVC starts off empty. Refresh the app and you'll see the /tmp folder getting filled. You can restart and replace the Pod and the data in the PVC survives both.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
-kubectl exec deploy/pi-proxy -- ls /tmp
-```
-
-Refresh the app and you'll the /tmp folder getting filled.
-
-The data in the PVC survives Pod restarts: 
-
-```
+# force the container to exit
 kubectl exec deploy/pi-proxy -- kill 1
 
 kubectl get pods -l app=pi-proxy,storage=pvc
@@ -185,9 +179,8 @@ kubectl get pods -l app=pi-proxy,storage=pvc
 kubectl exec deploy/pi-proxy -- ls /tmp
 ```
 
-And Pod replacements:
-
 ```
+# force a rollout to replace the Pod
 kubectl rollout restart deploy/pi-proxy
 
 kubectl get pods -l app=pi-proxy,storage=pvc
@@ -197,9 +190,26 @@ kubectl exec deploy/pi-proxy -- ls /tmp
 
 Try the app again and the new Pod still serves the response from the cache, so it will be super fast.
 
+</details><br />
+
 > Data in PersistentVolumes has its own lifecycle. It survives until the PV is removed.
 
-## Manual PVC management with PersistentVolumes
+
+## Lab
+
+There's an easier way to get persistent storage, but it's not as flexible as using a PVC, and it comes with some security concerns.
+
+Run a simple sleep Pod with a different type of volume, that gives you access to the root drive on the host node where the Pod runs.
+
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
+___
+
+
+## **EXTRA** Manual PVC management with PVs
+
+<details>
+  <summary>Take ownership of the PersistentVolumes lifecycle</summary>
 
 Some provisioners delete a PV when the PVC using it gets deleted:
 
@@ -251,22 +261,14 @@ kubectl get nodes --show-labels
 kubectl describe pod -l app=pi-proxy,storage=local
 ```
 
-Now the Pod is scheduled - but there's another error... Let's fix it in the lab :)
+Now the Pod is scheduled - but there's another error... That's one for you to think about (what you did in the lab will have helped) :)
 
-## Lab
+</details><br/>
 
-You'll need to get access to your node, so you can create the path the PV is trying to use.
-
-`mkdir -p /volumes/pi-proxy` will do it, but the hard part is getting a connection to the server.
-
-Most Kubernetes deployments don't give you remote access to the nodes. You can't use `ssh`, so you'll need to think of another way which only needs `kubectl`.
-
-> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+___
 
 ## Cleanup
 
-When you're done **after you've tried the lab**, you can remove all the objects:
-
 ```
-kubectl delete all,cm,pvc,pv -l co.courselabs.k8s=persistentvolumes
+kubectl delete all,cm,pvc,pv -l k8sfun.courselabs.co=persistentvolumes
 ```
