@@ -49,7 +49,9 @@ Kubectl can print information in different formats, try showing your node detail
 kubectl get node <your-node> -o json
 ```
 
-And you can query that using [JSON Path](https://kubernetes.io/docs/reference/kubectl/jsonpath/) to get specific fields:
+Check the help to see what other output formats you can use.
+
+One is [JSON Path](https://kubernetes.io/docs/reference/kubectl/jsonpath/), which is a query language you can use to print specific fields:
 
 ```
 kubectl get node <your-node> -o jsonpath='{.status.capacity.cpu}'
@@ -57,11 +59,13 @@ kubectl get node <your-node> -o jsonpath='{.status.capacity.cpu}'
 
 > This tells you the number of CPU cores Kubernetes sees for that node.
 
+What happens if you try the same command without specifying a node name?
+
 ## Lab
 
 Every object in Kubernetes can have **labels** - they are key-value pairs used to record additional information about the object.
 
-Use Kubectl to find labels for you node, to confirm the CPU architecture and operating system it's using.
+Use Kubectl to find labels for you node, which will confirm the CPU architecture and operating system it's using.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 

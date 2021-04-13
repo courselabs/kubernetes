@@ -6,13 +6,13 @@ The easiest way to see labels for an object is with the `show-labels` option to 
 kubectl get nodes --show-labels
 ```
 
-To see specific label values, you can print the labels as columns:
+To see specific label values you can print the labels as columns:
 
 ```
 kubectl get nodes --label-columns kubernetes.io/arch,kubernetes.io/os
 ```
 
-Alternatively you can query the labels field in the metadata using JOSNPath:
+Alternatively you can query the labels field in the metadata using JSONPath:
 
 ```
 kubectl get node <your-node> -o jsonpath={.metadata.labels}
