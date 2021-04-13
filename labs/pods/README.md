@@ -40,7 +40,7 @@ The format of the `spec` field is different for every object type. For Pods, thi
 
 > Indentation is important in YAML - object fields are nested with spaces. 
 
-</details>
+</details><br/>
 
 ## Run a simple Pod
 
@@ -107,7 +107,7 @@ kubectl apply -f labs/pods/specs/sleep-pod.yaml
 
 kubectl get pods
 ```
-</details>
+</details><br/>
 
 This Pod container does have a shell, and it has some useful tools installed.
 

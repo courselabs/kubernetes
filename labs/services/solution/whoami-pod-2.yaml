@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: whoami-2
   labels:
+    k8sfun.courselabs.co: services
     app: whoami
 spec:
   containers:

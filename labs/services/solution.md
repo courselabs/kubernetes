@@ -12,16 +12,7 @@ kubectl get endpoints whoami
 
 You can create a Service with no matching Pods by adding a label:
 
-```
-apiVersion: v1
-kind: Service
-metadata:
-  name: whoami-zero-matches
-spec:
-  selector:
-    app: whoami
-    version: v2
-```
+- [whoami-svc-zeromatches.yaml](solution/whoami-svc-zeromatches.yaml)
 
 There are no Pods which match because the whoami Pod doesn't have a `version` label:
 

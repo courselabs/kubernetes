@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: whoami-np
   labels:
+    k8sfun.courselabs.co: services
     app: whoami
 spec:
   selector:

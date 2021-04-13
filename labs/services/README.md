@@ -4,9 +4,14 @@ Every Pod has an IP address which other Pods in the cluster can reach, but that 
 
 Services provide a consistent IP address linked to a DNS name, and you'll always use Services for routing internal and external traffic into Pods.
 
-Services and Pods are loosely-coupled: a Service finds target Pods using a [label selector]().
+Services and Pods are loosely-coupled: a Service finds target Pods using a [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/).
 
-## Service YAML
+## API specs
+
+- [Service](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#service-v1-core)
+
+<details>
+  <summary>YAML overview</summary>
 
 Service definitions have the usual metadata. The spec needs to include the network ports and the label selector:
 
@@ -24,9 +29,9 @@ spec:
       targetPort: 80
 ```
 
-The ports are where the Service listens, and the label selector may match zero to many Pods.
+The ports are where the Service listens, and the label selector can match zero to many Pods.
 
-* `selector`- list of labels to find Pod IP addresses
+* `selector` - list of labels to find target Pods
 * `ports` - list of ports to listen on
 * `name` - port name within Kubernetes
 * `port` - port the Service listens on
@@ -49,14 +54,16 @@ spec:
   # ...
 ```
 
-> Labels are abitrary key-value pairs. `app`, `component` and `version` are typically used for all Pods.
+> Labels are abitrary key-value pairs. `app`, `component` and `version` are typically used for application Pods.
+
+</details><br/>
 
 ## Run sample Pods
 
 Replace the Pods from the previous lab with new definitions which contain labels:
 
-* [whoami.yaml]()
-* [sleep.yaml]()
+* [whoami.yaml](labs\services\specs\pods\whoami.yaml)
+* [sleep.yaml](labs\services\specs\pods\sleep.yaml)
 
 ```
 kubectl delete pods whoami sleep
@@ -66,11 +73,16 @@ kubectl apply -f labs/services/specs/pods
 
 > You can work with multiple objects and deploy multiple YAML manifests with Kubectl
 
-Check the Pod status, printing IP addresses and labels:
+Check the Pod status, printing all the IP addresses and labels.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl get pods -o wide --show-labels
 ```
+
+</details><br/>
 
 The Pod name has no affect on networking, Pods can't find each other by name:
 
@@ -80,13 +92,16 @@ kubectl exec sleep -- nslookup whoami
 
 ## Deploy an internal Service
 
-There are different types of Service. 
+Kubernetes provides different types of Service for internal and external access to Pods. 
 
-[ClusterIP]() is the default and it means the Service gets an IP address which is only accessible within the cluster - its for components to communicate internally.
+[ClusterIP](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/) is the default and it means the Service gets an IP address which is only accessible within the cluster - its for components to communicate internally.
 
-[whoami-clusterip.yaml](specs/services/whoami-clusterip.yaml) defines a ClusterIP service which will route to the whoami Pod.
+* [whoami-clusterip.yaml](specs/services/whoami-clusterip.yaml) defines a ClusterIP service which routes traffic to the whoami Pod
 
-Deploy it in the usual way:
+Deploy the Service in the usual way and print its details to see how it looks.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/services/specs/services/whoami-clusterip.yaml
@@ -102,17 +117,19 @@ kubectl describe svc whoami
 
 > The `get` and `describe` commands are the same for all objects; Services have the alias `svc`
 
+</details><br/>
+
 The Service has its own IP address, and that is static for the life of the Service.
 
 ## Use DNS to find the Service
 
-Kubernetes runs a DNS server and every Service gets an entry, linking the IP address to the Service name.
+Kubernetes runs a DNS server inside the cluster and every Service gets an entry, linking the IP address to the Service name.
 
 ```
 kubectl exec sleep -- nslookup whoami
 ```
 
-> This is the IP address of the Service. The first line is the IP address of the Kuberentes DNS server
+> This gets the IP address of the Service from its DNS name. The first line is the IP address of the Kuberentes DNS server itself.
 
 Now the Pods can communicate using DNS names:
 
@@ -121,6 +138,9 @@ kubectl exec sleep -- curl -s http://whoami
 ```
 
 Recreate the whoami Pod and the replacement will have a new IP address - but service resolution with DNS still works. 
+
+<details>
+  <summary>Not sure how?</summary>
 
 Check the current IP address then delete the Pod:
 
@@ -140,7 +160,9 @@ kubectl apply -f labs/services/specs/pods
 kubectl get pods -o wide -l app=whoami
 ```
 
-The Service IP address hasn't changed, so if clients cache that IP they'll still work. Now the Service routes traffic to the new Pod:
+</details><br/>
+
+The Service IP address doesn't changed, so if clients cache that IP they'll still work. Now the Service routes traffic to the new Pod:
 
 ```
 kubectl exec sleep -- nslookup whoami
@@ -150,9 +172,14 @@ kubectl exec sleep -- curl -s http://whoami
 
 ## Understanding external Services
 
-There are two types of Service which can be accessed outside of the cluster: [LoadBalancer]() and [NodePort]().
+There are two types of Service which can be accessed outside of the cluster: [LoadBalancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/) and [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport).
 
-They both listen for traffic coming into the cluster and route it to Pods, but they work in different ways:
+They both listen for traffic coming into the cluster and route it to Pods, but they work in different ways. LoadBalancers are easier to work with, but not every Kubernetes cluster supports them.
+
+> In this course we'll deploy both LoadBalancers and NodePorts for all our sample apps so you can follow along with your cluster.
+
+<details>
+  <summary>Here's why some clusters don't support LoadBalancers</summary>
 
 - LoadBalancer Services integrate with the platform they're running on to get a real IP address. In a managed Kubernetes service in the cloud you'll get a unique public IP address for every Service, integrated with a cloud load balancer to direct traffic to your nodes. In Docker Desktop the IP address will be `localhost`; in k3s it will be a local network address.
 
@@ -168,7 +195,9 @@ Minikube | |  ✔
 Microk8s | |  ✔
 Bare-metal | |  ✔
 
-> If you don't have LoadBalancer support you can add it with [MetalLB](https://metallb.universe.tf/), but that's not in scope for this class :)
+> If you don't have LoadBalancer support you can add it with [MetalLB](https://metallb.universe.tf/), but that's not in scope for this course :)
+
+</details><br/>
 
 ## Deploy an external Service
 
@@ -207,11 +236,13 @@ Now you can call the whoami app from your local machine:
 
 ```
 # either
-curl http://<load-balancer-ip>:8080
+curl http://localhost:8080
 
 # or
-curl http://<node-ip>:30010
+curl http://localhost:30010
 ```
+
+> If your cluster isn't running locally, use the node's IP address for NodePort access or the EXTERNAL-IP address field for the LoadBalancer
 
 ## Lab
 
@@ -228,3 +259,10 @@ What happens? How can you find the target Pods for a Service?
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+## Cleanup
+
+Every YAML spec for this lab adds a label `k8sfun.courselabs.co=services` that makes it super easy to clean up, by deleting all those resources:
+
+```
+kubectl delete pod,svc -l k8sfun.courselabs.co=services
+```
