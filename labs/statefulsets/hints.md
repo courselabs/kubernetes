@@ -1,9 +1,7 @@
 # Lab Hints
 
-For the first part this is about creating a new RoleBinding and Role. 
+You can use the simple-proxy Deployment spec as a starting point - adding in the PVC setup, similar to the products-db StatefulSet.
 
-RBAC permissions should follow the least-privilege approach, so your rules should be scoped to give the app the minimum permissions it needs.
-
-The second part will need some research. The [Kubernetes API docs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/) list the specs for every object, so you'll be able to drill down and find the field you need.
+To get your Pods created in parallel you'll need to dig into the [Kubernetes API docs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/).
 
 > Need more? Here's the [solution](solution.md).

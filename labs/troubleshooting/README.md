@@ -19,3 +19,12 @@ kubectl apply -f labs/troubleshooting/specs/pi-failing
 Don't go straight to the solution! These are the sort of issues you will get all the time, so it's good to start working through the steps to diagnose problems.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
+___
+## Cleanup
+
+When you're done you can remove all the objects:
+
+```
+kubectl delete all,hpa -l co.courselabs.k8sfun=troubleshooting
+```

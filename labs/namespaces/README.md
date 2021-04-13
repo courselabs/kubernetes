@@ -217,7 +217,7 @@ kubectl -n pi describe rs -l app=pi-web,cpu=max
 
 > The new ReplicaSet never scales up to the desired count. You'll see a nice, clear error telling you that the quota has been exceeded. Kubernetes will keep trying, in case the quota changes
 
-</details>
+</details><br/>
 
 ___
 ## **EXTRA** Context switching
@@ -274,8 +274,7 @@ And if you set up a fancy shell with [ZSH and PowerLevel10K](https://medium.com/
 
 ![](/img/ohmyzsh.png)
 
-</details>
-
+</details><br/>
 
 ___
 ## Lab

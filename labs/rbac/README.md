@@ -83,7 +83,7 @@ kubectl apply -f labs/rbac/specs/sleep.yaml
 
 The initial app spec doesn't include any RBAC rules, but it does include a specific security account for the Pod:
 
-- [kube-explorer/deployment.yaml](labs/rbac/specs/kube-explorer/deployment.yaml) - creates a ServiceAccount and sets the Pod spec to use that ServiceAccount
+- [kube-explorer/deployment.yaml](specs/kube-explorer/deployment.yaml) - creates a ServiceAccount and sets the Pod spec to use that ServiceAccount
 
 ```
 kubectl apply -f labs/rbac/specs/kube-explorer
@@ -119,8 +119,8 @@ kubectl auth can-i get pods -n default --as system:serviceaccount:default:kube-e
 
 RBAC rules are applied when a request is made to the API server, so we can fix this app by deploying a Role and RoleBinding:
 
-- [role-pod-manager.yaml](labs/rbac/specs/kube-explorer/rbac-namespace/role-pod-manager.yaml) - creates a Role with permissions to list and delete Pods in the default namespace
-- [rolebinding-pod-manager-sa.yaml](labs/rbac/specs/kube-explorer/rbac-namespace/rolebinding-pod-manager-sa.yaml) - creates a RoleBinding applying the new Role to the app's Service Account
+- [role-pod-manager.yaml](specs/kube-explorer/rbac-namespace/role-pod-manager.yaml) - creates a Role with permissions to list and delete Pods in the default namespace
+- [rolebinding-pod-manager-sa.yaml](specs/kube-explorer/rbac-namespace/rolebinding-pod-manager-sa.yaml) - creates a RoleBinding applying the new Role to the app's Service Account
 
 ```
 kubectl apply -f labs/rbac/specs/kube-explorer/rbac-namespace/default.yaml
@@ -140,8 +140,8 @@ kubectl auth can-i get pods -n kube-system --as system:serviceaccount:default:ku
 
 You can grant access to Pods in each namespace with more Roles and RoleBindings, but if you want permissions to apply across all namespaces you can use a ClusterRole and ClusterRoleBinding:
 
-- [clusterrole-pod-reader.yaml](labs/rbac/specs/kube-explorer/rbac-cluster/clusterrole-pod-reader.yaml) - sets Pod permissions for the cluster; note there is no namespace in the metadata
-- [](labs/rbac/specs/kube-explorer/rbac-cluster/clusterrolebinding-pod-reader-sa.yaml) - applies the role to the app's ServiceAccount
+- [clusterrole-pod-reader.yaml](specs/kube-explorer/rbac-cluster/clusterrole-pod-reader.yaml) - sets Pod permissions for the cluster; note there is no namespace in the metadata
+- [](lspecs/kube-explorer/rbac-cluster/clusterrolebinding-pod-reader-sa.yaml) - applies the role to the app's ServiceAccount
 
 
 ```
@@ -167,9 +167,9 @@ Production Kubernetes systems integrate with third-party identity providers - Az
 
 The steps for that are wrapped up in the user-cert-generator app:
 
-- [](labs/rbac/specs/user-cert-generator/01_service-account.yaml)  - ServiceAccount for the app, needs to be created before clusterrolebinding
-- [](labs/rbac/specs/user-cert-generator/02_rbac.yaml) - roles and bindings so the app can request a cert from Kubernetes 
-- [](labs/rbac/specs/user-cert-generator/03_pod.yaml) - the application Pod
+- [](specs/user-cert-generator/01_service-account.yaml)  - ServiceAccount for the app, needs to be created before clusterrolebinding
+- [](specs/user-cert-generator/02_rbac.yaml) - roles and bindings so the app can request a cert from Kubernetes 
+- [](specs/user-cert-generator/03_pod.yaml) - the application Pod
 
 > If you're interested in how the cert is created, it's all in this [shell script](https://github.com/sixeyed/kiamol/blob/master/ch17/docker-images/user-cert-generator/start.sh)
 

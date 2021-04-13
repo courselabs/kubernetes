@@ -53,7 +53,7 @@ spec:
 - `maxReplicas` - maximum number of replicas
 - `targetCPUUtilizationPercentage` - average CPU utilization target - below this the HPA will scale down, above it the HPA scales up
 
-</details>
+</details><br/>
 
 ## Self-healing apps with readiness probes
 
@@ -274,7 +274,7 @@ kubectl exec deploy/pi-secure-web -- chown root:root /app/Pi.Web.dll
 
 This is not the end of security. Securing containers is a multi-layered approach which starts with your securing your images, but this is a good step up from the default Pod security.
 
-</details>
+</details><br/>
 
 ___
 ## Cleanup
