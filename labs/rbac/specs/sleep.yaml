@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sleep
   labels:
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 spec:
   selector:
     matchLabels:

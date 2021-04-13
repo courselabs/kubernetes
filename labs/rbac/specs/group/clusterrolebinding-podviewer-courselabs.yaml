@@ -3,7 +3,7 @@ kind: ClusterRoleBinding
 metadata:
   name: test-logs-cluster
   labels:
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 roleRef:
   kind: ClusterRole
   name: podviewer

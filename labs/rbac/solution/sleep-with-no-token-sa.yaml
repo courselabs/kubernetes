@@ -3,7 +3,7 @@ kind: ServiceAccount
 metadata:
   name: no-token
   labels:  
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 automountServiceAccountToken: false  
 ---
 apiVersion: apps/v1
@@ -11,7 +11,7 @@ kind: Deployment
 metadata:
   name: sleep-v2
   labels:  
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 spec:  
   selector:
     matchLabels:

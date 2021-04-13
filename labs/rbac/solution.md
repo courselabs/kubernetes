@@ -11,7 +11,7 @@ kubectl auth can-i get serviceaccounts -n default --as system:serviceaccount:def
 
 This spec contains the new permissions:
 
-- [service-account-viewer.yaml](labs/rbac/solution/service-account-viewer.yaml) - a Role with rules to get and list ServiceAccounts, and a RoleBinding applying it to the app's ServiceAccount
+- [service-account-viewer.yaml](solution/service-account-viewer.yaml) - a Role with rules to get and list ServiceAccounts, and a RoleBinding applying it to the app's ServiceAccount
 
 > You could also amend the original Role, but that would mean any other principals using that role would also get the new permission.
 
@@ -33,7 +33,7 @@ kubectl exec deploy/sleep -- cat /var/run/secrets/kubernetes.io/serviceaccount/t
 
 The simplest way to fix it is with the `automountServiceAccountToken` field in the Pod spec:
 
-- [sleep-without-sa-token.yaml](labs/rbac/solution/sleep-without-sa-token.yaml)
+- [sleep-without-sa-token.yaml](solution/sleep-without-sa-token.yaml)
 
 
 ```
@@ -54,4 +54,4 @@ A better approach is to use a custom ServiceAccount with `automountServiceAccoun
 
 Any app which doesn't use the API server can use this SA - apps which do use the API server will each have their own SA with the permissions the app needs.
 
-- [sleep-with-no-token-sa.yaml](labs\rbac\solution\sleep-with-no-token-sa.yaml) - a new SA and Pod configured to use it
+- [sleep-with-no-token-sa.yaml](solution/sleep-with-no-token-sa.yaml) - a new SA and Pod configured to use it

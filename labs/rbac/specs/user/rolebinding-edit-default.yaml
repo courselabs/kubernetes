@@ -4,7 +4,7 @@ metadata:
   name: reader-edit-default
   namespace: default # this is the scope where the binding applies
   labels:
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 roleRef:
   kind: ClusterRole
   name: edit
