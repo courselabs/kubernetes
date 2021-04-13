@@ -2,7 +2,7 @@
 
 How you rollout config changes depends a lot on your organization structure and workflow.
 
-This solution shows two valid options, but often the process is automated with [Kustomize]() or [Helm]().
+This solution shows two valid options, but often the process is automated with [Kustomize](https://kustomize.io) or [Helm](https://helm.sh).
 
 
 ## Using new names for config objects
