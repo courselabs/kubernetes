@@ -73,7 +73,7 @@ kubectl apply -f labs/services/specs/pods
 
 > You can work with multiple objects and deploy multiple YAML manifests with Kubectl
 
-Check the Pod status, printing all the IP addresses and labels.
+Check the status for all Pods, printing all the IP addresses and labels.
 
 <details>
   <summary>Not sure how?</summary>
@@ -259,6 +259,7 @@ What happens? How can you find the target Pods for a Service?
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+___
 ## Cleanup
 
 Every YAML spec for this lab adds a label `k8sfun.courselabs.co=services` that makes it super easy to clean up, by deleting all those resources:

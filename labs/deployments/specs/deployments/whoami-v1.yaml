@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: whoami
+  labels:
+    k8sfun.courselabs.co: deployments
 spec:
   selector:
     matchLabels:

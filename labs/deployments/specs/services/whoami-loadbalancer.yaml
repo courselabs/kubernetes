@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami
+  name: whoami-lb
+  labels:
+    k8sfun.courselabs.co: deployments
+    app: whoami
 spec:
   selector:
     app: whoami
   ports:
     - name: http
-      port: 80
+      port: 8080
       targetPort: 80
-  type: ClusterIP
+  type: LoadBalancer
