@@ -24,7 +24,7 @@ These are hands-on resources to help you learn Kubernetes.
 ## Part 3 - Advanced Application Modelling
 
 - [Role-based Access Control (RBAC)](labs/rbac)
-- [DaemonSets](labs/damonsets)
+- [DaemonSets](labs/daemonsets)
 - [Ingress](labs/ingress)
 - [Jobs and CronJobs](labs/jobs)
 - [StatefulSets](labs/statefulsets)
