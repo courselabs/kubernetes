@@ -4,14 +4,14 @@ metadata:
   name: job-cleanup
   namespace: default
   labels:
-    co.courselabs.k8sfun: rbac
+    k8sfun.courselabs.co: rbac
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: job-cleanup-role
   labels:
-    co.courselabs.k8sfun: jobs
+    k8sfun.courselabs.co: jobs
 rules:
   - apiGroups: ["batch"]
     resources: ["jobs"]
@@ -25,7 +25,7 @@ kind: ClusterRoleBinding
 metadata:
   name: job-cleanup-role-binding
   labels:
-    co.courselabs.k8sfun: jobs
+    k8sfun.courselabs.co: jobs
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

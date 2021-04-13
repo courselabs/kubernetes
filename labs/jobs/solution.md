@@ -39,5 +39,5 @@ kubectl logs -l app=db-backup
 Adding the lab label will help with cleanup:
 
 ```
-kubectl label job db-backup-job co.courselabs.k8sfun=jobs
+kubectl label job db-backup-job k8sfun.courselabs.co=jobs
 ```

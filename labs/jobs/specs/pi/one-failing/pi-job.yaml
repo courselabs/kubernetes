@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: pi-job-one-failing
   labels:
-    co.courselabs.k8sfun: jobs
+    k8sfun.courselabs.co: jobs
 spec:
   template:
     spec:

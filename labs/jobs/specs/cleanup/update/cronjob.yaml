@@ -4,7 +4,7 @@ metadata:
   name: job-cleanup
   namespace: default
   labels:
-    co.courselabs.k8sfun: jobs
+    k8sfun.courselabs.co: jobs
 spec:
   schedule: "*/1 * * * *"        # every minute - see https://crontab.guru
   concurrencyPolicy: Forbid
