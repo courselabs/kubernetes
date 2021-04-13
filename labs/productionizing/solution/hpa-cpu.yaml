@@ -1,0 +1,14 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: configurable-cpu
+  labels:
+    co.courselabs.k8sfun: productionizing
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: configurable
+  minReplicas: 3
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
