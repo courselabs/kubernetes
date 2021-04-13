@@ -33,4 +33,4 @@ These are hands-on resources to help you learn Kubernetes.
 
 - [Production readiness](labs/productionizing)
 - [Troubleshooting](labs/troubleshooting)
-- Hackathon
+- [Hackathon!](hackathon)
