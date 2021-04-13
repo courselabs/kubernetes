@@ -31,6 +31,6 @@ These are hands-on resources to help you learn Kubernetes.
 
 ## Part 4 - Real Kubernetes
 
-- Production readiness
-- Troubleshooting
+- [Production readiness](labs/productionizing)
+- [Troubleshooting](labs/troubleshooting)
 - Hackathon
