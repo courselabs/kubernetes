@@ -5,9 +5,14 @@ The [Pod]() is the basic unit of compute in Kubernetes. Pods run containers - it
 Pod specs are very simple. The minimal YAML needs some metadata, and the name of the container image to run.
 
 
-## Pod YAML
+## API specs
 
-This is as simple as it gets:
+- [Pod](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#pod-v1-core)
+
+<details>
+  <summary>YAML overview</summary>
+
+This is as simple as it gets for a Pod:
 
 ```
 apiVersion: v1
@@ -35,20 +40,24 @@ The format of the `spec` field is different for every object type. For Pods, thi
 
 > Indentation is important in YAML - object fields are nested with spaces. 
 
+</details>
+
 ## Run a simple Pod
 
-Kubectl is the tool for managing objects. 
+Kubectl is the tool for managing objects. You create any object from YAML using the `apply` command.
 
-You create any object from YAML using the `apply` command - [whoami-pod.yaml](whoami-pod.yaml) is the Pod spec above:
+- [whoami-pod.yaml](specs/whoami-pod.yaml) is the Pod spec for a simple web app
+
+Deploy the app from your local copy of the course repo:
 
 ```
-kubectl apply -f labs/pods/whoami-pod.yaml
+kubectl apply -f labs/pods/specs/whoami-pod.yaml
 ```
 
 Or the path to the YAML file can be a web address:
 
 ```
-kubectl apply -f https://TODO labs/pods/whoami-pod.yaml
+kubectl apply -f https://k8sfun.courselabs.co/labs/pods/whoami-pod.yaml
 ```
 
 > The output shows you that nothing has changed. Kubernetes works on **desired state** deployment
@@ -57,21 +66,13 @@ Now you can use the familiar commands to print information:
 
 ```
 kubectl get pods
-```
 
-> Prints a list of Pods with basic information
-
-```
 kubectl get po -o wide
 ```
 
-> Uses the short name and adds extra columns
+> The second command uses the short name `po` and adds extra columns
 
-```
-kubectl describe pod whoami
-```
-
-> Prints the spec and status with an event list
+What extra information do you see in the second output, and how would you print all the Pod information in a readble format?
 
 
 ## Working with Pods
@@ -92,17 +93,23 @@ kubectl exec -it whoami -- sh
 
 > This container image doesn't have a shell installed!
 
-Run another Pod from the spec in [sleep-pod.yaml](sleep-pod.yaml):
+Let's try another app:
+
+- [sleep-pod.yaml](specs/sleep-pod.yaml) runs an app which does nothing
+
+Deploy the new app and check it is running.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
-kubectl apply -f labs/pods/sleep-pod.yaml
+kubectl apply -f labs/pods/specs/sleep-pod.yaml
 
 kubectl get pods
 ```
+</details>
 
-> This is a container image with basic DNS tools installed
-
-This Pod container does have a shell:
+This Pod container does have a shell, and it has some useful tools installed.
 
 ```
 kubectl exec -it sleep -- sh
@@ -148,11 +155,11 @@ Make a request to the HTTP server in the whoami Pod from the sleep Pod:
 kubectl exec sleep -- curl -s <whoami-pod-ip>
 ```
 
-> The output is the response from the whoami server - it includesthe  hostname and IP addresses
+> The output is the response from the whoami server - it includes the  hostname and IP addresses
 
 ## Lab
 
-Pods are an abstraction over containers. They monitor the container and if it exits the Pod restarts, creating a new container. This is the first layer of high-availability Kubernetes provides.
+Pods are an abstraction over containers. They monitor the container and if it exits the Pod restarts, creating a new container to keep your app running. This is the first layer of high-availability Kubernetes provides.
 
 You can see this in action - force the container in the sleep Pod to exit, and look at the details of the Pod to see what happens next.
 
