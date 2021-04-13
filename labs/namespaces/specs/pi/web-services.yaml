@@ -4,7 +4,7 @@ metadata:
   name: pi-web-lb
   namespace: pi
   labels:
-    co.courselabs.k8s: persistentvolumes
+    k8sfun.courselabs.co: namespaces
 spec:
   ports:
     - port: 8030
@@ -20,7 +20,7 @@ metadata:
   name: pi-web-np
   namespace: pi
   labels:
-    co.courselabs.k8s: persistentvolumes
+    k8sfun.courselabs.co: namespaces
 spec:
   ports:
     - port: 8030   

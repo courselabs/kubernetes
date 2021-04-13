@@ -2,10 +2,10 @@
 
 My solution creates a new namespace for Nginx to run in, and uses a FQDN in the Nginx config to proxy the Pi web app - and specifies the correct port:
 
-- [](labs\namespaces\solution\01-namespace.yaml) - the `front-end` namespace
-- [](labs\namespaces\solution\nginx-configMap.yaml) - the configuration, using `http://pi-web-np.pi.svc.cluster.local:8030` as the `proxy_pass` setting
-- [](labs\namespaces\solution\nginx-deployment.yaml) - Deployment using the namespace and ConfigMap
-- [](labs\namespaces\solution\nginx-services.yaml) - Services using the new ports
+- [solution/01-namespace.yaml](solution/01-namespace.yaml) - the `front-end` namespace
+- [nginx-configMap.yaml](solution/nginx-configMap.yaml) - the configuration, using `http://pi-web-np.pi.svc.cluster.local:8030` as the `proxy_pass` setting
+- [nginx-deployment.yaml](solution/nginx-deployment.yaml) - Deployment using the namespace and ConfigMap
+- [nginx-services.yaml](solution/nginx-services.yaml) - Services using the new ports
 
 Deploy the proxy, which uses the app in the existing `pi` namespace:
 

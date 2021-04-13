@@ -5,7 +5,7 @@ This is about making sure your new objects are created in the right namespace, a
 The original Nginx config in [nginx-configMap.yaml](../persistentvolumes/specs/pi/nginx-configMap.yaml) used a local DNS name: 
 
 ```
-proxy_pass             http://pi-web-internal;
+proxy_pass  http://pi-web-internal;
 ```
 
 That won't do when the Nginx is in a different namespace from the app it's proxying.

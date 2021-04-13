@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: pi
   labels:
-    co.courselabs.k8sfun: namespaces
+    k8sfun.courselabs.co: namespaces

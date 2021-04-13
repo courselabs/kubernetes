@@ -4,7 +4,7 @@ metadata:
   name: configurable-np
   namespace: configurable
   labels:
-    co.courselabs.k8sfun: namespaces
+    k8sfun.courselabs.co: namespaces
 spec:
   selector:
     app: configurable
@@ -21,7 +21,7 @@ metadata:
   name: configurable-lb
   namespace: configurable
   labels:
-    co.courselabs.k8sfun: namespaces
+    k8sfun.courselabs.co: namespaces
 spec:
   selector:
     app: configurable
