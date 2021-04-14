@@ -1,19 +1,76 @@
+# Running a Local Kubernetes Cluster
 
+Kubernetes clusters can have hundreds of nodes in production, but you can run a single-node cluster on your laptop and it works in the same way.
 
 ## Docker Desktop - Mac or Windows
 
-If you're on macOS or Windows 10, Docker Desktop is the easiest way to get Kubernetes:
+If you're on macOS or Windows 10 Docker Desktop is the easiest way to get Kubernetes:
 
-> Installing Kubernetes with Docker Desktop
+- [Install Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-## k3d - Linux
+The download and install takes a few minutes. When it's done, run the _Docker_ app and you'll see the Docker whale logo in your taskbar (Windows) or menu bar (macOS).
 
-On Linux k3d is a lightweight Kubernetes distribution with a good feature set:
+> On Windows 10 the install may need a restart before you get here.
 
-> Installing Kubernetes with k3s
+Right-click that whale and click _Settings_:
 
-## Kind - Linux
+![](/img/docker-desktop-settings.png)
 
-If you're already using Kind, follow this setup (if you're not use k3d instead):
+In the settings Windows select _Kubernetes_ from the left menu and click _Enable Kubernetes_: 
 
-> Installing Kubernetes with Kind
+![](/img/docker-desktop-kubernetes.png)
+
+> Docker downloads all the Kubernetes components and sets them up. That can take a few minutes too. When the Docker logo and the Kubernetes logo in the UI are both green, everything is running.
+
+## **OR** k3d - Linux
+
+<details>
+  <summary>Running Kubernetes inside a container</summary>
+
+On Linux [k3d](https://k3d.io) is a lightweight Kubernetes distribution with a good feature set. It runs a whole Kubernetes cluster inside a Docker container :)
+
+> You can use k3d on macOS and Windows too - but Docker Desktop is easier.
+
+You need to install Docker, then k3d and then create a cluster:
+
+```
+curl -fsSL https://get.docker.com | sh
+
+curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+
+k3d cluster create k8sfun -p "30000-30040:30000-30040@server[0]"
+```
+
+</details><br />
+
+## **OR** Kind - Linux
+
+<details>
+  <summary>An alternative Dockerized Kubernetes setup</summary>
+
+If you're already using [Kind](kind.sigs.k8s.io/), use this setup which is tweaked for the labs:
+
+```
+kind create cluster --name k8s-fundamentals --config setup/kind.yaml
+```
+
+> If you're not using Kind use k3d instead
+
+</details><br />
+
+## Check your cluster
+
+Whichever setup you use, you should be able to run this command and get some output about your cluster:
+
+```
+kubectl get nodes
+```
+
+I'm using Docker Desktop and mine says:
+
+```
+NAME             STATUS   ROLES    AGE    VERSION
+docker-desktop   Ready    master   5d4h   v1.19.7
+```
+
+> Your details may be different - that's fine. If you get errors then we need to look into it, because you'll need your own cluster for every part of the course.
