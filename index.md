@@ -34,3 +34,8 @@ These are hands-on resources to help you learn Kubernetes.
 - [Production readiness](labs/productionizing)
 - [Troubleshooting](labs/troubleshooting)
 - [Hackathon!](hackathon)
+
+
+### Credits
+
+Created by [@EltonStoneman](https://twitter.com/EltonStoneman) ([sixeyed](https://github.com/sixeyed)). Contributions welcome.
