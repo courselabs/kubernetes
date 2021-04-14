@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: products-api
   labels:
-    co.courselabs.k8sfun: hackathon
+    k8sfun.courselabs.co: hackathon
     app: widgetario
 spec:
   ports:

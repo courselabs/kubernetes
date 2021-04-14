@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: ingress-nginx
   labels:
-    co.courselabs.k8sfun: ingress
+    k8sfun.courselabs.co: hackathon

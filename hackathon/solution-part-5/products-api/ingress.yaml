@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: api-widgetario-local
   labels:
-    co.courselabs.k8sfun: hackathon
+    k8sfun.courselabs.co: hackathon
 spec:
   rules:
   - host: api.widgetario.local 

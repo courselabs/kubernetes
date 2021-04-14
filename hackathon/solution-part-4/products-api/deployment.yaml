@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: products-api
   labels:
-    app: widgetario
-    co.courselabs.k8sfun: hackathon
+    k8sfun.courselabs.co: hackathon
 spec:
   selector:
     matchLabels:
