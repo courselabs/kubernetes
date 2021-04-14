@@ -73,7 +73,7 @@ kubectl apply -f labs/services/specs/pods
 
 > You can work with multiple objects and deploy multiple YAML manifests with Kubectl
 
-Check the status for all Pods, printing all the IP addresses and labels.
+📋 Check the status for all Pods, printing all the IP addresses and labels.
 
 <details>
   <summary>Not sure how?</summary>
@@ -98,7 +98,7 @@ Kubernetes provides different types of Service for internal and external access 
 
 * [whoami-clusterip.yaml](specs/services/whoami-clusterip.yaml) defines a ClusterIP service which routes traffic to the whoami Pod
 
-Deploy the Service in the usual way and print its details to see how it looks.
+📋 Deploy the Service in the usual way and print its details to see how it looks.
 
 <details>
   <summary>Not sure how?</summary>
@@ -137,7 +137,7 @@ Now the Pods can communicate using DNS names:
 kubectl exec sleep -- curl -s http://whoami
 ```
 
-Recreate the whoami Pod and the replacement will have a new IP address - but service resolution with DNS still works. 
+📋 Recreate the whoami Pod and the replacement will have a new IP address - but service resolution with DNS still works. 
 
 <details>
   <summary>Not sure how?</summary>

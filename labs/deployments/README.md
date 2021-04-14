@@ -64,7 +64,7 @@ kubectl get pods -l app=whoami
 
 Deployments are first-class objects, you work with them in Kubectl in the usual way. 
 
-Print the details of the Deployment.
+📋 Print the details of the Deployment.
 
 <details>
   <summary>Not sure how?</summary>
@@ -105,7 +105,7 @@ So it's better to make the changes **declaratively in YAML**.
 
 - [whoami-v1-scale.yaml](specs/deployments/whoami-v1-scale.yaml) sets a replica level of 2
 
-Update the Deployment and check the Pods again.
+📋 Update the Deployment and check the Pods again.
 
 <details>
   <summary>Not sure how?</summary>

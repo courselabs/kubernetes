@@ -97,7 +97,7 @@ Let's try another app:
 
 - [sleep-pod.yaml](specs/sleep-pod.yaml) runs an app which does nothing
 
-Deploy the new app and check it is running.
+📋 Deploy the new app and check it is running.
 
 <details>
   <summary>Not sure how?</summary>

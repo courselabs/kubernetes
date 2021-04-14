@@ -61,7 +61,7 @@ kubectl apply -f labs/persistentvolumes/specs/pi
 
 > Browse to localhost:30010/pi?dp=30000 or localhost:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
 
-Refresh and the response will be instant - the calculation response is cached in Nginx, you can see it in the `/tmp` folder.
+📋 Refresh and the response will be instant - the calculation response is cached in Nginx, you can see it in the `/tmp` folder.
 
 <details>
   <summary>Not sure how?</summary>
@@ -104,7 +104,7 @@ Refresh your page to see the Pi calculation happen again - the result gets cache
 
 > The container sees the same filesystem structure, but now the /tmp folder is mounted from the EmptyDir volume
 
-Stop the Nginx process and the Pod will restart, but this time the data in the `/tmp` folder is available to the new container.
+📋 Stop the Nginx process and the Pod will restart, but this time the data in the `/tmp` folder is available to the new container.
 
 <details>
   <summary>Not sure how?</summary>
@@ -165,7 +165,9 @@ kubectl get pvc,pv
 
 > Now the PVC is bound and the PersistentVolume exists with the requested size and access mode in the PVC
 
-The PVC starts off empty. Refresh the app and you'll see the /tmp folder getting filled. You can restart and replace the Pod and the data in the PVC survives both.
+The PVC starts off empty. Refresh the app and you'll see the /tmp folder getting filled. 
+
+📋 Restart and replace the Pod and confirm the data in the PVC survives both.
 
 <details>
   <summary>Not sure how?</summary>

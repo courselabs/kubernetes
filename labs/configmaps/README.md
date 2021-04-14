@@ -64,7 +64,7 @@ The API spec is the same, but in this format:
 
 * `data` - list of files, with the filename set and the contents following the separator `|-`
 
-In the Pod spec you can load all the values into the container filesystem as [volume mounts]():
+In the Pod spec you can load all the values into the container filesystem as volume mounts:
 
 ```
 spec:
@@ -111,7 +111,7 @@ Check the app at http://localhost:8080 (or your node's IP address if you have a 
 
 You see the default configuration settings from the JSON file in the container image. The environment variables come from Dockerfile, plus the container OS and some set by Kubernetes.
 
-Exit the port-forward and remove the Pod.
+📋 Exit the port-forward and remove the Pod.
 
 <details>
   <summary>Not sure how?</summary>
@@ -142,7 +142,7 @@ kubectl exec deploy/configurable -- printenv | grep Co
 
 > You should see `Configurable__Release=24.01.1`
 
-Confirm that by browsing to the app from your Service.
+📋 Confirm that by browsing to the app from your Service.
 
 <details>
   <summary>Not sure how?</summary>
@@ -192,7 +192,7 @@ kubectl apply -f labs/configmaps/specs/configurable/config-json/
 
 > Refresh the web app and you'll see new settings coming from the `config/override.json` file
 
-Check the filesystem inside the container to see the file loaded from the ConfigMap.
+📋 Check the filesystem inside the container to see the file loaded from the ConfigMap.
 
 <details>
   <summary>Not sure how?</summary>

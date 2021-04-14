@@ -56,7 +56,7 @@ Start by deploying the configurable app using ConfigMaps:
 kubectl apply -f labs/secrets/specs/configurable
 ```
 
-Check the details of a ConfigMap and you can see all the values in plain text.
+📋 Check the details of a ConfigMap and you can see all the values in plain text.
 
 <details>
   <summary>Not sure how?</summary>
