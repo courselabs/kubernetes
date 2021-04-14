@@ -47,18 +47,7 @@ If you didn't get part 1 finished, you can check out the specs in the sample sol
 Deploy the sample solution and you can continue to part 2:
 
 ```
-# remove the old database:
-kubectl delete deploy products-db
-kubectl delete svc products-db
-
-# you may have some PVCs lingering from the labs:
-kubectl delete pvc -l app=products-db
-
-# deploy the new specs:
-kubectl apply -f hackathon/solution-part-3/products-db -f hackathon/solution-part-3/products-api  -f hackathon/solution-part-3/stock-api -f hackathon/solution-part-3/web
-
-# rollout the APIs to load new config:
-kubectl rollout restart deploy/products-api deploy/stock-api
+kubectl apply -f hackathon/solution-part-1/products-db -f hackathon/solution-part-1/products-api  -f hackathon/solution-part-1/stock-api -f hackathon/solution-part-1/web
 ```
 
 </details><br/>
@@ -142,7 +131,18 @@ If you didn't get part 3 finished, you can check out the specs in the sample sol
 Deploy the sample solution and you can continue to part 4:
 
 ```
+# remove the old database:
+kubectl delete deploy products-db
+kubectl delete svc products-db
+
+# you may have some PVCs lingering from the labs:
+kubectl delete pvc -l app=products-db
+
+# deploy the new specs:
 kubectl apply -f hackathon/solution-part-3/products-db -f hackathon/solution-part-3/products-api  -f hackathon/solution-part-3/stock-api -f hackathon/solution-part-3/web
+
+# rollout the APIs to load new config:
+kubectl rollout restart deploy/products-api deploy/stock-api
 ```
 
 </details><br/>
