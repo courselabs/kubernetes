@@ -6,6 +6,7 @@ These are hands-on resources to help you learn Kubernetes.
 
  - [Set up Kubernetes](setup)
  - `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
+ - `cd kubernetes-fundamentals`
 
 ## Part 1 - Core Kubernetes
 
