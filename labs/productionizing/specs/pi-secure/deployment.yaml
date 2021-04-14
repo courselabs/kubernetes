@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: pi-secure-web
   labels:
-    co.courselabs.k8sfun: productionizing
+    k8sfun.courselabs.co: productionizing
 spec:
   selector:
     matchLabels:

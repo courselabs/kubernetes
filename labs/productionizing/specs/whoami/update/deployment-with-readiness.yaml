@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: whoami
   labels:
-    co.courselabs.k8sfun: productionizing
+    k8sfun.courselabs.co: productionizing
 spec:
   replicas: 2
   selector:

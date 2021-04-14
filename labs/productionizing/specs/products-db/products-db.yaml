@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: products-db
   labels:
-    co.courselabs.k8sfun: productionizing
+    k8sfun.courselabs.co: productionizing
 spec:
   selector:
     matchLabels:
@@ -20,8 +20,10 @@ spec:
             tcpSocket:
               port: 5432
             periodSeconds: 5
+            initialDelaySeconds: 10
           livenessProbe:
             exec:
               command: ["pg_isready", "-h", "localhost"]
-            periodSeconds: 10
-            initialDelaySeconds: 10
+            periodSeconds: 30
+            initialDelaySeconds: 20
+            failureThreshold: 5

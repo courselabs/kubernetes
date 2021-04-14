@@ -9,7 +9,7 @@ These are the things you'll add to your application models to get ready for prod
 ## API specs
 
 - [ContainerProbe](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#probe-v1-core)
-- [HorizontalPodAutoscaler](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#horizontalpodautoscaler-v1-autoscaling)
+- [HorizontalPodAutoscaler (autoscaling/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#horizontalpodautoscaler-v1-autoscaling)
 
 <details>
   <summary>YAML overview</summary>
@@ -57,7 +57,7 @@ spec:
 
 ## Self-healing apps with readiness probes
 
-We know Kubernetes restarts Pods when the container exits, but the app inside the container could be running but not responding - e.g. a web app returning `503` - and Kubernetes won't know.
+We know Kubernetes restarts Pods when the container exits, but the app inside the container could be running but not responding - like a web app returning `503` - and Kubernetes won't know.
 
 The whoami app has a nice feature we can use to trigger a failure like that. Start by running the app:
 
@@ -78,13 +78,16 @@ curl --data '503' http://localhost:8010/health
 curl -i http://localhost:8010
 ```
 
-> Repeat the last curl command and you'll get some OK responses and some 503s - the Pod with the broken app doesn't fix itself
+> Repeat the last curl command and you'll get some OK responses and some 503s - the Pod with the broken app doesn't fix itself.
 
-You can tell Kubernetes how to test your app is healthy with [container probes](). You define the action for the probe, and Kubernetes runs it repeatedly to make sure the app is healthy:
+You can tell Kubernetes how to test your app is healthy with [container probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/). You define the action for the probe, and Kubernetes runs it repeatedly to make sure the app is healthy:
 
-- [deployment-with-readiness.yaml](specs/whoami/update/deployment-with-readiness.yaml) - adds a readiness probe, which makes an HTTP call to the /health endpoint of the app every 5 seconds
+- [whoami/update/deployment-with-readiness.yaml](specs/whoami/update/deployment-with-readiness.yaml) - adds a readiness probe, which makes an HTTP call to the /health endpoint of the app every 5 seconds
 
-Deploy the update and check the new Pods:
+📋 Deploy the update and check the new Pods.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/productionizing/specs/whoami/update
@@ -92,7 +95,9 @@ kubectl apply -f labs/productionizing/specs/whoami/update
 kubectl wait --for=condition=Ready pod -l app=whoami,update=readiness
 ```
 
-> Describe the Pod and you'll see the readiness check listed in the output
+</details><br/>
+
+> Describe a Pod and you'll see the readiness check listed in the output
 
 These are new Pods so the app is healthy in both; trip one Pod into the unhealthy state and you'll see the status change:
 
@@ -102,9 +107,14 @@ curl --data '503' http://localhost:8010/health
 kubectl get po -l app=whoami --watch
 ```
 
-> One Pod changes in the Ready column - now 0/1 containers are ready
+> One Pod changes in the Ready column - now 0/1 containers are ready.
 
 If a readiness check fails, the Pod is removed from the Service and it won't receive any traffic:
+
+📋 Confirm the Service has only one Pod IP and test the app.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 # Ctrl-C to exit the watch
@@ -114,15 +124,17 @@ kubectl get endpoints whoami-np
 curl http://localhost:8010
 ```
 
+</details><br/>
+
 > Only the healthy Pod is in enlisted in the Service, so you will always get an OK response.
 
-If this was a real app the 503 could be happening if the app is overloaded. Removing it from the Service could give it time to fix itself.
+If this was a real app the `503` could be happening if the app is overloaded. Removing it from the Service might give it time to recover.
 
 ## Self-repairing apps with liveness probes
 
 Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app. 
 
-For that you can use a [liveness probe]() which will restart the Pod with a new container if the probe fails:
+For that you can use a liveness probe which will restart the Pod with a new container if the probe fails:
 
 - [deployment-with-liveness.yaml](specs/whoami/update2/deployment-with-liveness.yaml) - adds a liveness check; this one uses the same test as the readiness probe
 
@@ -134,7 +146,10 @@ kubectl apply -f labs/productionizing/specs/whoami/update2
 kubectl wait --for=condition=Ready pod -l app=whoami,update=liveness
 ```
 
-Now when you cause one of the new Pods to fail, it will be restarted:
+📋 Now trigger a failure in one Pod and watch to make sure it gets restarted.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 curl --data '503' http://localhost:8010/health
@@ -142,9 +157,11 @@ curl --data '503' http://localhost:8010/health
 kubectl get po -l app=whoami --watch
 ```
 
-> One Pod will become ready 0/1 -then it will restart, and then become ready 1/1 again 
+</details><br/>
 
-Check the endpoint and you'll see both Pod IPs are in the Service list. When the restarted Pod passed the readiness check it was added back
+> One Pod will become ready 0/1 -then it will restart, and then become ready 1/1 again.
+
+Check the endpoint and you'll see both Pod IPs are in the Service list. When the restarted Pod passed the readiness check it was added back.
 
 Other types of probe exist, so this isn't just for HTTP apps. This Postgres Pod spec uses a TCP probe and a command probe:
 
@@ -152,7 +169,7 @@ Other types of probe exist, so this isn't just for HTTP apps. This Postgres Pod 
 
 ## Autoscaling compute-intensive workloads
 
-A Kubernetes cluster is a pool of CPU and memory resources. If you have workloads with different demand peaks, you can use a [HorizontalPodAutoscaler]() to automatically scale Pods up and down, as long as your cluster has capacity.
+A Kubernetes cluster is a pool of CPU and memory resources. If you have workloads with different demand peaks, you can use a [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) to automatically scale Pods up and down, as long as your cluster has capacity.
 
 The basic autoscaler uses CPU metrics powered by the [metrics-server](https://github.com/kubernetes-sigs/metrics-server) project. Not all clusters have it installed, but it's easy to set up:
 
@@ -206,9 +223,9 @@ kubectl apply -f labs/productionizing/specs/configurable
 
 Try the app and you'll see it fails after 3 refreshes and never comes back online. There's a `/healthz` endpoint you can use to check that. Your goals are:
 
-- run multiple replicas and ensure traffic only gets sent to healthy Pods
+- run 5 replicas and ensure traffic only gets sent to healthy Pods
 - restart Pods if the app in the container fails
-- add an HPA as a backup, scaling up if the Pods use more than 50% CPU.
+- add an HPA as a backup, scaling up to 10 if Pods use more than 50% CPU.
 
 This app isn't CPU intensive so you won't be able to trigger the HPA by making HTTP calls. How else can you test the HPA scales up and down correctly? 
 
@@ -226,7 +243,7 @@ Security is a very large topic in containers, but there are a few features you s
 
 - changing the user to ensure the container process doesn't run as `root`
 - don't mount the Service Account API token unless your app needs it
-- add a [Security Context]() to limit the OS capabilities the app can use
+- add a [Security Context](https://kubernetes.io/docs/concepts/security/pod-security-standards/) to limit the OS capabilities the app can use
 
 Kubernetes doesn't apply these by default, because they can cause breaking changes in your app.
 
@@ -242,7 +259,7 @@ kubectl exec deploy/pi-web -- chown root:root /app/Pi.Web.dll
 
 This alternative spec fixes those security issues:
 
-- [pi-secure\deployment.yaml](labs\productionizing\specs\pi-secure\deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
+- [pi-secure/deployment.yaml](labs/productionizing/specs/pi-secure/deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
 
 ```
 kubectl apply -f labs/productionizing/specs/pi-secure/
@@ -252,9 +269,14 @@ kubectl get pod -l app=pi-secure-web --watch
 
 > The spec is more secure, but the app fails. Check the logs and you'll see it doesn't have permission to listen on the port.
 
-Port 80 is privileged inside the container, so apps can't listen on it asa a least-privilege user with no Linux capabilities. This is a .NET app which can use a custom port:
+Port 80 is privileged inside the container, so apps can't listen on it as a least-privilege user with no Linux capabilities. This is a .NET app which can use a custom port:
 
-- [deployment-custom-port.yaml](labs\productionizing\specs\pi-secure\update\deployment-custom-port.yaml) - configures the app to listen on non-privileged port 5001
+- [deployment-custom-port.yaml](specs/pi-secure/update/deployment-custom-port.yaml) - configures the app to listen on non-privileged port 5001
+
+📋 Deploy the update and check it  fixes those security holes.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/productionizing/specs/pi-secure/update
@@ -272,15 +294,15 @@ kubectl exec deploy/pi-secure-web -- cat /var/run/secrets/kubernetes.io/servicea
 kubectl exec deploy/pi-secure-web -- chown root:root /app/Pi.Web.dll
 ```
 
-This is not the end of security. Securing containers is a multi-layered approach which starts with your securing your images, but this is a good step up from the default Pod security.
+</details><br/>
+
+This is not the end of security - it's only the beginning. Securing containers is a multi-layered approach which starts with your securing your images, but this is a good step up from the default Pod security.
 
 </details><br/>
 
 ___
 ## Cleanup
 
-When you're done **after you've tried the lab**, you can remove all the objects:
-
 ```
-kubectl delete all,hpa -l co.courselabs.k8sfun=productionizing
+kubectl delete all,hpa -l k8sfun.courselabs.co=productionizing
 ```

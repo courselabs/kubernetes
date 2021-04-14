@@ -3,9 +3,9 @@ kind: Deployment
 metadata:
   name: configurable
   labels: 
-    co.courselabs.k8sfun: productionizing
+    k8sfun.courselabs.co: productionizing
 spec:
-  replicas: 2
+  replicas: 5
   selector:
     matchLabels:
       app: configurable
