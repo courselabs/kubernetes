@@ -1,5 +1,5 @@
 # Kubernetes Fundamentals
 
-Lab materials for the Kubernetes Fundamentals course.
+Labs and exercises to help you learn Kubernetes.
 
 Live at https://k8sfun.courselabs.co.
