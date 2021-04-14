@@ -27,6 +27,10 @@ Fixes:
 
 5. Fix typo in the container command. `RunContainerError` tells you Kubernetes can't get the container running - you'll see the error in the Pod logs or description, depending on the failure.
 
+6. Fix readiness probe. It's set to check a TCP socket is listening, but it's using the wrong port. `8020` is the Service port, the app in the container uses port `80`.
+
+7. Fix liveness probe. It's set to check an HTTP endpoint, but /healthy doesn't exist - a 404 response means a failed probe.
+
 ## Troubleshooting Services
 
 Fixes:

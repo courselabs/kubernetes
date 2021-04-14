@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: pi-web
   labels:
-    co.courselabs.k8sfun: troubleshooting
+    k8sfun.courselabs.co: troubleshooting
 spec:
   replicas: 0
   selector:
@@ -25,3 +25,13 @@ spec:
             limits:
               cpu: "32"            
               memory: "128Gi"
+          readinessProbe:
+            tcpSocket:
+              port: 8020
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 80
+            periodSeconds: 30
+            failureThreshold: 1

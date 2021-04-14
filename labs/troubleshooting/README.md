@@ -8,13 +8,13 @@ Objects like Services and Pods are loosely-coupled, so it's easy to break your a
 
 ## Lab
 
-This one is all lab :) Try running this app - and make whatever changes you need to get the app running.
+This one is all lab :) Try running this app - and make whatever changes you need to get the app running, so the Pod is healthy with no restarts.
 
 ```
 kubectl apply -f labs/troubleshooting/specs/pi-failing
 ```
 
-> Your goal is to browse to localhost:0820 or localhost:30020 and see the response from the Pi app
+> Your goal is to browse to localhost:8020 or localhost:30020 and see the response from the Pi app
 
 Don't go straight to the solution! These are the sort of issues you will get all the time, so it's good to start working through the steps to diagnose problems.
 
@@ -26,5 +26,5 @@ ___
 When you're done you can remove all the objects:
 
 ```
-kubectl delete all,hpa -l co.courselabs.k8sfun=troubleshooting
+kubectl delete all -l k8sfun.courselabs.co=troubleshooting
 ```

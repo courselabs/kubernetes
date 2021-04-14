@@ -1,6 +1,6 @@
 # Lab Hints
 
-Fixing deployments is usually about checking the status of running objects and seeing what's wrong, then fixing up the YAML and redeploying.
+Fixing apps is a process of checking the status of running objects and seeing what's wrong, then fixing up the YAML and redeploying.
 
 ## Troubleshooting Deployments
 
