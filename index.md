@@ -39,4 +39,4 @@ These are hands-on resources to help you learn Kubernetes.
 
 ### Credits
 
-Created by [@EltonStoneman](https://twitter.com/EltonStoneman) ([sixeyed](https://github.com/sixeyed)). Contributions welcome.
+Created by [@EltonStoneman](https://twitter.com/EltonStoneman) ([sixeyed](https://github.com/sixeyed)): Consultant, Trainer and author of [Learn Kubernetes in a Month of Lunches](https://www.manning.com/books/learn-kubernetes-in-a-month-of-lunches).
