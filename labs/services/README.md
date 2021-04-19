@@ -62,8 +62,8 @@ spec:
 
 Replace the Pods from the previous lab with new definitions which contain labels:
 
-* [whoami.yaml](labs\services\specs\pods\whoami.yaml)
-* [sleep.yaml](labs\services\specs\pods\sleep.yaml)
+* [whoami.yaml](specs/pods/whoami.yaml)
+* [sleep.yaml](specs/pods/sleep.yaml)
 
 ```
 kubectl delete pods whoami sleep
