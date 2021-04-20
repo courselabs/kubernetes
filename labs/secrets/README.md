@@ -145,7 +145,7 @@ kubectl create secret generic configurable-secret-file --from-file ./labs/secret
 
 And play the DevOps team, deploying the app now that the secrets are there:
 
-- [deployment.yaml](labs/secrets/specs/configurable/secrets-file/deployment.yaml) - references those Secrets
+- [deployment.yaml](specs/configurable/secrets-file/deployment.yaml) - references those Secrets
 
 ```
 kubectl apply -f ./labs/secrets/specs/configurable/secrets-file
