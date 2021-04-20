@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: sleep
   labels:
-    co.courselabs.k8s: daemonsets
+    k8sfun.courselabs.co: daemonsets
     app: sleep
 spec:
   containers:
