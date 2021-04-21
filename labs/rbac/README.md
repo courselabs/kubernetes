@@ -75,6 +75,7 @@ There's a [bug in the default RBAC setup](https://github.com/docker/for-mac/issu
 
 ```
 # on Docker Desktop for Mac (or WSL2 on Windows):
+sudo chmod +x ./scripts/fix-rbac-docker-desktop.sh
 ./scripts/fix-rbac-docker-desktop.sh
 
 # OR on Docker Desktop for Windows (PowerShell):
