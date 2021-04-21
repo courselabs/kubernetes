@@ -141,7 +141,7 @@ RBAC rules are applied when a request is made to the API server, so we can fix t
   <summary>Not sure how?</summary>
 
 ```
-kubectl apply -f labs/rbac/specs/kube-explorer/rbac-namespace/default.yaml
+kubectl apply -f labs/rbac/specs/kube-explorer/rbac-namespace
 
 kubectl auth can-i get pods -n default --as system:serviceaccount:default:kube-explorer
 ```
