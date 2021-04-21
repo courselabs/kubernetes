@@ -77,7 +77,7 @@ DaemonSets run exactly one Pod on each node, so the update behaviour is to remov
 
 This is different from Deployments, which default to starting new Pods and checking they're healthy before removing old ones. DaemonSet updates can break your app:
 
-- [update-bad/daemonset.yaml](specs/nginx/update-bad/daemonset.yaml) has a misconfigured command in the Pod container - when the container runs, it will exit instead of running Nginx
+- [update-bad/daemonset-bad-command.yaml](specs/nginx/update-bad/daemonset-bad-command.yaml) has a misconfigured command in the Pod container - when the container runs, it will exit instead of running Nginx
 
 ```
 kubectl apply -f labs/daemonsets/specs/nginx/update-bad
