@@ -152,9 +152,9 @@ Jobs are not automatically cleared up so you can work with the Pods and see the 
 
 Periodically running a cleanup task is one scenario where you use a CronJob:
 
-- [cleanup/cronjob.yaml](labs/jobs/specs/cleanup/cronjob.yaml) - a CronJob which runs a shell script to delete jobs by running Kubectl inside a Pod
-- [cleanup/rbac.yaml](labs/jobs/specs/cleanup/rbac.yaml) - Service Account for the Pod and RBAC rules to allow it to query and delete Jobs
-- [cleanup/configmap.yaml](labs/jobs/specs/cleanup/configmap.yaml) - ConfigMap which contains the shell script - this is a nice way to run scripts without having to build a custom Docker image
+- [cleanup/cronjob.yaml](specs/cleanup/cronjob.yaml) - a CronJob which runs a shell script to delete jobs by running Kubectl inside a Pod
+- [cleanup/rbac.yaml](specs/cleanup/rbac.yaml) - Service Account for the Pod and RBAC rules to allow it to query and delete Jobs
+- [cleanup/configmap.yaml](specs/cleanup/configmap.yaml) - ConfigMap which contains the shell script - this is a nice way to run scripts without having to build a custom Docker image
 
 The CronJob is set to run every minute so you'll soon see it get to work.
 
