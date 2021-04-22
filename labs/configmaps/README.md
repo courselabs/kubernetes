@@ -272,6 +272,8 @@ kubectl get replicaset -l app=configurable
 
 > The Deployment object won't scale down the old ReplicaSet until the new one reaches desired capacity. Using a Deployment keeps your app safe from issues like this.
 
+</details>
+
 ___
 
 ## Cleanup
