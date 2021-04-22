@@ -29,7 +29,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: nginx-configmap  
+            name: simple-proxy-configmap  
   volumeClaimTemplates:
   - metadata:
       name: cache

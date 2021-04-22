@@ -189,7 +189,7 @@ StatefulSets are complex and not as common as other controllers, but they have o
 
 Deployments don't let you do this ([yet](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes)), so you can use a StatefulSet instead to benefit from volume claim templates.
 
-The [simple-proxy/deployment.yaml](labs/statefulsets/specs/simple-proxy/deployment.yaml) is a spec to run an Nginx proxy over the StatefulSet website we have running.
+The [simple-proxy/deployment.yaml](specs/simple-proxy/deployment.yaml) is a spec to run an Nginx proxy over the StatefulSet website we have running.
 
 Deploy the proxy:
 
