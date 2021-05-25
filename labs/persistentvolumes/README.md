@@ -61,7 +61,7 @@ kubectl apply -f labs/persistentvolumes/specs/pi
 
 > Browse to localhost:30010/pi?dp=30000 or localhost:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
 
-📋 Refresh and the response will be instant - the calculation response is cached in Nginx, you can see it in the `/tmp` folder.
+📋 Refresh and the response will be instant - check the response cache in Nginx, you can see it in the `/tmp` folder.
 
 <details>
   <summary>Not sure how?</summary>
@@ -80,9 +80,9 @@ kubectl exec deploy/pi-proxy -- kill 1
 kubectl get po -l app=pi-proxy
 ```
 
-Check the /tmp folder in the new container and you'll see it's empty. Refresh your Pi app and it will take another second to load, because the cache is empty so it gets calculated again.
+Check the `/tmp` folder in the new container and you'll see it's empty. Refresh your Pi app and it will take another second to load, because the cache is empty so it gets calculated again.
 
-> Data in the container writeable layer has the same lifecycle as the container. When the container is replaced, the data is lost.
+> ℹ Data in the container writeable layer has the same lifecycle as the container. When the container is replaced, the data is lost.
 
 ## Pod storage in EmptyDir volumes
 
@@ -104,7 +104,7 @@ Refresh your page to see the Pi calculation happen again - the result gets cache
 
 > The container sees the same filesystem structure, but now the /tmp folder is mounted from the EmptyDir volume
 
-📋 Stop the Nginx process and the Pod will restart, but this time the data in the `/tmp` folder is available to the new container.
+📋 Stop the Nginx process and the Pod will restart. Check the `tmp` folder in the new container to see if the old data is still available.
 
 <details>
   <summary>Not sure how?</summary>
@@ -121,7 +121,7 @@ kubectl exec deploy/pi-proxy -- ls /tmp
 
 Refresh the site with the new container and it loads instantly.
 
-> Data in EmptyDir volumes has the same lifecycle as the Pod. When the Pod is replaced, the data is lost.
+> ℹ Data in EmptyDir volumes has the same lifecycle as the Pod. When the Pod is replaced, the data is lost.
 
 ## External storage with PersistentVolumeClaims
 
@@ -143,7 +143,13 @@ You can create a PersistentVolumeClaim with a named StorageClass, or omit the cl
 kubectl apply -f labs/persistentvolumes/specs/caching-proxy-pvc/pvc.yaml
 ```
 
-Each StorageClass has a provisioner which can create the storage unit on-demand:
+Each StorageClass has a provisioner which can create the storage unit on-demand.
+
+
+📋 List the persistent volumes and claims.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl get pvc
@@ -152,6 +158,9 @@ kubectl get persistentvolumes
 ```
 
 > Some provisioners create storage as soon as the PVC is created - others wait for the PVC to be claimed by a Pod
+
+</details><br />
+
 
 This [Deployment spec](specs/caching-proxy-pvc/nginx.yaml) updates the Nginx proxy to use the PVC:
 
@@ -165,9 +174,9 @@ kubectl get pvc,pv
 
 > Now the PVC is bound and the PersistentVolume exists with the requested size and access mode in the PVC
 
-The PVC starts off empty. Refresh the app and you'll see the /tmp folder getting filled. 
+The PVC starts off empty. Refresh the app and you'll see the `/tmp` folder getting filled. 
 
-📋 Restart and replace the Pod and confirm the data in the PVC survives both.
+📋 Restart and then replace the Pod and confirm the data in the PVC survives both.
 
 <details>
   <summary>Not sure how?</summary>
@@ -194,7 +203,7 @@ Try the app again and the new Pod still serves the response from the cache, so i
 
 </details><br />
 
-> Data in PersistentVolumes has its own lifecycle. It survives until the PV is removed.
+> i Data in PersistentVolumes has its own lifecycle. It survives until the PV is removed.
 
 
 ## Lab
