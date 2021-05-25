@@ -62,6 +62,8 @@ kubectl apply -f labs/secrets/specs/configurable
   <summary>Not sure how?</summary>
 
 ```
+kubectl get configmaps
+
 kubectl describe cm configurable-env
 ```
 
@@ -132,10 +134,15 @@ Some organizations have separate configuration management teams. They have acces
 
 The product team would own the Deployment YAML which references the Secrets and ConfigMaps. The workflow is decoupled, so the DevOps team can deploy and manage the app without having access to the sensitive data.
 
-Play the config management team and create secrets from your local store:
+Play the config management team with access to secrets on your local disk:
 
 - [configurable.env](secrets/configurable.env ) - a .env file for loading environment variables
 - [secret.json](secrets/secret.json) - a JSON file for loading as a volume mount
+
+📋 Create secrets from the files in `labs/secrets/secrets`.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl create secret generic configurable-env-file --from-env-file ./labs/secrets/secrets/configurable.env 
@@ -143,7 +150,9 @@ kubectl create secret generic configurable-env-file --from-env-file ./labs/secre
 kubectl create secret generic configurable-secret-file --from-file ./labs/secrets/secrets/secret.json
 ```
 
-And play the DevOps team, deploying the app now that the secrets are there:
+</details><br/>
+
+Now play the DevOps team, deploying the app using the secrets that already exist:
 
 - [deployment.yaml](specs/configurable/secrets-file/deployment.yaml) - references those Secrets
 
