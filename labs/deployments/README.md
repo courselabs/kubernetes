@@ -105,7 +105,7 @@ So it's better to make the changes **declaratively in YAML**.
 
 - [whoami-v1-scale.yaml](specs/deployments/whoami-v1-scale.yaml) sets a replica level of 2
 
-📋 Update the Deployment and check the Pods again.
+📋 Update the Deployment using that spec and check the Pods again.
 
 <details>
   <summary>Not sure how?</summary>
@@ -134,15 +134,23 @@ And if you need to run commands in the Pod, you can use exec at the Deployment l
 kubectl exec deploy/whoami -- hostname
 ```
 
-> Still no shell in the container image :)
+> Still no shell in this container image :)
 
-The Pod spec in the Deployment template applies the app=whoami label:
+The Pod spec in the Deployment template applies a label.
+
+📋 Print details - including IP address and labels - for all Pods with the label `app=whoami`.
+
+<details>
+  <summary>Not sure how?</summary>
+ the app=whoami label:
 
 ```
 kubectl get pods -o wide --show-labels -l app=whoami
 ```
 
-The label selector in these Services matches that label:
+</details><br/>
+
+The label selector in these Services matches that label too:
 
 - [whoami-loadbalancer.yaml](specs/services/whoami-loadbalancer.yaml)
 - [whoami-nodeport.yaml](specs/services/whoami-nodeport.yaml)
@@ -199,7 +207,9 @@ Rolling updates aren't always what you want - they mean the old and new versions
 
 You may want a blue-green deployment instead, where you have both versions running but only one is receiving traffic.
 
-Use Deployments and Services to create a blue-green update for the whoami app. You'll need two replicas running for v1 and two for v2, but only v2 should receive traffic. Your update should switch traffic to the v2 Pods without any changes to Deployments.
+Write Deployments and Services to create a blue-green update for the whoami app. Start by running two replicas for v1 and two for v2, but only the v1 Pods should receive traffic. 
+
+Then make your update to switch traffic to the v2 Pods without any changes to Deployments.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
