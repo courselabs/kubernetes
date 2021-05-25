@@ -2,7 +2,7 @@
 
 One of the great features of Kubernetes is that you can run any type of application - many organizations are looking to migrate their whole application landscape onto Kubernetes. That could make operations difficult if there was no way to segregate the cluster so Kubernetes has [namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
 
-Namespaces are Kubernetes resources which are a container for other resources. You can use them to isolate workloads, and how you do the isolation is up to you. You may have a production cluster with a different namespace for each application, and a non-production cluster with namespaces for each environment (dev, test, uat).
+Namespaces are Kubernetes resources which are a container for other resources. You can use them to isolate workloads, and how you do the isolation is up to you. You may have a production cluster with a different namespace for each application, and a non-production cluster with namespaces for each environment (dev, test, UAT).
 
 You introduce some complexity using namespaces but they give you a lot of safeguards so you can confidently run multiple workloads on a single cluster without compromising scale or security.
 
@@ -104,11 +104,16 @@ kubectl get po -n default
 
 </details><br />
 
-Let's switch back so we don't accidentally do anything dangerous in the system namespace:
+📋 Switch your context back to the `default` namespace so we don't accidentally do anything dangerous.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl config set-context --current --namespace default
 ```
+
+</details><br />
 
 ## Deploying objects to namespaces
 
@@ -116,7 +121,7 @@ Object specs can include the target namespace in the YAML. If it is not specifie
 
 - [sleep-pod.yaml](specs/sleep-pod.yaml) defines a Pod with no namespace, so Kubectl decides the namespace - using the default for the context, or an explicit namespace
 
-📋 Deploy the same Pod spec to the default namespace and the system namespace.
+📋 Deploy the Pod spec in `labs/namespaces/specs/sleep-pod.yaml` to the default namespace and the system namespace.
 
 <details>
   <summary>Not sure how?</summary>
@@ -131,7 +136,7 @@ kubectl get pods -l app=sleep --all-namespaces
 
 </details><br />
 
-> Namespace access can be restricted with RBAC, but in your dev environment you'll have cluster admin permissions so you can see everything.
+> Namespace access can be restricted with access controls, but in your dev environment you'll have cluster admin permissions so you can see everything.
 
 If you're using namespaces to isolate applications, you'll include the namespace spec with the model and specify the namespace in all the objects:
 
