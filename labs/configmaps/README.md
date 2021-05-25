@@ -144,7 +144,7 @@ kubectl apply -f labs/configmaps/specs/configurable/
 You can check the environment variable is set by running `printenv` inside the Pod container:
 
 ```
-kubectl exec deploy/configurable -- printenv | grep Co
+kubectl exec deploy/configurable -- printenv | grep __
 ```
 
 > You should see `Configurable__Release=24.01.1`
@@ -180,7 +180,7 @@ kubectl apply -f labs/configmaps/specs/configurable/config-env/
   <summary>Not sure how?</summary>
 
 ```
-kubectl exec deploy/configurable -- printenv | grep Co
+kubectl exec deploy/configurable -- printenv | grep __
 ```
 
 </details><br />

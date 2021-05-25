@@ -113,8 +113,12 @@ Kubectl always shows Secrets encoded as base-64, but that's just a basic safety 
 _Windows doesn't have a base64 command, so run this PowerShell script **if you're on Windows**:_
 
 ```
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
+
 . ./scripts/windows-tools.ps1
 ```
+
+> This only affects your current PowerShell session, it doesn't make any permanent changes to your system.
 
 You can fetch the data item from a Secret, and decode it into plaintext:
 
