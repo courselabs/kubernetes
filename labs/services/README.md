@@ -98,7 +98,7 @@ Kubernetes provides different types of Service for internal and external access 
 
 * [whoami-clusterip.yaml](specs/services/whoami-clusterip.yaml) defines a ClusterIP service which routes traffic to the whoami Pod
 
-📋 Deploy the Service in the usual way and print its details to see how it looks.
+📋 Deploy the Service from `labs/services/specs/services/whoami-clusterip.yaml` and print its details.
 
 <details>
   <summary>Not sure how?</summary>
@@ -212,11 +212,16 @@ You can deploy both:
 kubectl apply -f labs/services/specs/services/whoami-nodeport.yaml -f labs/services/specs/services/whoami-loadbalancer.yaml
 ```
 
-The specs have labels so you can print details for these new services:
+📋 Print the details for the services - both have the label `app=whoami`.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl get svc -l app=whoami
 ```
+
+</details><br/>
 
 > If your cluster doesn't have LoadBalancer support, the `EXTERNAL-IP` field will stay at `<pending>` forever
 
@@ -262,7 +267,9 @@ What happens? How can you find the target Pods for a Service?
 ___
 ## Cleanup
 
-Every YAML spec for this lab adds a label `k8sfun.courselabs.co=services` that makes it super easy to clean up, by deleting all those resources:
+Every YAML spec for this lab adds a label `k8sfun.courselabs.co=services` .
+
+That makes it super easy to clean up, by deleting all those resources:
 
 ```
 kubectl delete pod,svc -l k8sfun.courselabs.co=services

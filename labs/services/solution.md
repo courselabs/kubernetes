@@ -3,6 +3,9 @@
 You can list the all the Pods for a Service using:
 
 ```
+kubectl describe svc whoami
+
+# OR
 kubectl get endpoints whoami
 ```
 
