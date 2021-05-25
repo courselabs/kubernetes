@@ -15,7 +15,7 @@ kubectl get nodes --label-columns kubernetes.io/arch,kubernetes.io/os
 Alternatively you can query the labels field in the metadata using JSONPath:
 
 ```
-kubectl get node <your-node> -o jsonpath={.metadata.labels}
+kubectl get node <your-node> -o jsonpath='{.metadata.labels}'
 ```
 
 Or you can query for specific values with a Go template:
