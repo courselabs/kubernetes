@@ -2,7 +2,7 @@
 
 For blue-green updates you need two Deployment objects - each managing Pods for a different version of your app.
 
-- [solution/whoami-deployments.yaml](solution/whoami-deployments.yaml) has two Deployments defined in the same YAML, so you can easily compare them. 
+- [solution/whoami-deployments.yaml](/labs/deployments/solution/whoami-deployments.yaml) has two Deployments defined in the same YAML, so you can easily compare them. 
 
 Kubectl supports this too, using `---` to separate objects.
 
@@ -20,7 +20,7 @@ kubectl get pods -l app=whoami-lab,version=v2
 
 The blue-green switch is done by changing the label selector for the Service.
 
-- [solution/whoami-service-v1.yaml](labs/deployments/solution/whoami-service-v1.yaml) has a LoadBalancer and NodePort Service defined - each uses the same selector to pick the v1 Pods.
+- [solution/whoami-service-v1.yaml](/labs/deployments/solution/whoami-service-v1.yaml) has a LoadBalancer and NodePort Service defined - each uses the same selector to pick the v1 Pods.
 
 Deploy and test v1:
 
@@ -34,7 +34,7 @@ curl localhost:8020 # OR curl localhost:30020
 
 ## Switch to v2
 
-- [whoami-service-v2.yaml](labs/deployments/solution/whoami-service-v2.yaml) has the same Service definitions with just a change to the selector.
+- [whoami-service-v2.yaml](/labs/deployments/solution/whoami-service-v2.yaml) has the same Service definitions with just a change to the selector.
 
 Kubernetes deploys this as an update to the existing Services, so the IP addresses don't change, only the endpoints the Services find:
 
