@@ -93,7 +93,7 @@ Volumes are defined at the Pod level - they are storage units which are part of 
 
 ## Run the configurable demo app
 
-The demo app for this lab has the logic to merge config from multiple settings. 
+The demo app for this lab has the logic to merge config from multiple sources. 
 
 Defaults are built into the `appsettings.json` file inside the Docker image - run a Pod with no config applied to see the defaults:
 
@@ -130,9 +130,16 @@ The Pod spec is where you apply configuration:
 
 - [deployment.yaml](specs/configurable/deployment.yaml) adds a config setting with an environment variable in the template Pod spec.
 
+📋 Deploy the app from the folder `labs/configmaps/specs/configurable/`
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl apply -f labs/configmaps/specs/configurable/
 ```
+
+</details><br />
 
 You can check the environment variable is set by running `printenv` inside the Pod container:
 
@@ -167,11 +174,16 @@ kubectl apply -f labs/configmaps/specs/configurable/config-env/
 
 > This creates a new ConfigMap and updates the Deployment. Remember which object the Deployment uses to manage Pods?
 
-Check the updated Pod:
+📋 Print the environment variables set in the updated Pod.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl exec deploy/configurable -- printenv | grep Co
 ```
+
+</details><br />
 
 > You should see the release is now `24.01.2` and there's a new setting `Configurable__Environment=uat`
 
@@ -192,7 +204,7 @@ kubectl apply -f labs/configmaps/specs/configurable/config-json/
 
 > Refresh the web app and you'll see new settings coming from the `config/override.json` file
 
-📋 Check the filesystem inside the container to see the file loaded from the ConfigMap.
+📋 Check the filesystem inside the container to see the file loaded from the ConfigMap into the `/app/config` path.
 
 <details>
   <summary>Not sure how?</summary>
@@ -223,7 +235,7 @@ kubectl exec deploy/configurable -- printenv | grep Co
 
 ## Lab
 
-Mapping configuration in ConfigMap YAML works well and it means you can deploy your whole app with `kubectl apply`. But it won't suit every organization, and Kubernetes also supports creating ConfigMaps directly from values and config files.
+Mapping configuration in ConfigMap YAML works well and it means you can deploy your whole app with `kubectl apply`. But it won't suit every organization, and Kubernetes also supports creating ConfigMaps directly from values and config files - without any YAML.
 
 Create two new ConfigMaps to support the Deployment in [deployment-lab.yaml](specs/configurable/lab/deployment-lab.yaml) and set these values:
 
