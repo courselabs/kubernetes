@@ -70,7 +70,7 @@ kubectl get pods
 kubectl get po -o wide
 ```
 
-> The second command uses the short name `po` and adds extra columns
+> The second command uses the short name `po` and adds extra columns, including the Pod IP address
 
 What extra information do you see in the second output, and how would you print all the Pod information in a readble format?
 
@@ -79,11 +79,15 @@ What extra information do you see in the second output, and how would you print 
 
 In a production cluster the Pod could be running on any node. You manage it using Kubectl so you don't need access to the server directly.
 
-Print the container logs:
+📋 Print the container logs.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl logs whoami
 ```
+</details><br/>
 
 Connect to the container inside the Pod:
 
@@ -97,7 +101,7 @@ Let's try another app:
 
 - [sleep-pod.yaml](specs/sleep-pod.yaml) runs an app which does nothing
 
-📋 Deploy the new app and check it is running.
+📋 Deploy the new app from `labs/pods/specs/sleep-pod.yaml` and check it is running.
 
 <details>
   <summary>Not sure how?</summary>
@@ -141,11 +145,15 @@ Exit the shell session on the sleep Pod:
 exit
 ```
 
-And get the IP address of the original whoami Pod:
+📋 Print the IP address of the original whoami Pod.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl get pods -o wide whoami
 ```
+</details><br/>
 
 > That's the internal IP address of the Pod - any other Pod in the cluster can connect on that address
 

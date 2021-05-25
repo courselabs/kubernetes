@@ -20,7 +20,7 @@ kubectl get pods
 
 > Pods restart by creating a new container **not** by restarting the existing container
 
-You can see that in the JSON Pod details:
+You can see that in the JSON Pod details under the `containerStatuses` field:
 
 ```
 kubectl get pod sleep -o json
@@ -41,5 +41,3 @@ kubectl exec sleep -- kill 1
 ```
 
 > The status changes to `Error` then `Running` again, but if you repeatedly kill the process the Pod enters `CrashLoopBackOff` status.
-
-
