@@ -14,7 +14,7 @@ This one is all lab :) Try running this app - and make whatever changes you need
 kubectl apply -f labs/troubleshooting/specs/pi-failing
 ```
 
-> Your goal is to browse to localhost:8020 or localhost:30020 and see the response from the Pi app
+> Your goal is to browse to http://localhost:8020 or http://localhost:30020 and see the response from the Pi app
 
 Don't go straight to the solution! These are the sort of issues you will get all the time, so it's good to start working through the steps to diagnose problems.
 
