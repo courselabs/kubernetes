@@ -81,23 +81,33 @@ We'll start with a default app which will be a catch-all, so users won't ever se
 - [default/configmap.yaml](specs/default/configmap.yaml) - configuration containing HTML file for Nginx to show
 - [default/service.yaml](specs/default/service.yaml) - ClusterIP Service
 
-Deploy the default web app:
+📋 Deploy the default web app from `labs/ingress/specs/default`:
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/ingress/specs/default
 ```
 
+</details><br/>
+
 Nothing happens yet. Services aren't automatically wired up to the ingress controller - you do that by specifying routing rules in an Ingress object:
 
 - [ingress/default.yaml](specs/default/ingress/default.yaml) - Ingress rule with no host specified, so all requests will go here by default
 
-Now deploy the ingress rule:
+📋 Now deploy the ingress rule in `labs/ingress/specs/default/ingress` and list all rules:
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/ingress/specs/default/ingress
 
 kubectl get ingress
 ```
+
+</details><br/>
 
 When you browse to any URL you'll see the default response:
 
@@ -106,7 +116,7 @@ When you browse to any URL you'll see the default response:
 <details>
   <summary>ℹ Ingress controllers usually have their own default backend.</summary>
  
- That's where the 404 response originally came from Nginx. An alternative to running your own default app is to [customize the default backend](https://kubernetes.github.io/ingress-nginx/user-guide/default-backend/).
+ That's where the 404 response originally came from Nginx. An alternative to running your own default app is to [customize the default backend](https://kubernetes.github.io/ingress-nginx/user-guide/default-backend/) - but that's specific to the ingress controller you're using.
 
 </details><br/>
 
@@ -119,7 +129,7 @@ Here's the spec for the whoami app, which will publish to a specific host name:
 - [whoami.yaml](specs/whoami/whoami.yaml) - Deployment and ClusterIP Service for the app, nothing ingress-specific
 - [whoami/ingress.yaml](specs/whoami/ingress.yaml) - Ingress which routes traffic with the host domain `whoami.local` to the ClusterIP Service
 
-📋 Deploy the app and check the Ingress rules.
+📋 Deploy the app in `labs/ingress/specs/whoami` and check the Ingress rules.
 
 <details>
   <summary>Not sure how?</summary>
@@ -155,7 +165,7 @@ We'll publish the Pi web app on the hostname `pi.local`, first using a simple In
 - [pi.yaml](specs/pi/pi.yaml) - Deployment and Service for the app
 - [pi/ingress.yaml](specs/pi/ingress.yaml) - Ingress which routes `pi.local` to the Service
 
-📋 Deploy the app, check the status and add `pi.local` to your hosts file.
+📋 Deploy the app in `labs/ingress/specs/pi`, check the status and add `pi.local` to your hosts file.
 
 <details>
   <summary>Not sure how?</summary>
@@ -173,7 +183,6 @@ kubectl get po -l app=pi-web
 # *nix:
 ./scripts/add-to-hosts.sh pi.local 127.0.0.1
 ```
-
 
 </details><br/>
 
