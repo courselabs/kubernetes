@@ -84,6 +84,11 @@ kubectl get po -l app=simple-statefulset --watch
 
 > You'll see two differences from a Deployment - the Pods don't have random names, and each Pod is only created when the previous Pod has started
 
+📋 Check the logs for the `wait-service` container in each of the Pods.
+
+<details>
+  <summary>Not sure how?</summary>
+
 In Pods with multiple containers, you can view the logs for specific containers with the `-c` flag. These logs will show the startup workflow:
 
 ```
@@ -93,6 +98,8 @@ kubectl logs simple-statefulset-1 -c wait-service
 ```
 
 > Pod-0 knows it is the primary, because its has the expected `-0` hostname; Pod 1 knows it is a secondary because it doesn't have that hostname
+
+</details><br/>
 
 When they're running these are normal Pods, the StatefulSet just manages creating them differently than a Deployment.
 
@@ -113,7 +120,10 @@ kubectl get endpoints simple-statefulset
 
 There's one Service with 3 Pod IP addresses, but those Pods can also be  reached using individual domain names.
 
-Run a simple [sleep Pod](specs/sleep-pod.yaml) to make some DNS queries:
+📋 Run sleep Pod from `labs/statefulsets/specs/sleep-pod.yaml` and do a DNS lookup for `simple-statefulset` and `simple-statefulset-2.simple-statefulset.default.svc.cluster.local`.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/statefulsets/specs/sleep-pod.yaml
@@ -123,11 +133,13 @@ kubectl exec sleep -- nslookup simple-statefulset
 kubectl exec sleep -- nslookup simple-statefulset-2.simple-statefulset.default.svc.cluster.local
 ```
 
-> The internal Service returns all Pod IPs, but each Pod has it's own DNS entry using the name of the Pod `-0`, `-1` etc.
+</details><br/>
 
-This app also has LoadBalancer and NodePort Services with the same Pod selector. These make the app available externally and they load-balance requests in the usual way.
+> The internal Service returns all Pod IPs, but each Pod also has it's own DNS entry using the name of the Pod `-0`, `-1` etc.
 
-> Browse to localhost:8010 / localhost:30010 and then Ctrl-refresh, you'll see responses from different Pods
+This app has LoadBalancer and NodePort Services with the same Pod selector. These make the app available externally and they load-balance requests in the usual way.
+
+> Browse to http://localhost:8010 / http://localhost:30010 and then Ctrl-refresh, you'll see responses from different Pods
 
 StatefulSet Pods have their name set in a label, so if you want to avoid load-balancing (e.g. to send all traffic to a secondary) you can pin the external Service to a specific Pod:
 
@@ -163,7 +175,10 @@ kubectl get pvc -l app=products-db --watch
 
 > You'll see a PVC for Pod-0 gets created, then when Pod-0 is running another PVC gets created for Pod-1
 
-Check the logs of Pod-0 and you'll see it sets itself up as the primary:
+📋 Check the logs of Pod-0 and you'll see it sets itself up as the primary.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 # Ctrl-C to exit the watch
@@ -171,11 +186,18 @@ Check the logs of Pod-0 and you'll see it sets itself up as the primary:
 kubectl logs products-db-0
 ```
 
-Check Pod-1 and it sets itself as the secondary, once the Postgres database is up and running on the primary:
+</details><br/>
+
+📋 Check Pod-1 and it sets itself as the secondary, once the Postgres database is up and running on the primary:
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl logs products-db-1
 ```
+
+</details><br/>
 
 Both Pods should end with a log saying the database is ready to accept connections:
 
@@ -197,7 +219,7 @@ Deploy the proxy:
 kubectl apply -f labs/statefulsets/specs/simple-proxy
 ```
 
-Test it works at localhost:8040 / localhost:30040.
+Test it works at http://localhost:8040 / http://localhost:30040.
 
 Your task is to replace the Deployment which uses an emptyDir volume for cache files with a StatefulSet that uses a PVC for the cache for each Pod. 
 
@@ -208,90 +230,12 @@ The proxy doesn't need Pods to be managed consecutively, so the spec should be s
 ___
 
 
-## **EXTRA** Test the replicated database
+## **EXTRA** Testing the replicated database
 
 <details>
   <summary>Deploying a SQL client in the cluster</summary>
 
-Running databases inside Kubernetes isn't always the right choice, but it's great for non-production environments.
-
-In that scenario you may not want your database accessible outside of the cluster, so if you need to run queries you can deploy [Adminer]() - a web app which runs in a Pod, so it can connect to the Postgres database using the internal Service.
-
-Deploy Adminer:
-
-```
-kubectl apply -f labs/statefulsets/specs/adminer
-
-kubectl wait --for=condition=Ready pod -l app=adminer-web
-```
-
-> Browse to localhost:8020 / localhost:30020 and sign in:
-
-* _System (dropdown)_: **PostgreSQL**
-* _Server (already filled in)_: **products-db-0.products-db.default.svc.cluster.local**
-* _Username_: **postgres**
-* _Password_: **w1dgetar!0**
-* _Database_: **postgres**
-* _Permanent login_: **checked**
-
-![](/img/adminer-login.png)
-
-
-Now you;re connected to the database on the Primary Pod. You can browse to the Products table and see the data:
-
-- http://localhost:8020/?pgsql=products-db-0.products-db.default.svc.cluster.local&username=postgres&db=postgres&ns=public&select=products (LoadBalancer)
-
-OR:
-
-- http://localhost:30020/?pgsql=products-db-0.products-db.default.svc.cluster.local&username=postgres&db=postgres&ns=public&select=products (NodePort)
-
-Click the pencil icon in the _Modify_ column and make a change to one row, like editing the name of a product:
-
-
-![](/img/adminer-updated.png)
-
-Now click _Logout_ in the top right and log in again to the replica database server. The connection details are all the same except the server name, which uses the Service for Pod 1:
-
-* _Server_: **products-db-1.products-db.default.svc.cluster.local**
-
-Click _select_ for the Products table and you'll see the change you made to the primary server has been replicated to the secondary. If you try to edit a row here you'll get an error message because the secondary is read-only.
-
-</details><br/>
-
-
-## **EXTRA** Updating StatefulSets
-
-<details>
-  <summary>Using a known rollout order</summary>
-
-Updating StatefulSets uses a consecutive rollout, starting from the last Pod in the set and moving backwards to the first. That means secondaries are replaced before the primary.
-
-Some fields in the Pod spec are fixed (like the volume claim template), so you can't change those in an existing StatefulSet - you would need to remove and recreate it.
-
-Other changes (container image, metadata etc.) are performed with consecutive Pod replacements:
-
-- [statefulset-with-pvc-annotation.yaml](specs/products-db/update/statefulset-with-pvc-annotation.yaml) - adds an annotation to the Pod spec
-
-Apply the update and watch the rollout happen in reverse:
-
-```
-kubectl apply -f labs/statefulsets/specs/products-db/update
-
-kubectl get po -l app=products-db --watch
-```
->  You'll see products-db-1 terminate and be replaced first, then products-db-0 when the new products-db-1 is running.
-
-```
-# Ctrl-C to extit the watch
-
-kubectl get pvc -l app=products-db
-```
-
-> The PVCs aren't changed  - the new Pods attach to the original PVCs and the data is retained.
-
-The consecutive rollout is more time-consuming but safer - if there's a problem with the rollout, the secondary may be unavailable but the primary will still be available.
-
-Go back to the Adminer website and refresh your SQL query - the changes you made are still there, because the new Pods load the database files created by the previous Pods. 
+You may run a SQL database in your test clusters. You don't want it to be publicly available but you do want to be able to connect and run queries. [Running a SQL Client in Kubernetes](statefulsets-sql-client.md) walks you through that.
 
 </details><br/>
 
