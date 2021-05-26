@@ -79,13 +79,14 @@ sudo chmod +x ./scripts/fix-rbac-docker-desktop.sh
 ./scripts/fix-rbac-docker-desktop.sh
 
 # OR on Docker Desktop for Windows (PowerShell):
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
 ./scripts/fix-rbac-docker-desktop.ps1
 ```
 ___
 
 ## Securing API access with Service Accounts
 
-Authentication for end-user access is a bit more involved, so we'll start with internal access to the cluster.
+Authentication for end-user access is manged outside of Kubernetes, so we'll use RBAC for internal access to the cluster - apps running in Kubernetes.
 
 We'll use a simple web app which connects to the Kubernetes API server to get a list of Pods, it displays them and lets you delete them.
 
@@ -99,9 +100,16 @@ The initial spec for the web app doesn't include any RBAC rules, but it does inc
 
 - [kube-explorer/deployment.yaml](specs/kube-explorer/deployment.yaml) - creates a ServiceAccount and sets the Pod spec to use that ServiceAccount
 
+📋 Deploy the resources in `labs/rbac/specs/kube-explorer`.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl apply -f labs/rbac/specs/kube-explorer
 ```
+
+</details><br />
 
 > Browse to the app at localhost:8010 or localhost:30010
 
@@ -109,9 +117,17 @@ You'll see an error. The app is trying to connect to the Kubernetes REST API to 
 
 Kubernetes automatically populates an authentication token in the Pod, which the app uses to connect to the API server:
 
+📋 Print all the details about the kube-explorer Pod.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
+# you can get the Pod ID or use the label
 kubectl describe pod -l app=kube-explorer
 ```
+
+</details><br />
 
 > You'll see a volume mounted at `/var/run/secrets/kubernetes.io/serviceaccount` - that's not in the Pod spec, it's a Kubernetes default to add it
 
@@ -136,7 +152,7 @@ RBAC rules are applied when a request is made to the API server, so we can fix t
 - [rbac-namespace/role-pod-manager.yaml](specs/kube-explorer/rbac-namespace/role-pod-manager.yaml) - creates a Role with permissions to list and delete Pods in the default namespace
 - [rbac-namespace/rolebinding-pod-manager-sa.yaml](specs/kube-explorer/rbac-namespace/rolebinding-pod-manager-sa.yaml) - creates a RoleBinding applying the new Role to the app's Service Account
 
-📋 Deploy the namespace rules and verify the Service Account has permission now.
+📋 Deploy the rules in `labs/rbac/specs/kube-explorer/rbac-namespace` and verify the Service Account now has permission.
 
 <details>
   <summary>Not sure how?</summary>
@@ -155,16 +171,22 @@ Now the app has the permissions it needs. Refresh the site and you'll see a Pod 
 
 The role binding restricts access to the default namespace, the same ServiceAccount can't see Pods in the system namespace:
 
+📋 Check if the `kube-explorer` account can get Pods in the `kube-system` namespace.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl auth can-i get pods -n kube-system --as system:serviceaccount:default:kube-explorer
 ```
+</details><br />
 
 You can grant access to Pods in each namespace with more Roles and RoleBindings, but if you want permissions to apply across all namespaces you can use a ClusterRole and ClusterRoleBinding:
 
 - [rbac-cluster/clusterrole-pod-reader.yaml](specs/kube-explorer/rbac-cluster/clusterrole-pod-reader.yaml) - sets Pod permissions for the cluster; note there is no namespace in the metadata
 - [rbac-cluster/clusterrolebinding-pod-reader-sa.yaml](specs/kube-explorer/rbac-cluster/clusterrolebinding-pod-reader-sa.yaml) - applies the role to the app's ServiceAccount
 
-📋 Deploy the cluster rules and verify the SA can get Pods in the system namespace, but it can't delete them.
+📋 Deploy the cluster rules in `labs/rbac/specs/kube-explorer/rbac-cluster` and verify the SA can get Pods in the system namespace, but it can't delete them.
 
 <details>
   <summary>Not sure how?</summary>
@@ -184,114 +206,6 @@ kubectl auth can-i delete pods -n kube-system --as system:serviceaccount:default
 The app can see Pods in other namespaces now.
 
 RBAC permissions are finely controlled. The app only has access to Pod resources - if you click the _Service Accounts_ link the app shows the 403 Forbidden error again.
-
-## Creating a new end-user
-
-Kubernetes manages authorization with roles and bindings but it does not have an authentication system. It expects clients (e.g. Kubectl users) to be authenticated by a trusted system, and then it uses the authenticated identity to apply role permissions.
-
-Production Kubernetes systems integrate with third-party identity providers - Azure AD for AKS, OpenID Connect and LDAP are other options. For a dev cluster you can use Kubernetes to create a client certificate which users can authenticate with.
-
-The steps for that are wrapped up in the user-cert-generator app:
-
-- [01_service-account.yaml](specs/user-cert-generator/01_service-account.yaml)  - ServiceAccount for the app, needs to be created before clusterrolebinding
-- [02_rbac.yaml](specs/user-cert-generator/02_rbac.yaml) - roles and bindings so the app can request a cert from Kubernetes 
-- [03_pod.yaml](specs/user-cert-generator/03_pod.yaml) - the application Pod
-
-> ℹ If you're interested in how the cert is created, it's all in this [shell script](https://github.com/sixeyed/kiamol/blob/master/ch17/docker-images/user-cert-generator/start.sh)
-
-📋 Run the app to create a client certificate, and check the logs once it has completed.
-
-<details>
-  <summary>Not sure how?</summary>
-
-```
-kubectl apply -f labs/rbac/specs/user-cert-generator/
-
-kubectl wait --for=condition=Ready pod user-cert-generator
-
-kubectl logs user-cert-generator
-```
-
-</details><br />
-
-The new user's certificate and key are in the Pod container's filesystem. You can copy them out to your local machine:
-
-```
-kubectl cp user-cert-generator:/certs/user.key user.key
-kubectl cp user-cert-generator:/certs/user.crt user.crt
-```
-
-Create a new context for Kubectl to use the new user's certificate:
-
-```
-# save the cert in Kubeconfig to authenticate the user:
-kubectl config set-credentials labreader --client-key=./user.key --client-certificate=./user.crt --embed-certs=true
-
-# set the cluster for the new context to the same as the current context:
-kubectl config set-context labreader --user=labreader --cluster $(kubectl config view --minify -o jsonpath='{.clusters[0].name}')
-
-# check your new context:
-kubectl config get-contexts
-```
-
-You can use the new user directly with your context, and you'll see they're authenticated but they have no permissions:
-
-```
-kubectl apply -f labs/rbac/specs/sleep.yaml --context labreader
-
-kubectl get pods --as reader@courselabs.co
-```
-
-
-## Granting end-user and group permissions
-
-Just like Service Accounts, new client users start with zero permissions.
-
-You apply permissions in the same way, with RoleBindings and ClusterRoleBindings. The subject of the binding can either be the name of the user, or the group they belong to.
-
-Different authentication systems represent that in different ways; the certificate we're using includes the user name and group:
-
-```
-openssl x509 -in user.crt -noout -subject
-
-# if you don't have OpenSSL installed, this is what you would have seen:
-# subject=C = UK, ST = LONDON, L = London, O = courselabs, CN = reader@courselabs.co
-```
-
-- CN is the Common Name - in Kubernetes that's the user name
-- O is the Organization - Kubernetes uses it as the group name
-
-We can create a group permission, so all courselabs users can list Pods, show Pod details and print logs:
-
-- [group/clusterrole-podviewer.yaml](specs/group/clusterrole-podviewer.yaml) - role with Pod and log permissions
-- [group/clusterrolebinding-podviewer-courselabs.yaml](specs/group/clusterrolebinding-podviewer-courselabs.yaml) - binding for the role to the group
-
-📋 Apply the new group rules and check the reader user can get Pod details and logs, but can't delete Pods or work with Secrets.
-
-<details>
-  <summary>Not sure how?</summary>
-
-```
-kubectl apply -f labs/rbac/specs/group
-
-kubectl get pods --context labreader
-
-kubectl get pods -n kube-system --context labreader
-```
-
-The new permissions also allow the reader to get Pod details and print logs, but that's all:
-
-```
-kubectl describe pods -l app=sleep --context labreader
-
-kubectl logs user-cert-generator --tail=3 --context labreader
-
-kubectl delete pod user-cert-generator --context labreader
-
-kubectl get secrets --context labreader
-```
-
-</details><br />
 
 ## Lab
 
@@ -333,6 +247,16 @@ kubectl delete pod --all -n kube-system --context labreader
 
 </details><br />
 
+___
+
+## **EXTRA** Managing end-user permissions
+
+<details>
+  <summary>RBAC for Kubectl users</summary>
+
+Kubernetes integrates with other systems for end-user authentication, but in a dev setup you can create certificates for users and apply RBAC rules for them. This isn't day-to-day work, but if you're interested you can work through the exercises in [RBAC for Users](rbac-for-users.md).
+
+</details><br />
 ___
 
 ## Cleanup

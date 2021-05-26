@@ -1,6 +1,5 @@
 # Lab Solution
 
-
 ## Kube-explorer RBAC
 
 First confirm the app doesn't have access to ServiceAccount objects:
