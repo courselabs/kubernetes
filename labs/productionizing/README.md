@@ -59,17 +59,24 @@ spec:
 
 We know Kubernetes restarts Pods when the container exits, but the app inside the container could be running but not responding - like a web app returning `503` - and Kubernetes won't know.
 
-The whoami app has a nice feature we can use to trigger a failure like that. Start by running the app:
+The whoami app has a nice feature we can use to trigger a failure like that. 
+
+📋 Start by deploying the app from `labs/productionizing/specs/whoami`.
+
+<details>
+  <summary>Not sure how?</summary>
 
 ```
 kubectl apply -f labs/productionizing/specs/whoami
 ```
 
+</details><br/>
+
 You now have two whoami Pods - make a POST command and one of them will switch to a failed state:
 
 ```
 # if you're on Windows, run this to use the correct curl:
-. ./scripts/windows-tools.ps1
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force; . ./scripts/windows-tools.ps1
 
 curl http://localhost:8010
 
@@ -84,7 +91,7 @@ You can tell Kubernetes how to test your app is healthy with [container probes](
 
 - [whoami/update/deployment-with-readiness.yaml](specs/whoami/update/deployment-with-readiness.yaml) - adds a readiness probe, which makes an HTTP call to the /health endpoint of the app every 5 seconds
 
-📋 Deploy the update and check the new Pods.
+📋 Deploy the update in `labs/productionizing/specs/whoami/update` and wait for the Pods with label `update=readiness` to be ready.
 
 <details>
   <summary>Not sure how?</summary>
@@ -109,7 +116,7 @@ kubectl get po -l app=whoami --watch
 
 > One Pod changes in the Ready column - now 0/1 containers are ready.
 
-If a readiness check fails, the Pod is removed from the Service and it won't receive any traffic:
+If a readiness check fails, the Pod is removed from the Service and it won't receive any traffic.
 
 📋 Confirm the Service has only one Pod IP and test the app.
 
@@ -140,11 +147,18 @@ For that you can use a liveness probe which will restart the Pod with a new cont
 
 You'll often have the same tests for readiness and liveness, but the liveness check has more significant consequences, so you may want it to run less frequently and have a higher failure threshold.
 
+📋 Deploy the update in `labs/productionizing/specs/whoami/update2` and wait for the Pods with label `update=liveness` to be ready.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl apply -f labs/productionizing/specs/whoami/update2
 
 kubectl wait --for=condition=Ready pod -l app=whoami,update=liveness
 ```
+
+</details><br/>
 
 📋 Now trigger a failure in one Pod and watch to make sure it gets restarted.
 
@@ -187,6 +201,11 @@ The Pi app is compute intensive so it's a good target for an HPA:
 - [pi/deployment.yaml](specs/pi/deployment.yaml) - Deployment which includes CPU resources
 - [pi/hpa-cpu.yaml](specs/pi/hpa-cpu.yaml) - HPA which will scale the Deployment, using 75% utilization of requested CPU as the threshold 
 
+📋 Deploy the app from `labs/productionizing/specs/pi`, check the metrics for the Pod and print the details for the HPA.
+
+<details>
+  <summary>Not sure how?</summary>
+
 ```
 kubectl apply -f labs/productionizing/specs/pi
 
@@ -195,7 +214,9 @@ kubectl top pod -l app=pi-web
 kubectl get hpa pi-cpu --watch
 ```
 
-> Initially the Pod is at 0% CPU. Open 2 browser tabs pointing to localhost:8020/pi?dp=100000; that's enough work to max out the Pod and trigger the HPA
+</details><br/>
+
+> Initially the Pod is at 0% CPU. Open 2 browser tabs pointing to http://localhost:8020/pi?dp=100000; that's enough work to max out the Pod and trigger the HPA
 
 **If your cluster honours CPU limits** the HPA will start more Pods.  After the requests have been processed workload falls so the average CPU across Pods is below the threshold and then the HPA scales down.
 
