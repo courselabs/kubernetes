@@ -2,7 +2,7 @@
 
 [Kubectl](https://kubectl.docs.kubernetes.io/references/kubectl/) is the command line to work with a Kubernetes cluster.
 
-It has commands to deploy applications and work with objects in the cluster. 
+It has commands to deploy applications and work with objects in the cluster.
 
 
 ## Working with Nodes
@@ -17,7 +17,7 @@ kubectl get nodes
 
 > Nodes are the servers in the cluster. The `get` command prints a table with basic information.
 
-``` 
+```
 kubectl describe nodes
 ```
 
@@ -69,3 +69,8 @@ Use Kubectl to find labels for you node, which will confirm the CPU architecture
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+---
+
+[Next chapter (Pods)](/labs/pods)
+
+[Back to index](/index.md)

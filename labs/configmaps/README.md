@@ -93,7 +93,7 @@ Volumes are defined at the Pod level - they are storage units which are part of 
 
 ## Run the configurable demo app
 
-The demo app for this lab has the logic to merge config from multiple sources. 
+The demo app for this lab has the logic to merge config from multiple sources.
 
 Defaults are built into the `appsettings.json` file inside the Docker image - run a Pod with no config applied to see the defaults:
 
@@ -266,7 +266,7 @@ kubectl apply -f labs/configmaps/specs/configurable/config-broken/
 kubectl get pods -l app=configurable --watch
 ```
 
-> A new Pod gets created, errors and goes into CrashLoopBackoff. 
+> A new Pod gets created, errors and goes into CrashLoopBackoff.
 
 ```
 # Ctrl-C
@@ -279,7 +279,7 @@ kubectl logs -l app=configurable,broken=bad-mount
 But the original Pod doesn't get replaced:
 
 ```
-kubectl get replicaset -l app=configurable 
+kubectl get replicaset -l app=configurable
 ```
 
 > The Deployment object won't scale down the old ReplicaSet until the new one reaches desired capacity. Using a Deployment keeps your app safe from issues like this.
@@ -295,3 +295,8 @@ Cleanup by removing objects with this lab's label:
 ```
 kubectl delete configmap,deploy,svc -l k8sfun.courselabs.co=configmaps
 ```
+---
+
+[Next chapter (Secrets)](/labs/secrets)
+
+[Back to index](/index.md)

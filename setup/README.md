@@ -16,7 +16,7 @@ Right-click that whale and click _Settings_:
 
 ![](/img/docker-desktop-settings.png)
 
-In the settings Windows select _Kubernetes_ from the left menu and click _Enable Kubernetes_: 
+In the settings Windows select _Kubernetes_ from the left menu and click _Enable Kubernetes_:
 
 ![](/img/docker-desktop-kubernetes.png)
 
@@ -74,3 +74,7 @@ docker-desktop   Ready    master   5d4h   v1.19.7
 ```
 
 > Your details may be different - that's fine. If you get errors then we need to look into it, because you'll need your own cluster for every part of the course.
+
+---
+
+[Back to index](/index.md)

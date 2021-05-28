@@ -26,7 +26,7 @@ kubectl get pods -l app=nginx
 
 ## Delete the DaemonSet but retain the Pod
 
-Kubernetes maintains the relationship between Pods and controllers, but it lets you break that relationship with non-cascading deletes. 
+Kubernetes maintains the relationship between Pods and controllers, but it lets you break that relationship with non-cascading deletes.
 
 ```
 kubectl delete ds nginx --cascade=false
@@ -37,3 +37,7 @@ kubectl get po -l app=nginx
 ```
 
 The DaemonSet is removed, but the Pod which it used to control is still there.
+
+---
+
+[Back](./)

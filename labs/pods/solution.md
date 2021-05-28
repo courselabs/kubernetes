@@ -41,3 +41,8 @@ kubectl exec sleep -- kill 1
 ```
 
 > The status changes to `Error` then `Running` again, but if you repeatedly kill the process the Pod enters `CrashLoopBackOff` status.
+
+
+---
+
+[Back](./)

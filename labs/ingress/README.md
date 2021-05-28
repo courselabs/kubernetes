@@ -14,7 +14,7 @@ You can choose from different controllers. We'll use the [Nginx Ingress Controll
 <details>
   <summary>YAML overview</summary>
 
-Ingress rules can have multiple mappings, but they're pretty straightforward. 
+Ingress rules can have multiple mappings, but they're pretty straightforward.
 
 You usually have one object per app, and they are namespaced, so you can deploy them in the same namespace as the app:
 
@@ -33,7 +33,7 @@ spec:
         backend:
           service:
             name: whoami-internal
-            port: 
+            port:
               name: http
 ```
 
@@ -49,7 +49,7 @@ spec:
 
 ## Deploy an Ingress controller
 
-It's not a good name, because an ingress controller isn't a specific type of Kubernetes object - like a Deployment is a Pod controller. 
+It's not a good name, because an ingress controller isn't a specific type of Kubernetes object - like a Deployment is a Pod controller.
 
 An ingress controller is a logical thing, composed of a Service, a Pod controller and a set of RBAC rules:
 
@@ -115,7 +115,7 @@ When you browse to any URL you'll see the default response:
 
 <details>
   <summary>ℹ Ingress controllers usually have their own default backend.</summary>
- 
+
  That's where the 404 response originally came from Nginx. An alternative to running your own default app is to [customize the default backend](https://kubernetes.github.io/ingress-nginx/user-guide/default-backend/) - but that's specific to the ingress controller you're using.
 
 </details><br/>
@@ -210,7 +210,7 @@ You may have different Ingress rules - one for all static content which has the 
 
 ## Lab
 
-Two parts to this lab. First we want to take the configurable web app and publish it through the ingress controller. 
+Two parts to this lab. First we want to take the configurable web app and publish it through the ingress controller.
 
 The app spec is already in place to get you started:
 
@@ -240,3 +240,8 @@ ___
 ```
 kubectl delete all,secret,ingress,ns -l k8sfun.courselabs.co=ingress
 ```
+---
+
+[Next chapter (Jobs and CronJobs)](/labs/jobs)
+
+[Back to index](/index.md)

@@ -2,7 +2,7 @@
 
 Kubernetes creates the container filesystem and it can mount multiple sources. We've seen ConfigMaps and Secrets which are typically read-only mounts, now we'll use writeable volumes.
 
-Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems. 
+Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems.
 
 Those details are kept away from the application model using an abstraction - the [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction), which an app uses to request storage.
 
@@ -112,7 +112,7 @@ Refresh your page to see the Pi calculation happen again - the result gets cache
 ```
 kubectl exec deploy/pi-proxy -- kill 1
 
-kubectl get pods -l app=pi-proxy,storage=emptydir 
+kubectl get pods -l app=pi-proxy,storage=emptydir
 
 kubectl exec deploy/pi-proxy -- ls /tmp
 ```
@@ -174,7 +174,7 @@ kubectl get pvc,pv
 
 > Now the PVC is bound and the PersistentVolume exists with the requested size and access mode in the PVC
 
-The PVC starts off empty. Refresh the app and you'll see the `/tmp` folder getting filled. 
+The PVC starts off empty. Refresh the app and you'll see the `/tmp` folder getting filled.
 
 📋 Restart and then replace the Pod and confirm the data in the PVC survives both.
 
@@ -240,7 +240,7 @@ When you need more control you can manually manage the PV lifecycle:
 
 - [persistentVolume.yaml](specs/caching-proxy-pv/persistentVolume.yaml) defines a PV which uses `local` storage, and attaches to a node with has a label `k8sfun`
 - [caching-proxy-pv/pvc.yaml](specs/caching-proxy-pv/pvc.yaml) requests a volume by name, instead of using a Storage Class
-- [caching-proxy-pv/nginx.yaml](specs/caching-proxy-pv/nginx.yaml) updates the proxy deployment to use the new PVC 
+- [caching-proxy-pv/nginx.yaml](specs/caching-proxy-pv/nginx.yaml) updates the proxy deployment to use the new PVC
 
 The PV uses the `local` volume type, which means it gets created as a directory on the node's disk. It uses a `NodeSelector` to specify the node it should use.
 
@@ -283,3 +283,8 @@ ___
 ```
 kubectl delete all,cm,pvc,pv -l k8sfun.courselabs.co=persistentvolumes
 ```
+---
+
+[Next chapter (Namespaces)](/labs/namespaces)
+
+[Back to index](/index.md)

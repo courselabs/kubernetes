@@ -40,3 +40,8 @@ Fixes:
 2. Edited the Service selector to match the labels in the Pod spec. If there are no endpoints, that means there are no matching Pods.
 
 3. Fixed the target port name in the Service spec to match the container spec. Using names instead of port numbers is more flexible, but if the names don't match you won't see an error - just an empty endpoint list.
+
+
+---
+
+[Back](./)

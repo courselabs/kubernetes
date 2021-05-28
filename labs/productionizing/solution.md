@@ -54,3 +54,7 @@ kubectl get hpa configurable-cpu --watch
 > After a few more minutes the HPA scales down - it scales down to the maximum initially, but there's no CPU activity so it will repeatedly scale down until it gets to the minimum.
 
 You can't configure the scale-up and scale-down timings for v1 HPAs. If you need that level of control you can use [HorizontalPodAutoscaler (autoscaling/v2beta2)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#horizontalpodautoscaler-v2beta2-autoscaling), which is a more complex HPA spec.
+
+---
+
+[Back](./)

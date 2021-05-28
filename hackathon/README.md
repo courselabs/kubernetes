@@ -8,7 +8,7 @@ You'll use all the key skills you've learned in the course, and:
 - 💥 you will have errors and broken apps
 - 📑 you will need to research and troubleshoot
 
-**That's why the hackathon is so useful!** 
+**That's why the hackathon is so useful!**
 
 It will help you understand which areas you're comfortable with and where you need to spend some more time.
 
@@ -18,7 +18,7 @@ And it will give you an app that you modelled yourself, which you can use as a r
 
 ## Part 1 - Welcome to Widgetario
 
-Widgetario is a company which sells gadgets. They want to run their public web app on Kubernetes. 
+Widgetario is a company which sells gadgets. They want to run their public web app on Kubernetes.
 
 They've made a start - all the components are packaged into container images and published on Docker Hub. Your job is to get it running in Kubernetes for them.
 
@@ -42,7 +42,7 @@ When you're done you should be able to browse to port 8080 on your cluster and s
 <details>
   <summary>Solution</summary>
 
-If you didn't get part 1 finished, you can check out the specs in the sample solution from `hackathon/solution-part-1`. 
+If you didn't get part 1 finished, you can check out the specs in the sample solution from `hackathon/solution-part-1`.
 
 Deploy the sample solution and you can continue to part 2:
 
@@ -86,7 +86,7 @@ When you've rolled out your update, the UI will be updated but the products and 
 <details>
   <summary>Solution</summary>
 
-If you didn't get part 2 finished, you can check out the specs in the sample solution from `hackathon/solution-part-2`. 
+If you didn't get part 2 finished, you can check out the specs in the sample solution from `hackathon/solution-part-2`.
 
 Deploy the sample solution and you can continue to part 3:
 
@@ -98,7 +98,7 @@ kubectl apply -f hackathon/solution-part-2/products-db -f hackathon/solution-par
 
 ## Part 3 - Storage
 
-It's going well, but we need to think about storage. 
+It's going well, but we need to think about storage.
 
 The Stock API has a nice caching feature: when it fetches data from the database it stores a local copy in the filesystem. We want that cache to be kept available if the app crashes, but it doesn't need persistent storage - it's just a performance boost.
 
@@ -114,8 +114,8 @@ And the DB team are keen to spend more time looking at running Postgres in Kuber
 
 <details>
   <summary>Hints</summary>
-  
-You'll need to change configuration for the APIs, but for the database you'll need to switch to a different type of workload altogether. 
+
+You'll need to change configuration for the APIs, but for the database you'll need to switch to a different type of workload altogether.
 
 And if you have product-db data volumes from other labs, they'll need to be removed.
 
@@ -126,7 +126,7 @@ The app won't look any different if you get your update right. If not, you'll ne
 <details>
   <summary>Solution</summary>
 
-If you didn't get part 3 finished, you can check out the specs in the sample solution from `hackathon/solution-part-3`. 
+If you didn't get part 3 finished, you can check out the specs in the sample solution from `hackathon/solution-part-3`.
 
 Deploy the sample solution and you can continue to part 4:
 
@@ -151,7 +151,7 @@ kubectl rollout restart deploy/products-api deploy/stock-api
 
 We're nearly there, but all these non-standard ports are no good. We'd like to get some proper DNS names set up, so we can publish the web app and the products API on standard HTTP ports:
 
-* the web app should publish to `widgetario.local` 
+* the web app should publish to `widgetario.local`
 * the products API shoud publish to `api.widgetario.local`
 
 <details>
@@ -166,7 +166,7 @@ The app will still look the same from the new domains. If not, you'll need to lo
 <details>
   <summary>Solution</summary>
 
-If you didn't get part 4 finished, you can check out the specs in the sample solution from `hackathon/solution-part-4`. 
+If you didn't get part 4 finished, you can check out the specs in the sample solution from `hackathon/solution-part-4`.
 
 Deploy the sample solution and you can continue to part 5:
 
@@ -186,23 +186,23 @@ Update your hosts:
 ./scripts/add-to-hosts.sh api.widgetario.local 127.0.0.1
 ```
 
-- check the app at http://widgetario.local 
+- check the app at http://widgetario.local
 - and the API at http://api.widgetario.local/products
 
 </details><br/>
 
 ## Part 5 - Productionizing
 
-All right! 
+All right!
 
-We've commissioned a 200-node Kubernetes cluster in the cloud and we're ready to go. 
+We've commissioned a 200-node Kubernetes cluster in the cloud and we're ready to go.
 
 Now's your chance to make any last updates you think we need before we go to production.
 
 <details>
   <summary>Hints</summary>
 
-No :) 
+No :)
 
 This is up to you to see what you think is important.
 
@@ -211,7 +211,7 @@ This is up to you to see what you think is important.
 <details>
   <summary>Solution</summary>
 
-If you didn't get part 5 finished, you can check out the specs in the sample solution from `hackathon/solution-part-5`. 
+If you didn't get part 5 finished, you can check out the specs in the sample solution from `hackathon/solution-part-5`.
 
 My main focus in the samples is productionizing Pod specs:
 
@@ -233,10 +233,13 @@ And we're good to go.
 
 </details><br/>
 
-___ 
+___
 
 ## Cleanup
 
 ```
 kubectl delete all,cm,secret,pvc,ns -l co.courselabs.k8sfun=hackathon
 ```
+---
+
+[Back to index](/index.md)

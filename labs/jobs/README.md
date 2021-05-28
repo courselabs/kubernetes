@@ -20,7 +20,7 @@ The simplest Job spec just has metadata and a template with a standard Pod spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pi-job  
+  name: pi-job
 spec:
   template:
     spec:
@@ -74,7 +74,7 @@ Jobs apply a label to Pods they create (in addition to any labels in the templat
   <summary>Not sure how?</summary>
 
 ```
-kubectl get pods --show-labels 
+kubectl get pods --show-labels
 
 kubectl get pods -l job-name=pi-job-one
 
@@ -91,7 +91,7 @@ When Jobs have completed they are not automatically cleaned up:
 kubectl get jobs
 ```
 
-> The Job shows 1/1 completions - which means 1 Pod ran successfully 
+> The Job shows 1/1 completions - which means 1 Pod ran successfully
 
 You can't update the Pod spec for an existing Job, Jobs don't manage Pod upgrades like Deployments do.
 
@@ -107,7 +107,7 @@ kubectl apply -f labs/jobs/specs/pi/one/update
 
 ## Run a Job with multiple concurrent tasks
 
-Jobs aren't just for a single task, in some scenarios you want the same Pod to run for a fixed number of times. 
+Jobs aren't just for a single task, in some scenarios you want the same Pod to run for a fixed number of times.
 
 When you have a fixed set of work to process, use can use a Job to run all the pieces in parallel:
 
@@ -180,7 +180,7 @@ Confirm that completed Pi Jobs and their Pods have been removed:
 ```
 # Ctrl-C to exit the watch
 
-kubectl get jobs 
+kubectl get jobs
 
 kubectl get pods -l job-name --show-labels
 ```
@@ -219,7 +219,7 @@ ___
 <details>
   <summary>Retry options for failed Jobs</summary>
 
-Background tasks in Jobs could run for a long time, and you need some control on how you handle failures. 
+Background tasks in Jobs could run for a long time, and you need some control on how you handle failures.
 
 The first option is to allow Pod restarts, so if the container fails then a new container is started in the same Pod:
 
@@ -280,3 +280,8 @@ ___
 ```
 kubectl delete job,cronjob,cm,sa,clusterrole,clusterrolebinding -l k8sfun.courselabs.co=jobs
 ```
+---
+
+[Next chapter (StatefulSets)](/labs/statefulsets)
+
+[Back to index](/index.md)

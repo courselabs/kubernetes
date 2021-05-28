@@ -221,7 +221,7 @@ kubectl apply -f labs/statefulsets/specs/simple-proxy
 
 Test it works at http://localhost:8040 / http://localhost:30040.
 
-Your task is to replace the Deployment which uses an emptyDir volume for cache files with a StatefulSet that uses a PVC for the cache for each Pod. 
+Your task is to replace the Deployment which uses an emptyDir volume for cache files with a StatefulSet that uses a PVC for the cache for each Pod.
 
 The proxy doesn't need Pods to be managed consecutively, so the spec should be set to create them in parallel.
 
@@ -246,3 +246,8 @@ ___
 ```
 kubectl delete svc,cm,secret,statefulset,deployment,pod -l k8sfun.courselabs.co=statefulsets
 ```
+---
+
+[Next chapter (Production readiness)](/labs/productionizing)
+
+[Back to index](/index.md)

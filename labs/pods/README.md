@@ -38,7 +38,7 @@ The format of the `spec` field is different for every object type. For Pods, thi
 * `name` - the name of the container
 * `image` - the Docker image to run
 
-> Indentation is important in YAML - object fields are nested with spaces. 
+> Indentation is important in YAML - object fields are nested with spaces.
 
 </details><br/>
 
@@ -175,3 +175,8 @@ What happens if you keep forcing the container to exit?
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+---
+
+[Next chapter (Services)](/labs/services)
+
+[Back to index](/index.md)

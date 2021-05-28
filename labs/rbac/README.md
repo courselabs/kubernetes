@@ -28,7 +28,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: pod-viewer
-  namespace: default 
+  namespace: default
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -50,7 +50,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: student-pod-viewer
-  namespace: default 
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -218,7 +218,7 @@ Oh - one more thing :) Mounting the ServiceAccount token in the Pod is  default 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
 ___
- 
+
 ## **EXTRA** Applying ClusterRoles to specific namespaces
 
 <details>
@@ -264,3 +264,8 @@ ___
 ```
 kubectl delete pod,deploy,svc,serviceaccount,role,rolebinding,clusterrole,clusterrolebinding -A -l k8sfun.courselabs.co=rbac
 ```
+---
+
+[DaemonSets](/labs/daemonsets)
+
+[Back to index](/index.md)

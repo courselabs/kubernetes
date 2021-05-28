@@ -77,7 +77,7 @@ kubectl config get-contexts
 cat ~/.kube/config
 ```
 
-> Contexts are how you switch between clusters too; the cluster API server details are stored in your kubeconfig file 
+> Contexts are how you switch between clusters too; the cluster API server details are stored in your kubeconfig file
 
 You can create a new context to point to a remote cluster, or a specific namespace on a cluster. Contexts include authentication details, so they should be managed carefully.
 
@@ -97,7 +97,7 @@ All Kubectl commands work against the cluster and namespace in the current conte
 ```
 kubectl get po
 
-kubectl logs -l k8s-app=kube-dns 
+kubectl logs -l k8s-app=kube-dns
 
 kubectl get po -n default
 ```
@@ -144,7 +144,7 @@ If you're using namespaces to isolate applications, you'll include the namespace
 - [whoami/deployment.yaml](specs/whoami/deployment.yaml) - defines a Deployment for the namespace
 - [whoami/services.yaml](specs/whoami/services.yaml) - defines Services; the label selectors only apply to Pods in the same namespace as the Service
 
-Kubectl can deploy all the YAML in a folder, but it doesn't check the objects for dependencies and create them in the correct order. Mostly that's fine because of the loosely-coupled architecture - Services can be created before a Deployment and vice-versa. 
+Kubectl can deploy all the YAML in a folder, but it doesn't check the objects for dependencies and create them in the correct order. Mostly that's fine because of the loosely-coupled architecture - Services can be created before a Deployment and vice-versa.
 
 But namespaces need to exist before any objects can be created in them, so the namespace YAML is called `01_namespaces.yaml` to ensure it gets created first (Kubectl processes files in order by filename).
 
@@ -204,7 +204,7 @@ kubectl exec pod/sleep -- nslookup whoami-np.whoami.svc.cluster.local
 
 Namespaces aren't just for logically grouping components, you can also enforce quotas on a namespace to limit the resources available.
 
-This ensures apps don't use all the processing power of the cluster, starving other apps. [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) at the namespace level work together with [resource limits and requests](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) at the Pod level. 
+This ensures apps don't use all the processing power of the cluster, starving other apps. [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) at the namespace level work together with [resource limits and requests](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) at the Pod level.
 
 The Pi app we've used before is compute-intensive, so to keep our cluster usable for other apps we'll deploy it in a new namespace with a CPU quota applied:
 
@@ -226,7 +226,7 @@ kubectl -n pi get po
 > Try the app at http://localhost:8030/pi?dp=30000. On my machine it takes about 10.5 seconds to respond.
 
 <details>
-  <summary>ℹ Not every dev Kubernetes setup enforces CPU limitations</summary> 
+  <summary>ℹ Not every dev Kubernetes setup enforces CPU limitations</summary>
   You might not see the app responding slowly if you're using Kind or k3d. Docker Desktop does enforce them, and so do all the production Kubernetes platforms.
 </details><br/>
 
@@ -279,7 +279,7 @@ ___
 
 <details>
   <summary>Learn about Kubectx and Kubens</summary>
-  
+
 When you work with a lot of Kubernetes clusters each with lots of namespaces, it gets very difficult to manage them.
 
 There's a great tool called [kubectx](https://kubectx.dev/) which helps with that - it's cross-platform and it lets you easily switch between clusters, along with the partner tool `kubens` for switching namespaces.
@@ -342,3 +342,8 @@ kubectl delete ns -l k8sfun.courselabs.co=namespaces
 # which just leaves the sleep Pods:
 kubectl delete po -A -l k8sfun.courselabs.co=namespaces
 ```
+---
+
+[Next chapter (Role-based Access Control RBAC)](/labs/rbac)
+
+[Back to index](/index.md)

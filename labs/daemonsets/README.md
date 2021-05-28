@@ -30,7 +30,7 @@ spec:
       labels:
         app: nginx
     spec:
-      # Pod spec 
+      # Pod spec
 ```
 
 - `selector` - the labels used to identify Pods owned by the DaemonSet
@@ -54,7 +54,7 @@ kubectl get daemonset
 
 > The `desired` count matches the number of nodes in your cluster. In a single-node cluster you'll get one Pod; with 10 nodes, 10 Pods
 
-Services route to Pods in the same way, whether they're managed by a DaemonSet or a ReplicaSet. 
+Services route to Pods in the same way, whether they're managed by a DaemonSet or a ReplicaSet.
 
 📋 Confirm that the Pod IP address is enlisted in the Service.
 
@@ -177,7 +177,7 @@ The Nginx Pod writes logs to a HostPath volume:
 kubectl exec daemonset/nginx -- ls /var/log/nginx
 ```
 
-You can deploy another Pod with the same HostPath volume spec, and it will have shared storage with the Nginx Pod. 
+You can deploy another Pod with the same HostPath volume spec, and it will have shared storage with the Nginx Pod.
 
 In a multi-node cluster you need to ensure the new Pod lands on the same node as the Nginx Pod and you can do that with [Pod affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity):
 
@@ -217,3 +217,8 @@ ___
 ```
 kubectl delete svc,ds,po -l k8sfun.courselabs.co=daemonsets
 ```
+---
+
+[Next chapter (Ingress)](/labs/ingress)
+
+[Back to index](/index.md)

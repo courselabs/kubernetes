@@ -12,7 +12,7 @@ Deploy the proxy, which uses the app in the existing `pi` namespace:
 ```
 kubectl apply -f labs/namespaces/solution/
 
-kubectl get svc -n front-end 
+kubectl get svc -n front-end
 ```
 
 > Browse to (e.g.) http://localhost:8040/pi?dp=40000 - the response will take a couple of seconds
@@ -24,3 +24,7 @@ kubectl exec -n front-end deploy/pi-proxy -- ls /tmp
 ```
 
 > Refresh the web app and your response will be instant
+
+---
+
+[Back](./)

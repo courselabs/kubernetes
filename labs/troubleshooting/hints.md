@@ -17,3 +17,7 @@ Fixing apps is a process of checking the status of running objects and seeing wh
 3. A port forward is a useful way of checking the application Pod directly.
 
 > Need more? Here's the [solution](solution.md).
+
+---
+
+[Back](./)

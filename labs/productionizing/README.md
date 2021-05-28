@@ -59,7 +59,7 @@ spec:
 
 We know Kubernetes restarts Pods when the container exits, but the app inside the container could be running but not responding - like a web app returning `503` - and Kubernetes won't know.
 
-The whoami app has a nice feature we can use to trigger a failure like that. 
+The whoami app has a nice feature we can use to trigger a failure like that.
 
 📋 Start by deploying the app from `labs/productionizing/specs/whoami`.
 
@@ -139,7 +139,7 @@ If this was a real app the `503` could be happening if the app is overloaded. Re
 
 ## Self-repairing apps with liveness probes
 
-Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app. 
+Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app.
 
 For that you can use a liveness probe which will restart the Pod with a new container if the probe fails:
 
@@ -199,7 +199,7 @@ kubectl top nodes
 The Pi app is compute intensive so it's a good target for an HPA:
 
 - [pi/deployment.yaml](specs/pi/deployment.yaml) - Deployment which includes CPU resources
-- [pi/hpa-cpu.yaml](specs/pi/hpa-cpu.yaml) - HPA which will scale the Deployment, using 75% utilization of requested CPU as the threshold 
+- [pi/hpa-cpu.yaml](specs/pi/hpa-cpu.yaml) - HPA which will scale the Deployment, using 75% utilization of requested CPU as the threshold
 
 📋 Deploy the app from `labs/productionizing/specs/pi`, check the metrics for the Pod and print the details for the HPA.
 
@@ -209,7 +209,7 @@ The Pi app is compute intensive so it's a good target for an HPA:
 ```
 kubectl apply -f labs/productionizing/specs/pi
 
-kubectl top pod -l app=pi-web 
+kubectl top pod -l app=pi-web
 
 kubectl get hpa pi-cpu --watch
 ```
@@ -234,7 +234,7 @@ pi-cpu   Deployment/pi-web   0%/75%     1         5         1          11m
 ___
 ## Lab
 
-Adding production concerns is often something you'll do after you've done the initial modelling and got your app running. 
+Adding production concerns is often something you'll do after you've done the initial modelling and got your app running.
 
 So your task is to add container probes and security settings to the configurable app. Start by running it with a basic spec:
 
@@ -248,12 +248,12 @@ Try the app and you'll see it fails after 3 refreshes and never comes back onlin
 - restart Pods if the app in the container fails
 - add an HPA as a backup, scaling up to 10 if Pods use more than 50% CPU.
 
-This app isn't CPU intensive so you won't be able to trigger the HPA by making HTTP calls. How else can you test the HPA scales up and down correctly? 
+This app isn't CPU intensive so you won't be able to trigger the HPA by making HTTP calls. How else can you test the HPA scales up and down correctly?
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
 ___
-## **EXTRA** Pod security 
+## **EXTRA** Pod security
 
 <details>
   <summary>Restricting what Pod containers can do</summary>
@@ -280,7 +280,7 @@ kubectl exec deploy/pi-web -- chown root:root /app/Pi.Web.dll
 
 This alternative spec fixes those security issues:
 
-- [pi-secure/deployment.yaml](labs/productionizing/specs/pi-secure/deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
+- [pi-secure/deployment.yaml](/labs/productionizing/specs/pi-secure/deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
 
 ```
 kubectl apply -f labs/productionizing/specs/pi-secure/
@@ -327,3 +327,8 @@ ___
 ```
 kubectl delete all,hpa -l k8sfun.courselabs.co=productionizing
 ```
+---
+
+[Next chapter (Troubleshooting)](/labs/troubleshooting)
+
+[Back to index](/index.md)

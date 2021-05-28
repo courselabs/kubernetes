@@ -134,7 +134,7 @@ kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Envi
 
 ## Creating Secrets from files
 
-Some organizations have separate configuration management teams. They have access to the raw sensitive data, and in Kubernetes they would own the management of Secrets. 
+Some organizations have separate configuration management teams. They have access to the raw sensitive data, and in Kubernetes they would own the management of Secrets.
 
 The product team would own the Deployment YAML which references the Secrets and ConfigMaps. The workflow is decoupled, so the DevOps team can deploy and manage the app without having access to the sensitive data.
 
@@ -149,7 +149,7 @@ Play the config management team with access to secrets on your local disk:
   <summary>Not sure how?</summary>
 
 ```
-kubectl create secret generic configurable-env-file --from-env-file ./labs/secrets/secrets/configurable.env 
+kubectl create secret generic configurable-env-file --from-env-file ./labs/secrets/secrets/configurable.env
 
 kubectl create secret generic configurable-secret-file --from-file ./labs/secrets/secrets/secret.json
 ```
@@ -215,7 +215,7 @@ Others only load settings at startup, and if you change the file contents in a C
 
 > This is only for config you load with volume mounts - environment variables are static for the life of the Pod
 
-If you know your app does hot reloads then your update process is simple, just apply the changed ConfigMap or Secret and wait. 
+If you know your app does hot reloads then your update process is simple, just apply the changed ConfigMap or Secret and wait.
 
 Kubernetes caches the contents so it will take a few minutes for all the nodes to get the latest content, and for the app to see the change in the filesystem.
 
@@ -244,7 +244,7 @@ kubectl exec deploy/configurable -- cat /app/secrets/secret.json
 If the file contents are updated but the app doesn't change, it may not support hot reloads, or it's caching too agressively. You can force an update to all the Pods in a Deployment with the `rollout restart` command:
 
 ```
-kubectl rollout restart deploy/configurable 
+kubectl rollout restart deploy/configurable
 ```
 
 > Now the site will show the latest version
@@ -258,3 +258,8 @@ ___
 ```
 kubectl delete all,cm,secret -l k8sfun.courselabs.co=secrets
 ```
+---
+
+[Next chapter (PersistentVolumes)](/labs/persistentvolumes)
+
+[Back to index](/index.md)

@@ -92,7 +92,7 @@ kubectl exec sleep -- nslookup whoami
 
 ## Deploy an internal Service
 
-Kubernetes provides different types of Service for internal and external access to Pods. 
+Kubernetes provides different types of Service for internal and external access to Pods.
 
 [ClusterIP](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/) is the default and it means the Service gets an IP address which is only accessible within the cluster - its for components to communicate internally.
 
@@ -137,7 +137,7 @@ Now the Pods can communicate using DNS names:
 kubectl exec sleep -- curl -s http://whoami
 ```
 
-📋 Recreate the whoami Pod and the replacement will have a new IP address - but service resolution with DNS still works. 
+📋 Recreate the whoami Pod and the replacement will have a new IP address - but service resolution with DNS still works.
 
 <details>
   <summary>Not sure how?</summary>
@@ -185,7 +185,7 @@ They both listen for traffic coming into the cluster and route it to Pods, but t
 
 - NodePorts don't need any external setup so they work in the same way on all Kubernetes clusters. Every node in the cluster listens on the specified port and forwards traffic to Pods. The external port number must be >= 30000 - a security feature so Kubernetes components don't need to run with elevated privileges on the node.
 
-Platform | LoadBalancer | NodePort 
+Platform | LoadBalancer | NodePort
 --- | --- | --- |
 Docker Desktop | ✔ | ✔
 K3s  | ✔ | ✔
@@ -203,7 +203,7 @@ Bare-metal | |  ✔
 
 There are two Service definitions to make the whoami app available outside the cluster:
 
-* [whoami-nodeport.yaml](specs/services/whoami-nodeport.yaml) - for clusters which don't support LoadBalancer Services 
+* [whoami-nodeport.yaml](specs/services/whoami-nodeport.yaml) - for clusters which don't support LoadBalancer Services
 * [whoami-loadbalancer.yaml](specs/services/whoami-loadbalancer.yaml) - for clusters which do
 
 You can deploy both:
@@ -225,7 +225,7 @@ kubectl get svc -l app=whoami
 
 > If your cluster doesn't have LoadBalancer support, the `EXTERNAL-IP` field will stay at `<pending>` forever
 
-External Services **also** create a ClusterIP, so you can access them internally. 
+External Services **also** create a ClusterIP, so you can access them internally.
 
 You always need to use the Service port for communication:
 
@@ -274,3 +274,8 @@ That makes it super easy to clean up, by deleting all those resources:
 ```
 kubectl delete pod,svc -l k8sfun.courselabs.co=services
 ```
+---
+
+[Next chapter (Deployments)](/labs/deployments)
+
+[Back to index](/index.md)

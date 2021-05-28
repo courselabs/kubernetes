@@ -2,7 +2,7 @@
 
 For blue-green updates you need two Deployment objects - each managing Pods for a different version of your app.
 
-- [solution/whoami-deployments.yaml](/labs/deployments/solution/whoami-deployments.yaml) has two Deployments defined in the same YAML, so you can easily compare them. 
+- [solution/whoami-deployments.yaml](/labs/deployments/solution/whoami-deployments.yaml) has two Deployments defined in the same YAML, so you can easily compare them.
 
 Kubectl supports this too, using `---` to separate objects.
 
@@ -47,3 +47,7 @@ curl localhost:8020 # OR curl localhost:30020
 ```
 
 > You can flip between the deployments by changing the Service spec
+
+---
+
+[Back](./)

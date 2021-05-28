@@ -28,3 +28,7 @@ When you're done you can remove all the objects:
 ```
 kubectl delete all -l k8sfun.courselabs.co=troubleshooting
 ```
+---
+
+[Next chapter (Hackaton!)](/labs/productionizing)
+[Back to index](hackaton)

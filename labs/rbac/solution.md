@@ -49,8 +49,12 @@ Every Pod runs in the context of a ServiceAccount - check and you'll see this on
 kubectl get pod -l app=sleep,sa-token=none -o jsonpath='{.items[0].spec.serviceAccountName}'
 ```
 
-A better approach is to use a custom ServiceAccount with `automountServiceAccountToken` set at the SA level. 
+A better approach is to use a custom ServiceAccount with `automountServiceAccountToken` set at the SA level.
 
 Any app which doesn't use the API server can use this SA - apps which do use the API server will each have their own SA with the permissions the app needs.
 
 - [sleep-with-no-token-sa.yaml](solution/sleep-with-no-token-sa.yaml) - a new SA and Pod configured to use it
+
+---
+
+[Back](./)

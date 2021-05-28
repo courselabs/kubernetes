@@ -13,7 +13,7 @@ Deployments use a template to create Pods, and a label selector to identify the 
 <details>
   <summary>YAML overview</summary>
 
-Deployments definitions have the usual metadata. 
+Deployments definitions have the usual metadata.
 
 The spec is more interesting - it includes a label selector but also a Pod spec. The Pod spec is the same format you would use to define a Pod in YAML, except you don't include a name.
 
@@ -57,12 +57,12 @@ Create the Deployment and it will create the Pod:
 ```
 kubectl apply -f labs/deployments/specs/deployments/whoami-v1.yaml
 
-kubectl get pods -l app=whoami 
+kubectl get pods -l app=whoami
 ```
 
 > Deployments apply their own naming system when they create Pods, they end with a random string
 
-Deployments are first-class objects, you work with them in Kubectl in the usual way. 
+Deployments are first-class objects, you work with them in Kubectl in the usual way.
 
 📋 Print the details of the Deployment.
 
@@ -93,7 +93,7 @@ kubectl scale deploy whoami --replicas 3
 kubectl get pods -l app=whoami
 ```
 
-But now your running Deployment object is different from the spec you have in source control. This is bad. 
+But now your running Deployment object is different from the spec you have in source control. This is bad.
 
 <details>
   <summary>Why?</summary>
@@ -125,7 +125,7 @@ kubectl get pods -l app=whoami
 Because Pod names are random, you'll manage them in Kubectl using labels. We've done that with `get`, and it works for `logs` too:
 
 ```
-kubectl logs -l app=whoami 
+kubectl logs -l app=whoami
 ```
 
 And if you need to run commands in the Pod, you can use exec at the Deployment level:
@@ -207,7 +207,7 @@ Rolling updates aren't always what you want - they mean the old and new versions
 
 You may want a blue-green deployment instead, where you have both versions running but only one is receiving traffic.
 
-Write Deployments and Services to create a blue-green update for the whoami app. Start by running two replicas for v1 and two for v2, but only the v1 Pods should receive traffic. 
+Write Deployments and Services to create a blue-green update for the whoami app. Start by running two replicas for v1 and two for v2, but only the v1 Pods should receive traffic.
 
 Then make your update to switch traffic to the v2 Pods without any changes to Deployments.
 
@@ -252,3 +252,8 @@ Cleanup by removing objects with this lab's label:
 ```
 kubectl delete deploy,svc -l k8sfun.courselabs.co=deployments
 ```
+---
+
+[Next chapter (ConfigMaps)](/labs/configmaps)
+
+[Back to index](/index.md)
