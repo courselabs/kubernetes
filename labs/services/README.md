@@ -2,7 +2,7 @@
 
 Every Pod has an IP address which other Pods in the cluster can reach, but that IP address only applies for the life of the Pod.
 
-Services provide a consistent IP address linked to a DNS name, and you'll always use Services for routing internal and external traffic into Pods.
+[Services](https://kubernetes.io/docs/concepts/services-networking/service/) provide a consistent IP address linked to a DNS name, and you'll always use Services for routing internal and external traffic into Pods.
 
 Services and Pods are loosely-coupled: a Service finds target Pods using a [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/).
 
@@ -66,7 +66,7 @@ Replace the Pods from the previous lab with new definitions which contain labels
 * [sleep.yaml](specs/pods/sleep.yaml)
 
 ```
-kubectl delete pods whoami sleep
+kubectl delete pods --all
 
 kubectl apply -f labs/services/specs/pods
 ```
@@ -179,7 +179,7 @@ They both listen for traffic coming into the cluster and route it to Pods, but t
 > In this course we'll deploy both LoadBalancers and NodePorts for all our sample apps so you can follow along with your cluster.
 
 <details>
-  <summary>Here's why some clusters don't support LoadBalancers</summary>
+  <summary>ℹ Here's why some clusters don't support LoadBalancers</summary>
 
 - LoadBalancer Services integrate with the platform they're running on to get a real IP address. In a managed Kubernetes service in the cloud you'll get a unique public IP address for every Service, integrated with a cloud load balancer to direct traffic to your nodes. In Docker Desktop the IP address will be `localhost`; in k3s it will be a local network address.
 
@@ -189,11 +189,12 @@ Platform | LoadBalancer | NodePort
 --- | --- | --- |
 Docker Desktop | ✔ | ✔
 K3s  | ✔ | ✔
+K3d  | 🌓 | ✔
 AKS, EKS, GKE etc.  | ✔ | ✔
-Kind | |  ✔
-Minikube | |  ✔
-Microk8s | |  ✔
-Bare-metal | |  ✔
+Kind | ❌ | ✔
+Minikube | ❌  |  ✔
+Microk8s | ❌  |  ✔
+Bare-metal | ❌  |  ✔
 
 > If you don't have LoadBalancer support you can add it with [MetalLB](https://metallb.universe.tf/), but that's not in scope for this course :)
 
