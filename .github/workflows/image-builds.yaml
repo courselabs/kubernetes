@@ -12,12 +12,18 @@ jobs:
   docker-builds:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: azure/docker-login@v1
+
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Registry login
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      - working-directory: ./src
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build & push
+        working-directory: ./src
         run: |
           docker-compose build 
           docker-compose push 
