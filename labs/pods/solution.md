@@ -1,43 +1,54 @@
 # Lab Solution
 
-You can list the processes in Linux with `ps`:
+Your Pod spec will look like this - you can use the sample in [solution/lab.yaml](./solution/lab.yaml):
 
 ```
-kubectl exec sleep -- ps
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sleep-lab
+spec:
+  containers:
+    - name: app
+      image: courselabs/bad-sleep
 ```
 
-You'll find the `sleep` command is PID 1. That's the container startup process, so if you remove that the container will exit:
+Deploy it in the usual way with Kubectl:
 
 ```
-kubectl exec sleep -- kill 1
+kubectl apply -f labs/pods/solution/lab.yaml
 ```
 
-Check the Pod and you'll see it has restarted:
+Now watch the Pod status:
 
 ```
-kubectl get pods
+kubectl get pod sleep-lab --watch
+```
+
+After around 30 seconds, the application in the container ends, so the container exits - then Kubernetes restarts the Pod. You'll see a new line in the watch output, with the restart count increased to 1:
+
+```
+NAME        READY   STATUS    RESTARTS   AGE
+sleep-lab   1/1     Running   0          3s
+sleep-lab   0/1     Completed   0          33s
+sleep-lab   1/1     Running     1          35s
 ```
 
 > Pods restart by creating a new container **not** by restarting the existing container
 
-You can see that in the JSON Pod details under the `containerStatuses` field:
+The new container runs until the app exits after 30 seconds. Kubernetes restarts the Pod - but if the Pod containers keep exiting, Kubernetes adds an increasing delay before restarting.
+
+> The status changes to `Completed` then `Running` again, but Kubernets the Pod enters `CrashLoopBackOff` status:
 
 ```
-kubectl get pod sleep -o json
+NAME        READY   STATUS    RESTARTS   AGE
+sleep-lab   1/1     Running   0          3s
+sleep-lab   0/1     Completed   0          33s
+sleep-lab   1/1     Running     1          35s
+sleep-lab   0/1     Completed   1          64s
+sleep-lab   0/1     CrashLoopBackOff   1          79s
+sleep-lab   1/1     Running            2          80s
+sleep-lab   0/1     Completed          2          110s
+sleep-lab   0/1     CrashLoopBackOff   2          2m4s
+sleep-lab   1/1     Running            3          2m17s
 ```
-
-If you repeatedly force a restart, Kubernetes changes the state of the Pod. Run the `get` command with the `watch` option:
-
-```
-kubectl get pods sleep --watch
-```
-
-> Watch checks the status of the object and prints any changes
-
-Now open a new terminal window and run the kill command a few more times:
-
-```
-kubectl exec sleep -- kill 1
-```
-
-> The status changes to `Error` then `Running` again, but if you repeatedly kill the process the Pod enters `CrashLoopBackOff` status.

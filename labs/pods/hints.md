@@ -1,9 +1,7 @@
 # Lab Hints
 
-Applications usually run as the first container process, with process ID=1. 
+Pod specs are pretty simple - you don't need any more in your YAML than we've already used in the `specs` folder from this lab.
 
-You can run the `kill` command inside a Pod container to kill a specific process.
-
-Printing the Pod details will show you what action Kubernetes takes to keep your Pod running; remember you can use different formats to see more output.
+When you run your Pod it should start and go into the running state, but because the application is misconfured, it won't keep running.
 
 > Need more? Here's the [solution](solution.md).

@@ -1,6 +1,6 @@
 # Running Containers in Pods
 
-The [Pod]() is the basic unit of compute in Kubernetes. Pods run containers - it's their job to ensure the container keeps running.
+The [Pod](https://kubernetes.io/docs/concepts/workloads/pods/) is the basic unit of compute in Kubernetes. Pods run containers - it's their job to ensure the container keeps running.
 
 Pod specs are very simple. The minimal YAML needs some metadata, and the name of the container image to run.
 
@@ -169,9 +169,7 @@ kubectl exec sleep -- curl -s <whoami-pod-ip>
 
 Pods are an abstraction over containers. They monitor the container and if it exits the Pod restarts, creating a new container to keep your app running. This is the first layer of high-availability Kubernetes provides.
 
-You can see this in action - force the container in the sleep Pod to exit, and look at the details of the Pod to see what happens next.
-
-What happens if you keep forcing the container to exit?
+You can see this in action with a badly-configured app, where the container keeps exiting. Write a Pod spec to run a container from the Docker Hub image `courselabs/bad-sleep`. Deploy your spec and watch the Pod - what happens after about 30 seconds? And after a couple of minutes?
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
