@@ -202,7 +202,7 @@ kubectl logs products-db-1
 Both Pods should end with a log saying the database is ready to accept connections:
 
 ```
-kubectl logs -l app=products-db --tail 1
+kubectl logs -l app=products-db --tail 3
 ```
 
 ## Lab

@@ -218,7 +218,18 @@ Oh - one more thing :) Mounting the ServiceAccount token in the Pod is  default 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
 ___
- 
+
+## **EXTRA** Managing end-user permissions
+
+<details>
+  <summary>RBAC for Kubectl users</summary>
+
+Kubernetes integrates with other systems for end-user authentication, but in a dev setup you can create certificates for users and apply RBAC rules for them. This isn't day-to-day work, but if you're interested you can work through the exercises in [RBAC for Users](rbac-for-users.md).
+
+</details><br />
+
+___
+
 ## **EXTRA** Applying ClusterRoles to specific namespaces
 
 <details>
@@ -247,16 +258,6 @@ kubectl delete pod --all -n kube-system --context labreader
 
 </details><br />
 
-___
-
-## **EXTRA** Managing end-user permissions
-
-<details>
-  <summary>RBAC for Kubectl users</summary>
-
-Kubernetes integrates with other systems for end-user authentication, but in a dev setup you can create certificates for users and apply RBAC rules for them. This isn't day-to-day work, but if you're interested you can work through the exercises in [RBAC for Users](rbac-for-users.md).
-
-</details><br />
 ___
 
 ## Cleanup
