@@ -4,37 +4,37 @@ These are hands-on resources to help you learn Kubernetes.
 
 ## Pre-reqs
 
- - [Set up Kubernetes](setup)
+ - [Set up Kubernetes](./setup/README.md)
  - `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
  - `cd kubernetes-fundamentals`
 
 ## Part 1 - Core Kubernetes
 
-- [Nodes](labs/nodes)
-- [Pods](labs/pods)
-- [Services](labs/services)
-- [Deployments](labs/deployments)
+- [Nodes](labs/nodes/README.md)
+- [Pods](labs/pods/README.md)
+- [Services](labs/services/README.md)
+- [Deployments](labs/deployments/README.md)
 
 ## Part 2 - Application Modelling
 
-- [ConfigMaps](labs/configmaps)
-- [Secrets](labs/secrets)
-- [PersistentVolumes](labs/persistentvolumes)
-- [Namespaces](labs/namespaces)
+- [ConfigMaps](labs/configmaps/README.md)
+- [Secrets](labs/secrets/README.md)
+- [PersistentVolumes](labs/persistentvolumes/README.md)
+- [Namespaces](labs/namespaces/README.md)
 
 ## Part 3 - Advanced Application Modelling
 
-- [Role-based Access Control (RBAC)](labs/rbac)
-- [DaemonSets](labs/daemonsets)
-- [Ingress](labs/ingress)
-- [Jobs and CronJobs](labs/jobs)
-- [StatefulSets](labs/statefulsets)
+- [Role-based Access Control (RBAC)](labs/rbac/README.md)
+- [DaemonSets](labs/daemonsets/README.md)
+- [Ingress](labs/ingress/README.md)
+- [Jobs and CronJobs](labs/jobs/README.md)
+- [StatefulSets](labs/statefulsets/README.md)
 
 ## Part 4 - Real Kubernetes
 
-- [Production readiness](labs/productionizing)
-- [Troubleshooting](labs/troubleshooting)
-- [Hackathon!](hackathon)
+- [Production readiness](labs/productionizing/README.md)
+- [Troubleshooting](labs/troubleshootin/README.mdg)
+- [Hackathon!](hackathon/README.md)
 
 
 ### Credits
