@@ -8,7 +8,7 @@ Deployments use a template to create Pods, and a label selector to identify the 
 
 ## API specs
 
-- [Deployment](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#service-v1-core)
+- [Deployment](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#deployment-v1-apps)
 
 <details>
   <summary>YAML overview</summary>
