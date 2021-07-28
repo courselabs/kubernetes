@@ -4,9 +4,13 @@ These are hands-on resources to help you learn Kubernetes.
 
 ## Pre-reqs
 
- - [Set up Kubernetes](./setup/README.md)
- - `git clone https://github.com/courselabs/kubernetes-fundamentals.git`
- - `cd kubernetes-fundamentals`
+ - [Set up Kubernetes and a Git client](./setup/README.md) 
+ - Download your repo
+    - Open a terminal (PowerShell on Windows; any shell on Linux/macOS) 
+    - Run: `git clone https://github.com/courselabs/kubernetes-fundamentals.git --depth 1`
+     - Open the folder: `cd kubernetes-fundamentals`
+- _Optional_
+    -   Install [Visual Studio Code](https://code.visualstudio.com) (free - Windows, macOS and Linux) to browse the repo and documentation
 
 ## Part 1 - Core Kubernetes
 

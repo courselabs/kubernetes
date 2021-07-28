@@ -2,6 +2,15 @@
 
 Kubernetes clusters can have hundreds of nodes in production, but you can run a single-node cluster on your laptop and it works in the same way.
 
+We'll also use [Git](https://git-scm.com) for source control, so you'll need a client on your machine to talk to GitHub.
+
+## Git Client - Mac, Windows or Linux
+
+Git is a free, open source tool for source control:
+
+- [Install Git](https://git-scm.com/downloads)
+
+
 ## Docker Desktop - Mac or Windows
 
 If you're on macOS or Windows 10 Docker Desktop is the easiest way to get Kubernetes:
