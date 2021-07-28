@@ -52,3 +52,15 @@ sleep-lab   0/1     Completed          2          110s
 sleep-lab   0/1     CrashLoopBackOff   2          2m4s
 sleep-lab   1/1     Running            3          2m17s
 ```
+
+You can delete the Pod by name:
+
+```
+kubectl delete pod sleep-lab
+```
+
+Or by using the delete command with your YAML file:
+
+```
+kubectl delete -f labs/pods/solution/lab.yaml
+```

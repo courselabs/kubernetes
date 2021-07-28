@@ -171,5 +171,7 @@ Pods are an abstraction over containers. They monitor the container and if it ex
 
 You can see this in action with a badly-configured app, where the container keeps exiting. Write a Pod spec to run a container from the Docker Hub image `courselabs/bad-sleep`. Deploy your spec and watch the Pod - what happens after about 30 seconds? And after a couple of minutes?
 
+Kubernetes will keep trying to make the Pod work, so you'll want to remove it when you're done.
+
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
