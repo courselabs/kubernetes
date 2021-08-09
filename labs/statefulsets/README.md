@@ -107,7 +107,7 @@ When they're running these are normal Pods, the StatefulSet just manages creatin
 
 StatefulSets add their Pod IP addresses to the Service.
 
-📋 Check both Pods are registered with the Service.
+📋 Check all the Pods are registered with the Service.
 
 <details>
   <summary>Not sure how?</summary>

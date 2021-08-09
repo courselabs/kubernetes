@@ -216,7 +216,7 @@ kubectl get hpa pi-cpu --watch
 
 </details><br/>
 
-> Initially the Pod is at 0% CPU. Open 2 browser tabs pointing to http://localhost:8020/pi?dp=100000; that's enough work to max out the Pod and trigger the HPA
+> Initially the Pod is at 0% CPU. Open 2 browser tabs pointing to http://localhost:8020/pi?dp=100000 - that's enough work to max out the Pod and trigger the HPA
 
 **If your cluster honours CPU limits** the HPA will start more Pods.  After the requests have been processed workload falls so the average CPU across Pods is below the threshold and then the HPA scales down.
 
