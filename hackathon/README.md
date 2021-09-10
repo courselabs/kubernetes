@@ -238,5 +238,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,cm,secret,pvc,ns -l co.courselabs.k8sfun=hackathon
+kubectl delete all,cm,secret,pvc,ns -l co.courselabs.kubernetes=hackathon
 ```

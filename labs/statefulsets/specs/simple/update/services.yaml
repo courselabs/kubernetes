@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: simple-statefulset-lb
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8010
@@ -18,7 +18,7 @@ kind: Service
 metadata:
   name: simple-statefulset-np
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8010

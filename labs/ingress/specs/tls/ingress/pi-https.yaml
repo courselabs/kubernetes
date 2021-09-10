@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: pi
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
   annotations:
     nginx.ingress.kubernetes.io/proxy-buffering: "on" 
     nginx.ingress.kubernetes.io/configuration-snippet: |

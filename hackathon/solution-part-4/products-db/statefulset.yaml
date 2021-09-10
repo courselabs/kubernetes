@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: products-db
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   selector:
@@ -34,7 +34,7 @@ spec:
   - metadata:
       name: data
       labels:
-        k8sfun.courselabs.co: hackathon
+        kubernetes.courselabs.co: hackathon
         app: widgetario
     spec:
       accessModes: 

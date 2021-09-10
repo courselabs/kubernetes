@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: sleep
   labels: 
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
 spec:
   containers:
     - name: sleep

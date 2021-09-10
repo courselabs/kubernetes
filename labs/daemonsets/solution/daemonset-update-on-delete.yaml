@@ -3,7 +3,7 @@ kind: DaemonSet
 metadata:
   name: nginx
   labels:
-    k8sfun.courselabs.co: daemonsets
+    kubernetes.courselabs.co: daemonsets
 spec:
   updateStrategy:
     type: OnDelete
@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        k8sfun.courselabs.co: daemonsets
+        kubernetes.courselabs.co: daemonsets
         app: nginx
     spec:
       initContainers:

@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: whoami-internal
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
 spec:
   selector:
     app: whoami
@@ -18,7 +18,7 @@ kind: Deployment
 metadata:
   name: whoami
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
 spec:
   replicas: 3
   selector:

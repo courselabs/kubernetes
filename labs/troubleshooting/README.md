@@ -26,5 +26,5 @@ ___
 When you're done you can remove all the objects:
 
 ```
-kubectl delete all -l k8sfun.courselabs.co=troubleshooting
+kubectl delete all -l kubernetes.courselabs.co=troubleshooting
 ```

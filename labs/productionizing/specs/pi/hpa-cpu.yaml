@@ -3,7 +3,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: pi-cpu
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

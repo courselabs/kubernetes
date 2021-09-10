@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: create-approve-csr
   labels:
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 rules:
 - apiGroups: ["certificates.k8s.io"]
   resources: ["certificatesigningrequests"]
@@ -21,7 +21,7 @@ kind: ClusterRoleBinding
 metadata:
   name: user-cert-generator
   labels:
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 subjects:
 - kind: ServiceAccount
   name: user-cert-generator

@@ -250,5 +250,5 @@ ___
 Cleanup by removing objects with this lab's label:
 
 ```
-kubectl delete deploy,svc -l k8sfun.courselabs.co=deployments
+kubectl delete deploy,svc -l kubernetes.courselabs.co=deployments
 ```

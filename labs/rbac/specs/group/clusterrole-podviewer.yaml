@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: podviewer
   labels:
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 rules:
 - apiGroups: [""]
   resources: ["pods", "pods/log"]

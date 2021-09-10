@@ -293,5 +293,5 @@ ___
 Cleanup by removing objects with this lab's label:
 
 ```
-kubectl delete configmap,deploy,svc -l k8sfun.courselabs.co=configmaps
+kubectl delete configmap,deploy,svc -l kubernetes.courselabs.co=configmaps
 ```

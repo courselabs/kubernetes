@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: configurable-np
   labels: 
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: configurable
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: configurable-lb
   labels: 
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: configurable

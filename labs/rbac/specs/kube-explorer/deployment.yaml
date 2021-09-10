@@ -3,14 +3,14 @@ kind: ServiceAccount
 metadata:
   name: kube-explorer
   labels:  
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-explorer
   labels:  
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 spec:
   selector:
     matchLabels:

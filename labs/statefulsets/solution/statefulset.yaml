@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: simple-proxy
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
     app: simple-proxy
 spec:
   selector:

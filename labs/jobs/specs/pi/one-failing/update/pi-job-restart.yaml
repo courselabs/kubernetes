@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: pi-job-one-failing
   labels:
-    k8sfun.courselabs.co: jobs
+    kubernetes.courselabs.co: jobs
 spec:
   completions: 1
   backoffLimit: 4

@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: kube-explorer-lb
   labels:  
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 spec:
   ports:
     - port: 8010
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: kube-explorer-np
   labels:  
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 spec:
   ports:
     - port: 8010

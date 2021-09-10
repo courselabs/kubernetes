@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: products-db
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   ports:

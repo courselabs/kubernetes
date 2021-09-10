@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: widgetario-web-internal
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   ports:

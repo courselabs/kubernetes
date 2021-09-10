@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: nginx-internal
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
 spec:
   ports:
     - name: http

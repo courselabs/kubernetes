@@ -238,7 +238,7 @@ kubectl get pv
 
 When you need more control you can manually manage the PV lifecycle:
 
-- [persistentVolume.yaml](specs/caching-proxy-pv/persistentVolume.yaml) defines a PV which uses `local` storage, and attaches to a node with has a label `k8sfun`
+- [persistentVolume.yaml](specs/caching-proxy-pv/persistentVolume.yaml) defines a PV which uses `local` storage, and attaches to a node with has a label `kubernetes`
 - [caching-proxy-pv/pvc.yaml](specs/caching-proxy-pv/pvc.yaml) requests a volume by name, instead of using a Storage Class
 - [caching-proxy-pv/nginx.yaml](specs/caching-proxy-pv/nginx.yaml) updates the proxy deployment to use the new PVC 
 
@@ -265,7 +265,7 @@ The PV can't find a node matching the label selector, and the unhelpul Pod messa
 Add a label to a node and everything will flow through:
 
 ```
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') k8sfun=y
+kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') kubernetes=y
 
 kubectl get nodes --show-labels
 
@@ -281,5 +281,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,cm,pvc,pv -l k8sfun.courselabs.co=persistentvolumes
+kubectl delete all,cm,pvc,pv -l kubernetes.courselabs.co=persistentvolumes
 ```

@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pi-proxy-pvc-local
   labels: 
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
     app: pi-proxy
 spec:
   accessModes:

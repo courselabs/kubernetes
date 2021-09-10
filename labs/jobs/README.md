@@ -278,5 +278,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete job,cronjob,cm,sa,clusterrole,clusterrolebinding -l k8sfun.courselabs.co=jobs
+kubectl delete job,cronjob,cm,sa,clusterrole,clusterrolebinding -l kubernetes.courselabs.co=jobs
 ```

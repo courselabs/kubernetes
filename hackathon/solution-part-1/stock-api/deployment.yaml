@@ -4,7 +4,7 @@ metadata:
   name: stock-api
   labels:
     app: widgetario
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
 spec:
   selector:
     matchLabels:

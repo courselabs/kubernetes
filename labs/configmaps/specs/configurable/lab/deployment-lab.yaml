@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: configurable
   labels: 
-    k8sfun.courselabs.co: configmaps
+    kubernetes.courselabs.co: configmaps
     app: configurable
 spec:
   selector:

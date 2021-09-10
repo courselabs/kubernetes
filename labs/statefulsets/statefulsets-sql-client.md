@@ -81,5 +81,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete svc,cm,secret,statefulset,deployment,pod -l k8sfun.courselabs.co=statefulsets
+kubectl delete svc,cm,secret,statefulset,deployment,pod -l kubernetes.courselabs.co=statefulsets
 ```

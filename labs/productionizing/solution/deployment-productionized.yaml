@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: configurable
   labels: 
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   replicas: 5
   selector:

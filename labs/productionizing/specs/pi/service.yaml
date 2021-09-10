@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: pi-np
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: pi-web
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: pi-lb
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: pi-web

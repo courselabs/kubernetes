@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: configurable-env
   labels: 
-    k8sfun.courselabs.co: configmaps
+    kubernetes.courselabs.co: configmaps
     app: configurable
 data:
   Configurable__Release: 24.01.2

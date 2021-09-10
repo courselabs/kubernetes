@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: whoami
   labels:
-    k8sfun.courselabs.co: deployments
+    kubernetes.courselabs.co: deployments
 spec:
   selector:
     matchLabels:

@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: pi-proxy-lb
   labels: 
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
     app: pi-proxy
 spec:
   ports:
@@ -20,7 +20,7 @@ metadata:
   name: pi-proxy-np
   labels:
     app: pi-proxy
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
 spec:
   ports:
     - port: 8010   
@@ -37,7 +37,7 @@ metadata:
   name: pi-proxy
   labels:
     app: pi-proxy
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
 spec:
   selector:
     matchLabels:

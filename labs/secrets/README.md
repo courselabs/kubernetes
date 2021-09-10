@@ -256,5 +256,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,cm,secret -l k8sfun.courselabs.co=secrets
+kubectl delete all,cm,secret -l kubernetes.courselabs.co=secrets
 ```

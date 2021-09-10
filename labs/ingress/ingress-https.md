@@ -48,7 +48,7 @@ And use them to create a Secret. Kubernetes supports TLS certificates as a speci
 ```
 kubectl create secret tls https-local --key=tls.key --cert=tls.crt
 
-kubectl label secret https-local k8sfun.courselabs.co=ingress
+kubectl label secret https-local kubernetes.courselabs.co=ingress
 
 kubectl describe secret https-local
 ```
@@ -100,5 +100,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,secret,ingress,ns -l k8sfun.courselabs.co=ingress
+kubectl delete all,secret,ingress,ns -l kubernetes.courselabs.co=ingress
 ```

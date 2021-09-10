@@ -325,5 +325,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,hpa -l k8sfun.courselabs.co=productionizing
+kubectl delete all,hpa -l kubernetes.courselabs.co=productionizing
 ```

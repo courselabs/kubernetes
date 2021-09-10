@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: pi-job-many
   labels:
-    k8sfun.courselabs.co: jobs
+    kubernetes.courselabs.co: jobs
     app: pi-many
 spec:
   completions: 3

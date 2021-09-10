@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: whoami-lab-np
   labels:
-    k8sfun.courselabs.co: deployments
+    kubernetes.courselabs.co: deployments
 spec:
   selector:
     app: whoami-lab
@@ -20,7 +20,7 @@ kind: Service
 metadata:
   name: whoami-lab-lb
   labels:
-    k8sfun.courselabs.co: deployments
+    kubernetes.courselabs.co: deployments
 spec:
   selector:
     app: whoami-lab

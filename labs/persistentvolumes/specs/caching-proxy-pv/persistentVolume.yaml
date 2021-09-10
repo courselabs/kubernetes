@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: pi-proxy-pv
   labels: 
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
     app: pi-proxy
 spec:
   capacity:
@@ -16,5 +16,5 @@ spec:
     required:
       nodeSelectorTerms:
         - matchExpressions:
-          - key: k8sfun
+          - key: kubernetes
             operator: Exists

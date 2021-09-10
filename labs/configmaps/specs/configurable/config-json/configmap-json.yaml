@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: configurable-override
   labels: 
-    k8sfun.courselabs.co: configmaps
+    kubernetes.courselabs.co: configmaps
 data:
   override.json: |-
     {

@@ -4,7 +4,7 @@ metadata:
   name: job-cleanup-script
   namespace: default
   labels:
-    k8sfun.courselabs.co: jobs
+    kubernetes.courselabs.co: jobs
 data:
   run.sh: |-
     #!/bin/sh

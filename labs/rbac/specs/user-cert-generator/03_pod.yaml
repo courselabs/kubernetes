@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: user-cert-generator
   labels:
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 spec:
   serviceAccountName: user-cert-generator
   containers:

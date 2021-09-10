@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: simple-proxy-lb
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8040
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: simple-proxy-np
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
 spec:
   ports:
     - port: 8040

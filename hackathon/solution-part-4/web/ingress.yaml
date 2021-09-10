@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: widgetario-local
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
 spec:
   rules:
   - host: widgetario.local 

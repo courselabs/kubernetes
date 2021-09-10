@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: products-db
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
     app: products-db
 spec:
   selector:

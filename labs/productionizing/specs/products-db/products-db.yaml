@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: products-db
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     matchLabels:

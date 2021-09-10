@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: widgetario-web-lb
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   ports:
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: widgetario-web-np
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   ports:

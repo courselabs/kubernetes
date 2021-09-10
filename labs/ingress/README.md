@@ -238,5 +238,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,secret,ingress,ns -l k8sfun.courselabs.co=ingress
+kubectl delete all,secret,ingress,ns -l kubernetes.courselabs.co=ingress
 ```

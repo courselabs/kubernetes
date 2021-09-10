@@ -47,7 +47,7 @@ curl -fsSL https://get.docker.com | sh
 
 curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 
-k3d cluster create k8sfun -p "30000-30040:30000-30040@server[0]"
+k3d cluster create k8s -p "30000-30040:30000-30040@server[0]"
 ```
 
 </details><br />
@@ -60,10 +60,10 @@ k3d cluster create k8sfun -p "30000-30040:30000-30040@server[0]"
 If you're already using [Kind](kind.sigs.k8s.io/), use this setup which is tweaked for the labs:
 
 ```
-kind create cluster --name k8s-fundamentals --config setup/kind.yaml
+kind create cluster --name k8s --config setup/kind.yaml
 ```
 
-> If you're not using Kind use k3d instead
+> If you're not already using Kind use k3d instead
 
 </details><br />
 

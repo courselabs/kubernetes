@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: pi-internal
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
 spec:
   ports:
     - port: 80
@@ -18,7 +18,7 @@ kind: Deployment
 metadata:
   name: pi-web
   labels:
-    k8sfun.courselabs.co: ingress
+    kubernetes.courselabs.co: ingress
 spec:
   replicas: 2
   selector:

@@ -178,7 +178,7 @@ kubectl get deploy -A --show-labels
 You can only use Kubectl with one namespace or all namespaces, so you might want additional labels for objects like Services, so you can list across all namespace and filter by label:
 
 ```
-kubectl get svc -A -l k8sfun.courselabs.co=namespaces
+kubectl get svc -A -l kubernetes.courselabs.co=namespaces
 ```
 
 ## Namespaces and Service DNS
@@ -337,8 +337,8 @@ ___
 
 ```
 # deleting a namespace deletes everything inside it:
-kubectl delete ns -l k8sfun.courselabs.co=namespaces
+kubectl delete ns -l kubernetes.courselabs.co=namespaces
 
 # which just leaves the sleep Pods:
-kubectl delete po -A -l k8sfun.courselabs.co=namespaces
+kubectl delete po -A -l kubernetes.courselabs.co=namespaces
 ```

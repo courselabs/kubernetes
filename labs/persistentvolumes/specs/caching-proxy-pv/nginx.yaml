@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: pi-proxy
   labels: 
-    k8sfun.courselabs.co: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
     app: pi-proxy
 spec:
   selector:

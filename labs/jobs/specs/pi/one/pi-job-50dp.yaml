@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: pi-job-one
   labels:
-    k8sfun.courselabs.co: jobs
+    kubernetes.courselabs.co: jobs
     app: pi-one
     dp: '50'    
 spec:

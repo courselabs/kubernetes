@@ -4,7 +4,7 @@ metadata:
   name: whoami-lb
   namespace: whoami
   labels:
-    k8sfun.courselabs.co: namespaces
+    kubernetes.courselabs.co: namespaces
 spec:
   selector:
     app: whoami
@@ -20,7 +20,7 @@ metadata:
   name: whoami-np
   namespace: whoami
   labels:
-    k8sfun.courselabs.co: namespaces
+    kubernetes.courselabs.co: namespaces
 spec:
   selector:
     app: whoami

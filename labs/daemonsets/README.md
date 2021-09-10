@@ -145,7 +145,7 @@ As soon as a node matches the selector, a Pod gets scheduled for it.
   <summary>Not sure how?</summary>
 
 ```
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') k8sfun.courselabs.co.ip=public
+kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') kubernetes.courselabs.co.ip=public
 
 kubectl get pods -l app=nginx --watch
 ```
@@ -215,5 +215,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete svc,ds,po -l k8sfun.courselabs.co=daemonsets
+kubectl delete svc,ds,po -l kubernetes.courselabs.co=daemonsets
 ```

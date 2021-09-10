@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: whoami-np
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: whoami
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: whoami-lb
   labels:
-    k8sfun.courselabs.co: productionizing
+    kubernetes.courselabs.co: productionizing
 spec:
   selector:
     app: whoami

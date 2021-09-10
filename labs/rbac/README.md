@@ -263,5 +263,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete pod,deploy,svc,serviceaccount,role,rolebinding,clusterrole,clusterrolebinding -A -l k8sfun.courselabs.co=rbac
+kubectl delete pod,deploy,svc,serviceaccount,role,rolebinding,clusterrole,clusterrolebinding -A -l kubernetes.courselabs.co=rbac
 ```

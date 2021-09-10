@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: web
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
     app: widgetario
 spec:
   selector:

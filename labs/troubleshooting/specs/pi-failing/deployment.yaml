@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: pi-web
   labels:
-    k8sfun.courselabs.co: troubleshooting
+    kubernetes.courselabs.co: troubleshooting
 spec:
   replicas: 0
   selector:

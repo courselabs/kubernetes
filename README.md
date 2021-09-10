@@ -1,5 +1,5 @@
-# Kubernetes Fundamentals
+# Kubernetes Course Labs
 
 Labs and exercises to help you learn Kubernetes.
 
-Live at https://k8sfun.courselabs.co.
+Live at https://kubernetes.courselabs.co.

@@ -3,7 +3,7 @@ kind: ClusterRoleBinding
 metadata:
   name: kube-explorer-pod-reader
   labels:
-    k8sfun.courselabs.co: rbac
+    kubernetes.courselabs.co: rbac
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

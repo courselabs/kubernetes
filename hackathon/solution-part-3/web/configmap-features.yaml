@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: web-features
   labels:
-    k8sfun.courselabs.co: hackathon
+    kubernetes.courselabs.co: hackathon
 data:
   Widgetario__Theme: dark

@@ -22,5 +22,5 @@ Everything works in the same way:
 Cleanup:
 
 ```
-kubectl delete all,statefulset,pvc,secret,configmap -l k8sfun.courselabs.co=hackathon
+kubectl delete all,statefulset,pvc,secret,configmap -l kubernetes.courselabs.co=hackathon
 ```

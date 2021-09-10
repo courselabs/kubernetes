@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: simple-statefulset-scripts
   labels:
-    k8sfun.courselabs.co: statefulsets
+    kubernetes.courselabs.co: statefulsets
 data:
   wait-service.sh: |-
     #!/bin/sh
