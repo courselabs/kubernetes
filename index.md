@@ -40,6 +40,11 @@ These are hands-on resources to help you learn Kubernetes.
 - [Monitoring](labs/monitoring/README.md)
 - [Logging](labs/logging/README.md)
 
+
+## Continuous Integration and Continuous Deployment (CI/CD)
+
+- [Image optimizing](labs/docker/README.md)
+
 ## Real Kubernetes
 
 - [Troubleshooting](labs/troubleshootin/README.mdg)

@@ -142,5 +142,5 @@ Add another container, read the log file from the app container and echo it out
 ## Cleanup
 
 ```
-k delete ns,deploy,svc -l kubernetes.courselabs.co=logging
+k delete ns,deploy,svc,po -l kubernetes.courselabs.co=logging
 ```

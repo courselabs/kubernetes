@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: logging
   labels: 
-    kubernetes.courselabs.co: monitoring
+    kubernetes.courselabs.co: logging
