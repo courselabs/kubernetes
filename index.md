@@ -12,21 +12,21 @@ These are hands-on resources to help you learn Kubernetes.
 - _Optional_
     -   Install [Visual Studio Code](https://code.visualstudio.com) (free - Windows, macOS and Linux) to browse the repo and documentation
 
-## Part 1 - Core Kubernetes
+## Core Kubernetes
 
 - [Nodes](labs/nodes/README.md)
 - [Pods](labs/pods/README.md)
 - [Services](labs/services/README.md)
 - [Deployments](labs/deployments/README.md)
 
-## Part 2 - Application Modelling
+## Application Modelling
 
 - [ConfigMaps](labs/configmaps/README.md)
 - [Secrets](labs/secrets/README.md)
 - [PersistentVolumes](labs/persistentvolumes/README.md)
 - [Namespaces](labs/namespaces/README.md)
 
-## Part 3 - Advanced Application Modelling
+## Advanced Application Modelling
 
 - [Role-based Access Control (RBAC)](labs/rbac/README.md)
 - [DaemonSets](labs/daemonsets/README.md)
@@ -34,9 +34,14 @@ These are hands-on resources to help you learn Kubernetes.
 - [Jobs and CronJobs](labs/jobs/README.md)
 - [StatefulSets](labs/statefulsets/README.md)
 
-## Part 4 - Real Kubernetes
+## Operating Kubernetes
 
 - [Production readiness](labs/productionizing/README.md)
+- [Monitoring](labs/monitoring/README.md)
+- [Logging](labs/logging/README.md)
+
+## Real Kubernetes
+
 - [Troubleshooting](labs/troubleshootin/README.mdg)
 - [Hackathon!](hackathon/README.md)
 
