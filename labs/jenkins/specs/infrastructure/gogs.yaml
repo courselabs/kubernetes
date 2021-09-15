@@ -8,22 +8,7 @@ metadata:
 spec:
   ports:
     - port: 3000
-      targetPort: gogs
-  selector:
-    app: gogs
-  type: LoadBalancer
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: gogs-np
-  namespace: infra
-  labels:
-    team: infrastructure
-spec:
-  ports:
-    - port: 3000
-      nodePort: 30030
+      nodePort: 30300
       targetPort: gogs
   selector:
     app: gogs

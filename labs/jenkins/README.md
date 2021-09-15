@@ -48,7 +48,7 @@ k get deploy -n infra --watch
 
 ## Push the source code to your local Git server
 
-http://localhost:30030
+http://localhost:30300
 
 - username `kiamol`
 - password `kiamol`
@@ -58,7 +58,24 @@ http://localhost:30030
 ```
 git remote -v
 
-git remote add gogs http://localhost:30030/kiamol/kiamol.git
+git remote add gogs http://localhost:30300/kiamol/kiamol.git
 
 git push --set-upstream gogs main
 ```
+
+> All the code is in your local Git server. This is the buid pipeline: http://localhost:30300/kiamol/kiamol/src/main/labs/jenkins/project/Jenkinsfile
+
+## Run the pipeline in Jenkins
+
+http://localhost:30880
+
+Log in
+
+- username `kiamol`
+- password `kiamol`
+
+Browse to project http://localhost:30880/job/kiamol/
+
+Click Enable; wait a minute or click Build Now
+
+

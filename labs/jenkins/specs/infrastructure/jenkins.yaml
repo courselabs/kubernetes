@@ -1,29 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins-lb
+  name: jenkins
   namespace: infra
   labels:
     team: infrastructure
 spec:
   ports:
     - port: 8080
-      targetPort: jenkins
-  selector:
-    app: jenkins
-  type: LoadBalancer
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: jenkins-np
-  namespace: infra
-  labels:
-    team: infrastructure
-spec:
-  ports:
-    - port: 8080
-      nodePort: 30080
+      nodePort: 30880
       targetPort: jenkins
   selector:
     app: jenkins
@@ -137,8 +122,8 @@ data:
 
     def instance = Jenkins.getInstance()
 
-    def username = "labs"
-    def password = "labs"
+    def username = "kiamol"
+    def password = "kiamol"
 
     def hudsonRealm = new HudsonPrivateSecurityRealm(false)
     hudsonRealm.createAccount(username, password)
