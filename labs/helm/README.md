@@ -108,3 +108,10 @@ k get svc
 Install the Nginx Ingress controller with Helm, using the values file in labs\helm\ingress-nginx\dev.yaml.
 
 Browse to the HTTP endpoint and confirm you get a response from Nginx.
+
+
+## Cleanup
+
+helm uninstall vweb,whoami-custom,whoami-default
+
+helm uninstall ingress-nginx -n ingress
