@@ -107,3 +107,22 @@ kubectl create secret docker-registry -n integration-test registry-creds --docke
 Now uncomment the stage and push the changes to Gogs
 
 ```
+# remove /* and */ comment lines from Jenkinsfile
+
+git add --all 'Enable CD'
+
+git push gogs
+```
+
+Hit Build Now a few times - check build succeeds
+
+k get rs -n integration-test -o wide
+
+> You should see the updated build versions in the image tags
+
+## Lab
+
+Update the release:
+
+- latest golang sdk on latest alpine OS
+- image doesn't need OS tools

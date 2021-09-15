@@ -15,8 +15,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 // Units.
@@ -44,16 +42,10 @@ func init() {
 	flag.StringVar(&mode, "mode", os.Getenv("WHOAMI_MODE"), "set mode: q=quiet")
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
 func main() {
 	flag.Parse()
 
 	http.HandleFunc("/data", dataHandler)
-	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/bench", benchHandler)
 	http.HandleFunc("/", whoamiHandler)
 	http.HandleFunc("/api", apiHandler)
@@ -71,27 +63,6 @@ func benchHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Content-Type", "text/plain")
 	_, _ = fmt.Fprint(w, "1")
-}
-
-func echoHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			return
-		}
-
-		printBinary(p)
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			return
-		}
-	}
 }
 
 func printBinary(s []byte) {
