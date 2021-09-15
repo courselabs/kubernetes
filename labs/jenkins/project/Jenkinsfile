@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    environment {
+      WHOAMI_IMAGE = "${REGISTRY_DOMAIN}/${REGISTRY_REPOSITORY}/whoami-lab:${RELEASE_VERSION}-${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Audit tools') {                        
+            steps {
+                sh '''
+                  git version
+                  buildctl --version
+                  kubectl version --short
+                  helm version --short
+                '''
+            }
+        }
+    }
+}
