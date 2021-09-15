@@ -38,9 +38,6 @@ spec:
           - unix:///run/buildkit/buildkitd.sock
           - --addr
           - tcp://0.0.0.0:1234
-        envFrom:
-          - configMapRef:
-              name: build-config
         securityContext:
           privileged: true
         ports:

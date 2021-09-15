@@ -39,7 +39,7 @@ kubectl create secret docker-registry -n infra registry-creds --docker-server=$R
 Set your registry domain and repository name in a configmap:
 
 ```
-kubectl create configmap -n infra build-config --from-literal=REGISTRY=docker.io  --from-literal=REPOSITORY=<your-registry-id>
+kubectl create configmap -n infra build-config --from-literal=RELEASE_VERSION=21.09 --from-literal=REGISTRY_DOMAIN=docker.io  --from-literal=REGISTRY_REPOSITORY=<your-registry-id>
 ```
 
 k get deploy -n infra --watch
@@ -78,4 +78,32 @@ Browse to project http://localhost:30880/job/kiamol/
 
 Click Enable; wait a minute or click Build Now
 
+View logs; all OK then check your registry, e.g. https://hub.docker.com/r/sixeyed/whoami-lab/tags
 
+
+## Add the deployment stage
+
+Test deployment locally with new image:
+
+helm upgrade --install whoami-dev --set serverImage=docker.io/sixeyed/whoami-lab:21.09-1 labs\jenkins\project\helm\whoami
+
+curl localhost:30820
+
+Helm commented out in Jenkinsfile - needs a registry secret in int namespace:
+
+```
+k create ns integration-test
+
+k label ns integration-test kubernetes.courselabs.co=jenkins
+
+```
+
+Assuming you have your creds in the same session;
+
+```
+kubectl create secret docker-registry -n integration-test registry-creds --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
+```
+
+Now uncomment the stage and push the changes to Gogs
+
+```

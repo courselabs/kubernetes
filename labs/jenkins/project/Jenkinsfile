@@ -26,5 +26,21 @@ pipeline {
               '''
             }
         }
+        #stage('Deploy to test namespace') {
+        #    steps {
+        #      dir ('labs/jenkins/project/helm') {
+        #        sh '''
+        #          helm upgrade --install \
+        #            --namespace integration-test \
+        #            -f integration-test.yaml \
+        #            --set serverImage=${WHOAMI_IMAGE} \
+        #            whoami-int \
+        #            whoami/
+        #
+        #          helm ls -n integration-test
+        #        '''
+        #      }
+        #    }
+        #}
     }
 }
