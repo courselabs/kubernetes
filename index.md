@@ -49,7 +49,7 @@ These are hands-on resources to help you learn Kubernetes.
 - [Helm](labs/helm/README.md)
 - [Rollouts](labs/rollouts/README.md)
 - [Jenkins](labs/jenkins/README.md)
-- [ArgoCD](labs/arego/README.md)
+- [ArgoCD](labs/argo/README.md)
 
 ## Real Kubernetes
 
