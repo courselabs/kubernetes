@@ -4,7 +4,9 @@ resources:
 - api.yaml
 - log.yaml
 - web.yaml
-namespace: apod
+namespace: default
+commonLabels:
+  project: apod
 images:
 - name: access-log
   newName: sixeyed/access-log
