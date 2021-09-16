@@ -9,8 +9,10 @@ These are hands-on resources to help you learn Kubernetes.
     - Open a terminal (PowerShell on Windows; any shell on Linux/macOS) 
     - Run: `git clone https://github.com/courselabs/kubernetes.git --depth 1`
      - Open the folder: `cd kubernetes`
+- _For advanced topics_
+    - Install [Helm](https://helm.sh/docs/intro/install/), [ArgoCD](https://argoproj.github.io/argo-cd/getting_started/#2-download-argo-cd-cli) and [k3d](https://k3d.io/v4.4.8/#installation) command line tools
 - _Optional_
-    -   Install [Visual Studio Code](https://code.visualstudio.com) (free - Windows, macOS and Linux) to browse the repo and documentation
+    - Install [Visual Studio Code](https://code.visualstudio.com) (free - Windows, macOS and Linux) to browse the repo and documentation
 
 ## Core Kubernetes
 
@@ -40,13 +42,14 @@ These are hands-on resources to help you learn Kubernetes.
 - [Monitoring](labs/monitoring/README.md)
 - [Logging](labs/logging/README.md)
 
-
 ## Continuous Integration and Continuous Deployment (CI/CD)
 
 - [Image optimizing](labs/docker/README.md)
 - [BuildKit](labs/helm/README.md)
 - [Helm](labs/helm/README.md)
 - [Rollouts](labs/rollouts/README.md)
+- [Jenkins](labs/jenkins/README.md)
+- [ArgoCD](labs/arego/README.md)
 
 ## Real Kubernetes
 

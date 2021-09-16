@@ -126,3 +126,12 @@ Update the release:
 
 - latest golang sdk on latest alpine OS
 - image doesn't need OS tools
+
+
+## Cleanup
+
+helm uninstall whoami-dev
+
+helm uninstall whoami-int -n integration-test
+
+k delete ns -l kubernetes.courselabs.co=jenkins
