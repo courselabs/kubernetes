@@ -5,7 +5,7 @@ serviceNodePort: 30820
 
 # deployment
 replicaCount: 2 #1
-serverImage: docker.io/sixeyed/whoami-lab:21.09-2 #docker.io/sixeyed/whoami-lab:21.09-1
+serverImage: docker.io/sixeyed/whoami-lab:21.09-6 #docker.io/sixeyed/whoami-lab:21.09-1
 serverMode: q
 
 # registry
