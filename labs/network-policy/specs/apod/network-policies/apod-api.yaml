@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: apod-api
+  labels:
+    kubernetes.courselabs.co: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: apod-api
+
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: apod-web
+    ports:
+    - port: api
+
+  egress:   
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
