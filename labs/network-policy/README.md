@@ -17,10 +17,17 @@ Apply deny-all policy:
 
 ```
 k apply -f labs\network-policy\specs\deny-all
+
+k get netpol
 ```
 
 > Refresh http://localhost:30816, still works
 
+Remove to free up the port:
+
+```
+k delete  -f labs\network-policy\specs\apod
+```
 
 ## Try on a new cluster with NetworkPolicy support
 
@@ -37,7 +44,7 @@ k apply -f labs\network-policy\specs\k3d
 
 kubectl get pods -n kube-system --watch
 
-> Calico Pods
+> Wait for Calico Pods
 
 k get nodes
 
@@ -51,6 +58,8 @@ Apply deny-all policy:
 
 ```
 k apply -f labs\network-policy\specs\deny-all
+
+k get netpol
 ```
 
 > Refresh http://localhost:30816, times out
@@ -65,7 +74,7 @@ To be sure, get the IP address and try:
 ```
 k get po -l app=apod-api -o wide
 
-k exec deploy/apod-web -- wget -O- http://<pod-ip-address>/image
+k exec deploy/apod-web -- wget -O- -T2 http://<pod-ip-address>/image
 ```
 
 ## Deploy app policies
@@ -76,7 +85,11 @@ k exec deploy/apod-web -- wget -O- http://<pod-ip-address>/image
 
 k apply -f labs\network-policy\specs\apod\network-policies
 
-k exec deploy/apod-web -- wget -O- http://apod-api/image
+k get netpol
+
+k exec deploy/apod-web -- wget -O- -T2 http://apod-api/image
+
+k describe netpol apod-api
 
 > Refresh http://localhost:30816, OK
 

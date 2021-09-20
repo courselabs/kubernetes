@@ -18,7 +18,7 @@ spec:
     - port: api
 
   egress:   
-  - to:
+  - to: # DNS
     - namespaceSelector:
         matchLabels:
           kubernetes.io/metadata.name: kube-system
@@ -30,3 +30,12 @@ spec:
       port: 53
     - protocol: UDP
       port: 53
+
+  - to: # NASA APIs - api.nasa.gov
+    - ipBlock:
+        cidr: 3.217.44.1/24
+    - ipBlock:
+        cidr: 34.206.6.1/24
+    ports:
+    - protocol: TCP
+      port: 443
