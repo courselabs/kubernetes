@@ -3,7 +3,7 @@ kind: NetworkPolicy
 metadata:
   name: apod-log
   labels:
-    kubernetes.courselabs.co: network-policy
+    kubernetes.courselabs.co: networkpolicy
 spec:
   podSelector:
     matchLabels:

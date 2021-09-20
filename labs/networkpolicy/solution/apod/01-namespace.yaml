@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: apod
   labels: 
-    kubernetes.courselabs.co: network-policy
+    kubernetes.courselabs.co: networkpolicy

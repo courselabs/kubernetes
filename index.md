@@ -51,9 +51,13 @@ These are hands-on resources to help you learn Kubernetes.
 - [Jenkins](labs/jenkins/README.md)
 - [ArgoCD](labs/argo/README.md)
 
+## Advanced Kubernetes
+
+- [NetworkPolicy](labs/networkpolicy/README.md)
+
 ## Real Kubernetes
 
-- [Troubleshooting](labs/troubleshootin/README.mdg)
+- [Troubleshooting](labs/troubleshooting/README.md)
 - [Hackathon!](hackathon/README.md)
 
 

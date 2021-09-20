@@ -105,3 +105,15 @@ k exec sleep -- wget -O- http://apod-api/image
 - change policies to restrict to `apod` ns
 
 (delete existing APOD app to clear down)
+
+## Cleanup
+
+Reusing cluster:
+
+k delete all,netpol,ns -l kubernetes.courselabs.co=network-policy
+
+Or:
+
+k3d cluster delete lab-calico
+
+kubectl config use-context docker-desktop # your cluster name

@@ -4,7 +4,7 @@ metadata:
   name: sleep
   labels:
     app: apod-web
-    kubernetes.courselabs.co: network-policy
+    kubernetes.courselabs.co: networkpolicy
 spec:
   containers:
     - name: sleep

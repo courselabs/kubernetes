@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: apod-web
   labels:
-    kubernetes.courselabs.co: network-policy
+    kubernetes.courselabs.co: networkpolicy
 spec:
   ports:
     - port: 8016
@@ -18,7 +18,7 @@ kind: Deployment
 metadata:
   name: apod-web
   labels:
-    kubernetes.courselabs.co: network-policy
+    kubernetes.courselabs.co: networkpolicy
 spec:
   selector:
     matchLabels:
