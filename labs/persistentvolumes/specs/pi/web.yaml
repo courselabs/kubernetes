@@ -19,7 +19,7 @@ metadata:
   name: pi-web
   labels:
     app: pi-web
-    co.courselabs.kubernetes: persistentvolumes
+    kubernetes.courselabs.co: persistentvolumes
 spec:
   selector:
     matchLabels:
