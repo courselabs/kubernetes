@@ -109,3 +109,6 @@ k3d node start k3d-lab-clusters-server-0
 Maintenance - remove pods and flag node for no more pods, add node back in and rebalance whoami pods
 
 
+## Cleanup
+
+k3d cluster delete lab-clusters
