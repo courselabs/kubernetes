@@ -225,4 +225,8 @@ ___
 
 ```
 kubectl delete ns,deploy,svc -l kubernetes.courselabs.co=monitoring
+
+kubectl delete ds,deploy -n kube-system -l kubernetes.courselabs.co=monitoring
+
+kubectl delete clusterrole,clusterrolebinding -l kubernetes.courselabs.co=monitoring
 ```
