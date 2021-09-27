@@ -54,6 +54,13 @@ These are hands-on resources to help you learn Kubernetes.
 ## Advanced Kubernetes
 
 - [NetworkPolicy](labs/networkpolicy/README.md)
+- [Admission](labs/admission/README.md)
+- [Operators](labs/operators/README.md)
+
+## Production Operations
+
+- [Clusters](labs/clusters/README.md)
+- [Affinity](labs/affinity/README.md)
 
 ## Real Kubernetes
 
