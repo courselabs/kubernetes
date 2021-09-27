@@ -19,4 +19,8 @@ spec:
           image: sixeyed/whoami:21.04
       nodeSelector:
         kubernetes.io/os: linux
+        # you can only express equality in a node selector
+        # you can't say a label shouldn't exist or
+        # should not have a specific value
+        # node-role.kubernetes.io/control-plane: !true
         

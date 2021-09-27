@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep
+  labels:
+    kubernetes.courselabs.co: affinity
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: sleep
+        image: kiamol/ch03-sleep
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions: # Intel AND (Linux OR Windows)
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+                - key: kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                  - windows
+              - matchExpressions: # same selection for older clusters
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+                - key: beta.kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                  - windows
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 10
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+          - weight: 10
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - windows
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - windows

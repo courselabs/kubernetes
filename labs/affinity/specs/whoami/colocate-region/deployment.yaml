@@ -26,19 +26,13 @@ spec:
               - matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
                   operator: DoesNotExist
-                - key: cis-compliance
-                  operator: Exists
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - preference:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
                 matchExpressions:
-                  - key: cis-compliance
-                    operator: In
-                    values: ['verified']
-              weight: 100
-            - preference:
-                matchExpressions:
-                  - key: cis-compliance
-                    operator: In
-                    values: ['requested']
-              weight: 1
+                - key: app
+                  operator: In
+                  values:
+                  - whoami
+              topologyKey: topology.kubernetes.io/region
         
