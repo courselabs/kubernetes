@@ -175,10 +175,7 @@ Add the bot app to get an API token, call it kubewatch:
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
-helm install --name kubewatch bitnami/kubewatch --values=labs\tools\kubewatch\values.yaml --set='slack.channel=#YOUR_CHANNEL,slack.token=xoxb-YOUR_TOKEN'
-
-
-helm install kubewatch -n default --values=labs\tools\kubewatch\values.yaml --set='slack.channel=#lab-tools,slack.token=xoxb-2558897489664-2535299245714-7jYPn24C9FuoBiyjr5XWHIeI' bitnami/kubewatch
+helm install kubewatch -n default --values=labs\tools\kubewatch\values.yaml --set='slack.channel=#lab-tools,slack.token=<YOUR-TOKEN>' bitnami/kubewatch
 
 
 k logs -n default -l app.kubernetes.io/name=kubewatch
