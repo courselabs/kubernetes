@@ -124,3 +124,7 @@ k delete svc,deploy -l kubernetes.courselabs.co=affinity
 OR
 
 k3d cluster delete lab-affinity
+
+Reset to previous cluster, e.g.
+
+kubectl config use-context docker-desktop

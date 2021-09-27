@@ -6,6 +6,15 @@
 - K3d
 - [Taints and tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
 
+## Cluster versions & API support
+
+TODO - create two clusters, 1@ latest and 1@ 1.16?
+
+k cluster-info
+
+k api-versions
+
+- deploy apps/beta deployment on both to see response
 
 ## Create a multi-node cluster
 
@@ -112,3 +121,5 @@ Maintenance - remove pods and flag node for no more pods, add node back in and r
 ## Cleanup
 
 k3d cluster delete lab-clusters
+
+kubectl config use-context docker-desktop

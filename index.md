@@ -61,12 +61,12 @@ These are hands-on resources to help you learn Kubernetes.
 
 - [Clusters](labs/clusters/README.md)
 - [Affinity](labs/affinity/README.md)
+- [Tools](labs/tools/README.md)
 
 ## Real Kubernetes
 
 - [Troubleshooting](labs/troubleshooting/README.md)
 - [Hackathon!](hackathon/README.md)
-
 
 ### Credits
 
