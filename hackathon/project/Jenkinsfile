@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+    environment {
+      PRODUCTS_DB_IMAGE = "${WIDGETARIO_REGISTRY_DOMAIN}/${WIDGETARIO_REGISTRY_REPOSITORY}/products-db-replicated:${WIDGETARIO_RELEASE_VERSION}-${BUILD_NUMBER}"
+      PRODUCTS_API_IMAGE = "${WIDGETARIO_REGISTRY_DOMAIN}/${WIDGETARIO_REGISTRY_REPOSITORY}/products-api:${WIDGETARIO_RELEASE_VERSION}-${BUILD_NUMBER}"
+      STOCK_API_IMAGE = "${WIDGETARIO_REGISTRY_DOMAIN}/${WIDGETARIO_REGISTRY_REPOSITORY}/stock-api:${WIDGETARIO_RELEASE_VERSION}-${BUILD_NUMBER}"
+      WEB_IMAGE = "${WIDGETARIO_REGISTRY_DOMAIN}/${WIDGETARIO_REGISTRY_REPOSITORY}/web:${WIDGETARIO_RELEASE_VERSION}-${BUILD_NUMBER}"
+    }
+    stages {
+        stage('Audit tools') {                        
+            steps {
+                sh '''
+                  git version
+                  buildctl --version
+                  kubectl version --short
+                  helm version --short
+                '''
+            }
+        }
+        stage('Build & push database') {
+            steps {
+              echo "Building image tag: ${PRODUCTS_DB_IMAGE}"
+              sh '''
+                buildctl --addr tcp://buildkitd:1234 \
+                  build --frontend=dockerfile.v0 \
+                  --local context=./src/db/postgres-replicated \
+                  --local dockerfile=./src/db/postgres-replicated \
+                  --output type=image,name="${PRODUCTS_DB_IMAGE}",push=true
+              '''
+            }
+        }
+        stage('Build & push products API') {
+            steps {
+              echo "Building image tag: ${PRODUCTS_API_IMAGE}"
+              sh '''
+                buildctl --addr tcp://buildkitd:1234 \
+                  build --frontend=dockerfile.v0 \
+                  --local context=./src/products-api/java \
+                  --local dockerfile=./src/products-api/java \
+                  --output type=image,name="${PRODUCTS_API_IMAGE}",push=true
+              '''
+            }
+        }
+        stage('Build & push stock API') {
+            steps {
+              echo "Building image tag: ${STOCK_API_IMAGE}"
+              sh '''
+                buildctl --addr tcp://buildkitd:1234 \
+                  build --frontend=dockerfile.v0 \
+                  --local context=./src/stock-api/golang \
+                  --local dockerfile=./src/stock-api/golang \
+                  --output type=image,name="${STOCK_API_IMAGE}",push=true
+              '''
+            }
+        }
+        stage('Build & push web') {
+            steps {
+              echo "Building image tag: ${WEB_IMAGE}"
+              sh '''
+                buildctl --addr tcp://buildkitd:1234 \
+                  build --frontend=dockerfile.v0 \
+                  --local context=./src/web/dotnet \
+                  --local dockerfile=./src/web/dotnet \
+                  --output type=image,name="${WEB_IMAGE}",push=true
+              '''
+            }
+        }
+        stage('Deploy to test namespace') {
+            steps {
+              dir ('helm') {
+                sh '''
+                  echo 'This is where the Helm install thingy needs to go'
+
+                '''
+              }
+            }
+        }
+    }
+}
