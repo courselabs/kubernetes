@@ -52,3 +52,8 @@ http://localhost:30880/job/widgetario/ - enable job, build now
 - new deployments not in Prom, why? (ns)
 
 - add helm deploy to Jenkins
+
+copy/paste from solution, or change jenkinsfile path
+
+- open
+- change path to `hackathon/solution-part-7/Jenkinsfile`

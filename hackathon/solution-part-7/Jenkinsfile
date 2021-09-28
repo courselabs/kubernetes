@@ -64,15 +64,25 @@ pipeline {
                   --output type=image,name="${WEB_IMAGE}",push=true
               '''
             }
-        }
+        }        
         stage('Deploy to test namespace') {
             steps {
-              dir ('helm') {
                 sh '''
-                  echo 'Replace this with your Helm install command'
+                  # upgrade or install using the newly-pushed images:
+                  helm upgrade --install \
+                    --namespace widg-smoke \
+                    --create-namespace \
+                    -f hackathon/files/helm/smoke-test.yaml \
+                    --set pdbImage=${PRODUCTS_DB_IMAGE} \
+                    --set papiImage=${PRODUCTS_API_IMAGE} \
+                    --set sapiImage=${STOCK_API_IMAGE} \
+                    --set webGreenImage=${WEB_IMAGE} \
+                    widg-smoke \
+                    hackathon/solution-part-7/helm/widgetario/
 
+                  # list releases to show the output in Jenkins:
+                  helm ls -n widg-smoke
                 '''
-              }
             }
         }
     }
