@@ -40,7 +40,7 @@ stringData:
     spring.jpa.database=POSTGRESQL
     spring.jpa.generate-ddl=false
     spring.datasource.platform=postgres           
-    {{- if gt .Values.pdbReplicaCount 1 }}
+    {{- if gt .Values.pdbReplicaCount 1.0 }}
     spring.datasource.url=jdbc:postgresql://{{ .Release.Name }}-pdb-1.{{ .Release.Name }}-pdb.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres
     {{- else }}
     spring.datasource.url=jdbc:postgresql://{{ .Release.Name }}-pdb-0.{{ .Release.Name }}-pdb.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres

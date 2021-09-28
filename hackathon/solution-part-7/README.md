@@ -55,5 +55,6 @@ http://localhost:30880/job/widgetario/ - enable job, build now
 
 copy/paste from solution, or change jenkinsfile path
 
-- open
+- open http://localhost:30880/job/widgetario/configure
+- scroll down to _Script Path_
 - change path to `hackathon/solution-part-7/Jenkinsfile`
