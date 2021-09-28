@@ -253,6 +253,8 @@ And we're good to go.
 
 - ci build
 -- buildkit, gogs, jenkins
+-- registry secret
+-- registry & domain configmap
 
 - cd
 -- add helm deployment
@@ -262,5 +264,5 @@ ___
 ## Cleanup
 
 ```
-kubectl delete all,cm,secret,pvc,ns -l co.courselabs.kubernetes=hackathon
+kubectl delete all,ingress,cm,secret,pvc,rolebinding,clusterrolebinding,role,clusterrole,ns -l kubernetes.courselabs.co=hackathon
 ```

@@ -58,3 +58,20 @@ copy/paste from solution, or change jenkinsfile path
 - open http://localhost:30880/job/widgetario/configure
 - scroll down to _Script Path_
 - change path to `hackathon/solution-part-7/Jenkinsfile`
+
+
+
+```
+# On Windows (run as Admin)
+./scripts/add-to-hosts.ps1 widgetario.smoke 127.0.0.1
+./scripts/add-to-hosts.ps1 api.widgetario.smoke 127.0.0.1
+
+# OR on Linux/macOS
+./scripts/add-to-hosts.sh widgetario.smoke 127.0.0.1
+./scripts/add-to-hosts.sh api.widgetario.smoke 127.0.0.1
+```
+
+http://widgetario.smoke
+
+
+curl -k https://api.widgetario.smoke/products
