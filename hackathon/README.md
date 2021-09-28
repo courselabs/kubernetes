@@ -265,4 +265,8 @@ ___
 
 ```
 kubectl delete all,ingress,cm,secret,pvc,rolebinding,clusterrolebinding,role,clusterrole,ns -l kubernetes.courselabs.co=hackathon
+
+helm uninstall -n widg-smoke widg-smoke
+
+helm uninstall -n widg-uat widg-uat
 ```
