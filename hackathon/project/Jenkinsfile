@@ -23,8 +23,8 @@ pipeline {
               sh '''
                 buildctl --addr tcp://buildkitd:1234 \
                   build --frontend=dockerfile.v0 \
-                  --local context=./src/db/postgres-replicated \
-                  --local dockerfile=./src/db/postgres-replicated \
+                  --local context=./hackathon/project/src/db/postgres-replicated \
+                  --local dockerfile=./hackathon/project/src/db/postgres-replicated \
                   --output type=image,name="${PRODUCTS_DB_IMAGE}",push=true
               '''
             }
@@ -35,8 +35,8 @@ pipeline {
               sh '''
                 buildctl --addr tcp://buildkitd:1234 \
                   build --frontend=dockerfile.v0 \
-                  --local context=./src/products-api/java \
-                  --local dockerfile=./src/products-api/java \
+                  --local context=./hackathon/project/src/products-api/java \
+                  --local dockerfile=./hackathon/project/src/products-api/java \
                   --output type=image,name="${PRODUCTS_API_IMAGE}",push=true
               '''
             }
@@ -47,8 +47,8 @@ pipeline {
               sh '''
                 buildctl --addr tcp://buildkitd:1234 \
                   build --frontend=dockerfile.v0 \
-                  --local context=./src/stock-api/golang \
-                  --local dockerfile=./src/stock-api/golang \
+                  --local context=./hackathon/project/src/stock-api/golang \
+                  --local dockerfile=./hackathon/project/src/stock-api/golang \
                   --output type=image,name="${STOCK_API_IMAGE}",push=true
               '''
             }
@@ -59,8 +59,8 @@ pipeline {
               sh '''
                 buildctl --addr tcp://buildkitd:1234 \
                   build --frontend=dockerfile.v0 \
-                  --local context=./src/web/dotnet \
-                  --local dockerfile=./src/web/dotnet \
+                  --local context=./hackathon/project/src/web/dotnet \
+                  --local dockerfile=./hackathon/project/src/web/dotnet \
                   --output type=image,name="${WEB_IMAGE}",push=true
               '''
             }
