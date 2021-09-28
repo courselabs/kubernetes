@@ -14,7 +14,7 @@ It will help you understand which areas you're comfortable with and where you ne
 
 And it will give you an app that you modelled yourself, which you can use as a reference next time you model a new app.
 
-> ℹ There are five parts to the hackathon - you're not expected to complete them all. Just get as far as you can in the time, it's all great experience.
+> ℹ There are several parts to the hackathon - you're not expected to complete them all. In some classes we have a whole day for this, in others just a few hours. Get as far as you can in the time, it's all great experience.
 
 ## Part 1 - Welcome to Widgetario
 
@@ -232,6 +232,30 @@ kubectl apply -f hackathon/solution-part-5/ingress-controller -f hackathon/solut
 And we're good to go.
 
 </details><br/>
+
+
+## Part 6 - Observability
+
+- run monitoring stack
+- add annotations to pods: opt-in for apis & web; path for products-api; port for web
+- load grafana dashboard
+
+- run efk stack
+- add logging sidecar to web pod
+- load kibana dashboard
+
+
+## Part 7 - CI/CD
+
+- build helm chart
+-- support image tags
+-- multiple installs one cluster
+
+- ci build
+-- buildkit, gogs, jenkins
+
+- cd
+-- add helm deployment
 
 ___ 
 
