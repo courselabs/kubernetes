@@ -8,6 +8,8 @@ Multi-stage builds are a great way to centralize your toolset - developers and b
 
 - [Multi-stage build docs](https://docs.docker.com/develop/develop-images/multistage-build/)
 
+- [Official SDK images on Docker Hub](https://hub.docker.com/search?type=image&image_filter=official&category=languages)
+
 <details>
   <summary>Sample Dockerfiles</summary>
 
