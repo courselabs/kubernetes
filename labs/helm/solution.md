@@ -1,3 +1,6 @@
+# Lab Solution
+
+Start by adding the repo and updating your local package list:
 
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -5,28 +8,35 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 ```
 
+Search for the chart - version `4.0.5` installs app version `1.0.3`, and you can see the default values:
+
 ```
 helm search repo ingress-nginx --versions
 
-helm show values ingress-nginx/ingress-nginx --version 4.0.1
+helm show values ingress-nginx/ingress-nginx --version 4.0.5
 ```
 
+Install the chart to a custom namespace, which Helm will create if it doesn't exist; the `f` flag has the path to the local values file:
+
 ```
-helm install -n ingress --create-namespace -f labs\helm\ingress-nginx\dev.yaml ingress-nginx ingress-nginx/ingress-nginx --version 4.0.1
+helm install -n ingress --create-namespace -f labs/helm/ingress-nginx/dev.yaml ingress-nginx ingress-nginx/ingress-nginx --version 4.0.5
 
-# output docs include sample Ingress spec
+# the output docs include sample Ingress spec
+```
 
+Helm releases are namespaced - you won't see the ingress controller in the default namespace:
+
+```
 helm ls
 
 helm ls -A
 ```
 
+Check the Service to confirm the type and port:
 ```
-k get ns
-
-k get svc -n ingress
+kubectl get svc -n ingress
 ```
 
-> http://localhost:30080
+> Browse to http://localhost:30080
 
-That's a lot of work to see a 404...
+And that's a production-grade 404 you're seeing :)
