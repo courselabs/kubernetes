@@ -1,4 +1,4 @@
-# Dockerfiles
+# Docker Image Optimiziation
 
 The key to optimizing Docker builds is to use the right base images, and keep your application images small with multi-stage builds. Multi-stage builds use the standard Dockerfile syntax, with multiple stages separated with `FROM` commands. They give you a repeatable build with minimal dependencies.
 
@@ -22,6 +22,8 @@ These are samples in the major languages:
 </details><br/>
 
 ## Multi-Stage Dockerfiles
+
+There are two build engines in Docker - the original and [BuildKit](). They both produce compatible images, but BuildKit is optimized and it's the default in recent Docker installations. 
 
 We'll start by using the original build engine so it's clear what's happening in the build - later we'll switch to BuildKit which has better performance:
 
