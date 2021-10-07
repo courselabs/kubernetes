@@ -192,6 +192,8 @@ Your CI/CD pipeline will have a buildctl command which runs on every push to sou
 
 Simulate that in this lab - build a new version of the simple Docker image and push it with a new tag. Use an environment variable for the version number, so your build command is the same every time; update the environment variable and push images with the tag `0.1.0` and `0.2.0`.
 
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
 ___
 
 ## Cleanup
