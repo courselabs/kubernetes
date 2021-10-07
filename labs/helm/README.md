@@ -297,7 +297,9 @@ Install the Nginx Ingress controller from the public Helm chart, using at least 
 Remove all the Helm releases:
 
 ```
-helm uninstall vweb,whoami-custom,whoami-default
+helm uninstall vweb whoami-custom whoami-default
 
 helm uninstall ingress-nginx -n ingress
+
+kubectl delete ns ingress
 ```
