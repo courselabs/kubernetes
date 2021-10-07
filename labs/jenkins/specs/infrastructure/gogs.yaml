@@ -30,6 +30,7 @@ spec:
       labels:
         app: gogs
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: gogs
           image: kiamol/ch11-gogs
