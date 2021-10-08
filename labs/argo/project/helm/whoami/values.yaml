@@ -4,8 +4,8 @@ serviceType: NodePort
 serviceNodePort: 30820
 
 # deployment
-replicaCount: 2
-serverImage: docker.io/courselabs/whoami-lab:21.09-3
+replicaCount: 3
+serverImage: docker.io/courselabs/whoami-lab:21.09-4
 serverMode: q
 
 # registry
