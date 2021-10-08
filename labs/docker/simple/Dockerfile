@@ -7,7 +7,7 @@ FROM base AS build
 RUN echo 'Building...' > /build.txt
 
 # pretend test suite
-FROM build AS test
+FROM base AS test
 COPY --from=build /build.txt /build.txt
 RUN echo 'Testing...' >> /build.txt
 

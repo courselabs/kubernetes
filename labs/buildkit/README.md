@@ -58,7 +58,7 @@ Still inside the Pod session, download a Dockerfile:
 ```
 cd bin
 
-wget https://raw.githubusercontent.com/courselabs/kubernetes/main/labs/docker/simple/Dockerfile
+wget --no-check-certificate https://raw.githubusercontent.com/courselabs/kubernetes/main/labs/docker/simple/Dockerfile
 
 cat Dockerfile
 ```
@@ -178,7 +178,7 @@ Finally we can download a Dockerfile and use BuildKit to build and push the imag
 ```
 cd ~
 
-wget https://raw.githubusercontent.com/courselabs/kubernetes/main/labs/docker/simple/Dockerfile
+wget --no-check-certificate https://raw.githubusercontent.com/courselabs/kubernetes/main/labs/docker/simple/Dockerfile
 
 # build using the repository info from the ConfigMap:
 buildctl --addr tcp://buildkitd:1234 build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --output type=image,name=${REGISTRY}/${REPOSITORY}/simple,push=true

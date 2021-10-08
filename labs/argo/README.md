@@ -104,8 +104,13 @@ kubectl apply -f labs/argo/specs/gogs
 When the Pod is ready, add the new server as a remote and push a copy of this repo:
 
 ```
+# fetch the full history of the GitHub repo:
+git fetch --unshallow
+
+# add the local Git server:
 git remote add labs-argo http://localhost:30300/kiamol/kiamol.git
 
+# push to the expected branch name:
 git push --set-upstream labs-argo main:master
 ```
 

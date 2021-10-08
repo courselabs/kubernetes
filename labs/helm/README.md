@@ -292,6 +292,10 @@ This values file is suitable for the Nginx ingress controller chart in a local e
 
 Install the Nginx Ingress controller from the public Helm chart, using at least version `1.0.3` of the app. Use a new namespace called `ingress`. Browse to the HTTP endpoint and confirm you get a response from Nginx.
 
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
+
+___
+
 ## Cleanup
 
 Remove all the Helm releases:

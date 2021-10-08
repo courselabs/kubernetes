@@ -134,8 +134,13 @@ The local build infrastructure is all running, and Jenkins is configured with a 
 To run a build we need to push our local code to Gogs. You can do this with the Git CLI - these commands adds the local server as a new remote and push a copy of the repo there:
 
 ```
+# fetch the full history of the GitHub repo:
+git fetch --unshallow
+
+# add the local Git server:
 git remote add gogs http://localhost:30300/kiamol/kiamol.git
 
+# and push:
 git push --set-upstream gogs main
 ```
 

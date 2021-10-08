@@ -117,7 +117,7 @@ kubectl rollout undo deploy/vweb
 
 > The rollback uses the new custom rollout strategy, 3x v1 Pods come online, v2 Pods replaced when v1 Pods are running
 
-Describe the Deployment and you'll see that the rolling update strategy hasn't changed. A rollback reverts to the previous Pod spec, not to the previous spec of the Deployment.
+Describe the Deployment and you'll see that the rolling update strategy hasn't changed. _A rollback reverts to the previous Pod spec_, not to the previous spec of the Deployment.
 
 Now we're back at v1, we can see what happens with a slower rollout strategy:
 
@@ -289,7 +289,7 @@ When the old Pod has terminated, the new one is created.
 
 StatefulSets have another variation on update strategies. By default the Pods are replaced consecutively, starting from the last Pod in the set and working backwards to the first.
 
-- [nginx-statefulset/1.18.yaml] - runs a 3-Pod set with the older Nginx release
+- [nginx-statefulset/1.18.yaml](./specs/nginx-statefulset/1.18.yaml) - runs a 3-Pod set with the older Nginx release
 
 Remove the DaemonSet and create the StatefulSet. If your watch is still running you'll see the old Pod removed and three new Pods created:
 

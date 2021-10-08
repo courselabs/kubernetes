@@ -41,7 +41,7 @@ Here's a [simple multi-stage Dockerfile](./simple/Dockerfile):
 
 - the `base` stage uses Alpine and simulates adding some dependencies
 - the `build` stage builds on the base and simulates an app build
-- the `test` stage starts from the build output and simulates automated testing
+- the `test` stage starts from the base, copies in the build output and simulates automated testing
 - the final stage starts from base and copies in the build output
 
 📋 Build an image called `simple` from the `labs/docker/simple` Dockerfile.
