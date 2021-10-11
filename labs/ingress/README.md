@@ -69,7 +69,7 @@ kubectl get all -n ingress-nginx
 kubectl wait --for=condition=Ready pod -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
 ```
 
-> Browse to localhost:8000 / localhost:30000. There are no apps running in the cluster but you'll get a 404 response, which comes from the ingress controller
+> Browse to http://localhost:8000 or http://localhost:30000. There are no apps running in the cluster but you'll get a 404 response, which comes from the ingress controller
 
 The ingress controller is powered by Nginx, but you don't need to configure routing inside Nginx - you treat it as a black box and do all the configuration with Ingress objects.
 
@@ -111,7 +111,7 @@ kubectl get ingress
 
 When you browse to any URL you'll see the default response:
 
-> Browse to localhost:8000/a/bc.php / localhost:30000/a/bc.php
+> Browse to http://localhost:8000/a/bc.php or http://localhost:30000/a/bc.php
 
 <details>
   <summary>ℹ Ingress controllers usually have their own default backend.</summary>
@@ -154,7 +154,7 @@ sudo chmod +x ./scripts/add-to-hosts.sh
 ./scripts/add-to-hosts.sh whoami.local 127.0.0.1
 ```
 
-> Browse to whoami.local:8000 / whoami.local:30000 and you'll see the site. There are multiple replicas - refresh to see load-balancing between them
+> Browse to http://whoami.local:8000 or http://whoami.local:30000 and you'll see the site. There are multiple replicas - refresh to see load-balancing between them
 
 ## Use ingress with response caching
 
@@ -186,7 +186,7 @@ kubectl get po -l app=pi-web
 
 </details><br/>
 
-> Browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000; it'll take a second or so to see the response. Refresh and you'll see the request is load-balanced and the response is calculated every time.
+> Browse to http://pi.local:8000/pi?dp=25000 / http://pi.local:30000/pi?dp=25000 it'll take a second or so to see the response. Refresh and you'll see the request is load-balanced and the response is calculated every time.
 
 We can update the Ingress object to use response caching - which the Nginx ingress controller supports:
 

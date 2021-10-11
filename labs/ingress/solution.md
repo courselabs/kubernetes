@@ -12,8 +12,10 @@ kubectl apply -f labs/ingress/solution/ingress
 It's a new domain so you need to add it to your hosts file:
 
 ```
+# on Windows:
 ./scripts/add-to-hosts.ps1 configurable.local 127.0.0.1
 
+# on *nix:
 ./scripts/add-to-hosts.sh configurable.local 127.0.01
 ```
 
