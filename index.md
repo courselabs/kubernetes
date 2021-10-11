@@ -7,7 +7,7 @@ These are hands-on resources to help you learn Kubernetes.
  - [Set up Kubernetes and a Git client](./setup/README.md) 
  - Download your repo
     - Open a terminal (PowerShell on Windows; any shell on Linux/macOS) 
-    - Run: `git clone https://github.com/courselabs/kubernetes.git --depth 1`
+    - Run: `git clone https://github.com/courselabs/kubernetes.git`
      - Open the folder: `cd kubernetes`
 - _For advanced topics_
     - Install [Helm](https://helm.sh/docs/intro/install/), [ArgoCD](https://argoproj.github.io/argo-cd/getting_started/#2-download-argo-cd-cli) and [k3d](https://k3d.io/v4.4.8/#installation) command line tools
