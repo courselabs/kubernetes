@@ -10,7 +10,7 @@ spec:
       app: apod-web
 
   ingress:
-  - {}
+  - {} # allow all
 
   egress:
   - to:

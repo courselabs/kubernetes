@@ -1,4 +1,9 @@
-dig api.nasa.gov
+# Lab Hints
 
-3.217.44.1/24
-34.206.6.1/24
+The [NetworkPolicy API spec](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#networkpolicy-v1-networking-k8s-io) includes namespace selectors in policy rules, which apply before the Pod selectors.
+
+You'll need to include the namespace in both ingress and egress rules.
+
+The existing policies do something similar already for accesss to the DNS server.
+
+> Need more? Here's the [solution](solution.md).

@@ -1,14 +1,52 @@
+# Lab Solution
 
-k delete -f labs\network-policy\specs\apod
+Start by deleting the original app:
 
-k delete -f labs\network-policy\specs\apod\network-policies
+```
+kubectl delete -f labs/networkpolicy/specs/apod
 
-k apply -f labs\network-policy\solution\apod
+kubectl delete -f labs/networkpolicy/specs/apod/network-policies
+```
 
-k exec -n apod deploy/apod-web -- wget -O- -T2 http://apod-api/image
+You should still have the default deny policy:
 
-> Refresh http://localhost:30816, OK
+```
+kubectl get netpol
+```
 
-k exec sleep -- wget -O- http://apod-api.apod.svc.cluster.local/image
+My solution (in labs\networkpolicy\solution\apod) adds a namespace to all the Pod selectors:
 
-> Bad address
+- [network-policies.yaml](.\solution\apod\network-policies.yaml)
+
+Deploy the app:
+
+```
+kubectl apply -f labs/networkpolicy/solution/apod
+```
+
+Test the web app can access the API, and the API can access the external API:
+
+```
+kubectl exec -n apod deploy/apod-web -- wget -O- -T2 http://apod-api/image
+```
+
+> Refresh http://localhost:30816, the app should be working correctly
+
+Try to access the API from the sleep Pod:
+
+```
+kubectl exec sleep -- wget -O- http://apod-api.apod.svc.cluster.local/image
+```
+
+> You'll get a bad address error, because the Pod can't access DNS
+
+Try with the IP address instead:
+
+```
+kubectl get po -n apod -l app=apod-api -o wide
+
+# this will fail with a timeout
+kubectl exec sleep -- wget -O- -T2 http://192.168.39.200/image
+```
+
+> Now you'll get a timeout error, because Calico is blocking the connection
