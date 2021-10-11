@@ -193,8 +193,10 @@ Services are namespace-scoped, so if you want to resolve the IP address for a Se
 Run some DNS queries inside the sleep Pod:
 
 ```
+# this won't return an address - the Service is in a different namespace:
 kubectl exec pod/sleep -- nslookup whoami-np
 
+# this includes the namespace, so it will return an IP address:
 kubectl exec pod/sleep -- nslookup whoami-np.whoami.svc.cluster.local
 ```
 
@@ -206,7 +208,7 @@ Namespaces aren't just for logically grouping components, you can also enforce q
 
 This ensures apps don't use all the processing power of the cluster, starving other apps. [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) at the namespace level work together with [resource limits and requests](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) at the Pod level. 
 
-The Pi app we've used before is compute-intensive, so to keep our cluster usable for other apps we'll deploy it in a new namespace with a CPU quota applied:
+The Pi-calculating web app is compute-intensive, so to keep our cluster usable for other apps we'll deploy it in a new namespace with a CPU quota applied:
 
 - [pi/02-cpu-limit-quota.yaml](specs/pi/02-cpu-limit-quota.yaml) - defines a quota which sets a total limits of 4 CPU cores across all Pods in the namespace
 - [pi/web-deployment.yaml](specs/pi/web-deployment.yaml) - defines a Deployment with one Pod which has a limit of 125 millicores (0.125 of one core)
@@ -223,7 +225,7 @@ kubectl -n pi get quota
 kubectl -n pi get po
 ```
 
-> Try the app at http://localhost:8030/pi?dp=30000. On my machine it takes about 10.5 seconds to respond.
+> Try the app at http://localhost:30030/pi?dp=30000. On my machine it takes about 10.5 seconds to respond.
 
 <details>
   <summary>ℹ Not every dev Kubernetes setup enforces CPU limitations</summary> 
@@ -247,7 +249,7 @@ kubectl describe po -l app=pi-web,cpu=mid -n pi
 
 </details><br />
 
-> Refresh http://localhost:8030/pi?dp=30000. On my machine it now takes about 1.2 seconds to respond.
+> Refresh http://localhost:30030/pi?dp=30000. On my machine it now takes about 1.2 seconds to respond.
 
 Try and go to the max - [max-cpu/web-deployment.yaml](specs/pi/max-cpu/web-deployment.yaml) sets a limit of 4.5 CPU cores, which is greater than the quota for the namespace:
 
@@ -263,13 +265,13 @@ kubectl -n pi describe rs -l app=pi-web,cpu=max
 
 ## Lab
 
-That Pi service takes too long to run, it was better when it ran with a proxy to cache the responses.
+That Pi service takes too long to run, it performs better when you run it with a reverse proxy to cache the responses.
 
 Add a caching proxy in front of the Pi app, and be aware that the ops team want all proxies in a namespace called `front-end`.
 
-You can use the Nginx setup from the PersistentVolumes lab as a starting point, but remember the pi-web Service is in its own namespace now.
+You can use the reverse proxy setup from here as a starting point, but the specs don't include a namespace: [reverse-proxy/nginx.yaml](labs/namespaces/specs/reverse-proxy/nginx.yaml).
 
-And we don't want any port clashes, so for the proxy let's use `8040` for the LoadBalancer Service and `30040` for the NodePort.
+Browse to http://localhost:30040 and you'll find an error - you'll need to fix the configuration to get it working.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
