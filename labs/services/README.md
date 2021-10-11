@@ -60,14 +60,12 @@ spec:
 
 ## Run sample Pods
 
-Replace the Pods from the previous lab with new definitions which contain labels:
+Start by creating some simple Pods from definitions which contain labels:
 
 * [whoami.yaml](specs/pods/whoami.yaml)
 * [sleep.yaml](specs/pods/sleep.yaml)
 
 ```
-kubectl delete pods --all
-
 kubectl apply -f labs/services/specs/pods
 ```
 

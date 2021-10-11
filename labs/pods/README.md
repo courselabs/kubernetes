@@ -175,3 +175,12 @@ Kubernetes will keep trying to make the Pod work, so you'll want to remove it wh
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
+
+___
+## Cleanup
+
+We'll clean up before we move on, deleting all the Pods we created:
+
+```
+kubectl delete pod sleep whoami sleep-lab
+```

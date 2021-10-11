@@ -131,10 +131,11 @@ kubectl logs -l app=whoami
 And if you need to run commands in the Pod, you can use exec at the Deployment level:
 
 ```
+# this will fail
 kubectl exec deploy/whoami -- hostname
 ```
 
-> Still no shell in this container image :)
+> There's no shell in this container image :)
 
 The Pod spec in the Deployment template applies a label.
 
