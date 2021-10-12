@@ -1,0 +1,13 @@
+apiVersion: v1
+appVersion: v0.4.0
+description: A Helm chart for mysql operator
+home: https://github.com/presslabs/mysql-operator
+keywords:
+- mysql
+- percona
+- orchestrator
+- presslabs
+name: mysql-operator
+sources:
+- https://github.com/presslabs/mysql-operator.git
+version: 0.4.0

@@ -1,94 +1,306 @@
+# Managing Apps with Operators
 
+Some applications need a lot of operational knowledge - not just the complexity of modelling the app in Kubernetes, but ongoing maintenance tasks. Think of a stateful application where you want to create backups of data. The application deployment is modelled in Kubernetes resources, and it would be great to model the operations in Kubernetes too.
+
+That's what the [operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) does. It's a loose definition for an approach where you install an application which extends Kubernetes. So in that stateful application your operator would deploy the app, and it would also create a custom _DataBackup_ resource in the cluster. Any time you want to take a backup, you deploy a backup object, the operator sees the object and performs all the backup tasks.
 
 ## Reference
 
-- [NATS Operator](https://github.com/nats-io/nats-operator)
-- [Presslabs MySql Operator](https://github.com/presslabs/charts)
+- [Custom Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) - extending Kubernetes with your own object type
+- [NATS Operator](https://github.com/nats-io/nats-operator) - a sample operator for deploying message queues
+- [Presslabs MySql Operator](https://github.com/presslabs/charts) - operator for managing MySql databases
 
-## CustomResourceDefinitions
+## Custom Resources
 
-k apply -f labs\operators\specs\crd
+Operators typically work by adding CustomResourceDefinitions (CRDs) to the cluster.
 
-k get crd
+CRDs are pretty simple in themselved, you deploy an object which describes the schema of your new resource type:
 
-k apply -f labs\operators\specs\students
+- [student-crd.yaml](./specs/crd/student-crd.yaml) - defines a v1 _Student_ resource, with _email_ and _company_ fields; the rest of the spec tells Kubernetes to store objects in its database, and print out specific fields when objects are shown in Kubectl
 
-k get students
+You deploy CRDs in the usual way:
 
-k describe student priti
+```
+kubectl apply -f labs/operators/specs/crd
+```
+
+📋 List all the custom resource in the cluster, and print the details of the new Student CRD.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+kubectl get crd
+
+kubectl describe crd students
+```
+
+</details><br/>
+
+> The CRD is just the object schema. Kubernetes opnly stores objects if it understands the type, which is what the CRD describes.
+
+Now your Kubernetes cluster understands _Student_ resources, you can define them with YAML:
+
+- [edwin.yaml](/specs/students/edwin.yaml) - describes a student who works at Microsoft
+- [priti.yaml](./specs/students/priti.yaml) - a student who works at Google
+
+📋 Create all the Students in the `labs/operators/specs/students` folder, list them and print the details for Priti.
+
+<details>
+  <summary>Not sure how?</summary>
+
+These objects are standard YAML:
+
+```
+kubectl apply -f labs/operators/specs/students
+```
+
+And the resources can be accesses using the CRD name:
+
+```
+kubectl get students
+
+kubectl describe student priti
+```
+
+</details><br/>
+
+> If you try to apply this YAML in a cluster which doesn't have the Student CRD installed, you'll get an error.
+
+The standard Kubectl verbs (get, delete, describe) work for all objects, including custom resources.
 
 ## NATS Operator
 
-k apply -f labs\operators\specs\nats\operator
+A CRD itself doesn't do anything, it just lets you store resources in the cluster. Operators typically install CRDs and also run _controllers_ in the cluster. A controller is just an app running in a Pod which connects to the Kubernetes API and watches for CRDs being created or updated. 
 
-k get crd
+When you create a new custom resource, the controller see that and takes action - which could mean creating Deployment, Services and ConfigMaps, or running any custom code you need.
 
-k apply -f labs\operators\specs\nats\cluster
+[NATS](https://nats.io) is a high-performance message queue which is very popular for asynchronous messaging in distributed apps. The NATS operator runs as a Deployment:
 
-k get natscluster -o wide
+- [nats/operator/10-deployment.yaml](./specs/nats/operator/10-deployment.yaml) - runs a single operator Pod which installs some CRDs and runs the controller
 
-k get svc
+Install the operator and look carefully at the output:
 
-k get po -l app=nats
+```
+kubectl apply -f labs/operators/specs/nats/operator
+```
 
-k logs -l name=nats-operator
+> The operator installs some RBAC objects and the Deployment
 
-k get rs
+📋 List the custom resource types in your cluster now. You'll see some NATS types - how did these get created?
 
-> Only for operator
+<details>
+  <summary>Not sure how?</summary>
 
-k describe po msgq-1
+```
+kubectl get crd
+```
 
-> _Controlled By:  NatsCluster/msgq_
+Shows your custom _Student_ resource, and also _NatsCluster_ and _NatsServiceRole_ resources.
 
-k delete po msgq-2
+There's no YAML for these CRDs, so the NATS controller running in the Pod must have created them by using the Kubernetes API in code. 
 
-k get po -l app=nats
+You can confirm the RBAC setup gives the controller ServiceAccount permission to do that:
 
-k logs -l name=nats-operator
+```
+kubectl auth can-i create crds --as system:serviceaccount:default:nats-operator
+```
 
+</details><br/>
+
+We can use a _NatsCluster_ object to create a clustered, highly-available message queue for applications to use:
+
+- [msq.yaml](./specs/nats/cluster/msq.yaml) - defines a cluster with 3 NATS servers, running version 2.5
+
+Create the cluster resource:
+
+```
+kubectl apply -f labs/operators/specs/nats/cluster
+```
+
+A single object gets created. 
+
+📋 Print the details of your new message queue, and look at the other objects running in the default namespace. The operator logs will show how the Pods were created.
+
+<details>
+  <summary>Not sure how?</summary>
+
+The output from the CRD doesn't show much:
+
+```
+kubectl get natscluster -o wide
+```
+
+But the operator has created Pods and Services:
+
+```
+kubectl get all --show-labels
+```
+
+Check the logs and you'll see the operator is managing the Pods - there's no Deployment or ReplicaSet for the message queue Pods:
+
+```
+kubectl logs -l name=nats-operator
+```
+
+</details><br/>
+
+The NATS operator is unusual because it acts as a Pod controller. Typically operators build on top of Kubernetes resources, so they would use Deployments to manage Pods.
+
+Print the details of one of the NATS Pods and you'll see it's managed by the operator:
+
+```
+kubectl describe po msgq-1
+```
+
+> You'll see _Controlled By:  NatsCluster/msgq_
+
+📋 The NATS operator still provides high availability. Delete one of the message queue Pods and confirm it gets recreated.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+kubectl delete po msgq-2
+
+kubectl get po -l app=nats
+
+kubectl logs -l name=nats-operator
+```
+
+You'll see a new Pod called `msgq-2` gets created, and the operator logs show it coming online.
+
+</details><br/>
+
+There's not much more you can do with the NATS operator, so we'll try one which has some more features.
 
 ## MySql Operator
 
-helm install mysql-operator labs\operators\specs\mysql\mysql-operator-0.4.0.tgz
+There's a Helm chart for the [Presslabs MySql operator](https://www.presslabs.com/code/kubernetes/mysql-operator/) in this repository:
 
-> Output tells you what to do...
+- [values.yaml](./specs/mysql/operator/values.yaml) - defines the default values for the operator; there is a lot you can tweak here
 
-k get po -l app=mysql-operator
+Install the operator (you'll need the [Helm CLI](https://helm.sh/docs/intro/install/) installed):
 
-What is the Pod controller?
+```
+helm install mysql-operator labs/operators/specs/mysql/operator/
+```
 
-> _Controlled By:  StatefulSet/mysql-operator_
+📋 What resources do you need to create to deploy a MySql database cluster using the operator?
 
-k apply -f labs\operators\specs\mysql\database
+<details>
+  <summary>Not sure?</summary>
 
-k get statefulset
+The Helm output gives you an example of what you need:
 
-What is the container setup?
+- a _MysqlCluster_ object - this is a CRD installed by the operator
 
-k describe po db-mysql-0
+- a _Secret_ containing the admin user password for the database
 
-> init container, percona sql container + 3 sidecars, exporter & heartbeat
+</details><br/>
 
-k logs db-mysql-0 -c mysql
+You can create a replicated database cluster using these specs:
+
+- [mysql/database/01-secret.yaml](./specs/mysql/database/01-secret.yaml) - the database password
+
+- [mysql/database/db.yaml](./specs/mysql/database/db.yaml) - the cluster set to use two MySql servers
+
+Create the database:
+
+```
+kubectl apply -f labs/operators/specs/mysql/database
+```
+
+📋 The database Pods take a while to start up. What controller does the operator use, and what's the container configuration in the Pods?
+
+<details>
+  <summary>Not sure?</summary>
+
+List the Pods and you'll see `db-mysql-0`. That name should suggest that it's managed by a StatefulSet:
+
+```
+kubectl get statefulset
+```
+
+Print the Pod details and you'll see multiple containers:
+
+```
+kubectl describe po db-mysql-0
+```
+
+The container setup is pretty complext:
+
+- two init containers which look like they set up the database environment and the MySql configuration
+- the main database container which runs MySql
+- three sidecar containers which export database metrics, and perform a heartbeat check between the database servers
+
+
+</details><br/>
+
+Check the logs of the primary database server in Pod 0:
+
+```
+kubectl logs db-mysql-0 -c mysql
+```
+
+> You'll see _mysqld: ready for connections_ showing the database server is running successfully
+
+And the logs of the secondary database server in Pod 1:
+
+```
+kubectl logs db-mysql-1 -c mysql
+```
+
+> You'll see _'replication@db-mysql-0.mysql.default:3306',replication started_ showing the secondary is replicating data from the primary.
+
+The operator provides a production-grade deployment of MySql, and it also sets up a CRD for creating database backups and sending them to cloud storage.
 
 ## Lab
 
-k delete natscluster,mysqlcluster --all
+We'll make use of the operators to install infrastructure components for a demo app.
 
-k apply -f labs\operators\specs\todo-list
+Start by deleting the existing message queue and database clusters:
 
-- Create NATS cluster & MySql database to match app config
+```
+kubectl delete natscluster,mysqlcluster --all
+```
 
+> The operators are watching for resources to be deleted, and will remove all the objects they created
+
+Now deploy a simple to-do list application:
+
+```
+kubectl apply -f labs/operators/specs/todo-list
+```
+
+The app has a website listening on http://localhost:30820 which posts messages to a queue when you create a new to-do item. A message handler listens on the same queue and creates items in the database.
+
+> Browse to the app now and you'll see an error - the components it needs don't exist yet
+
+You'll need to create NatsCluster and MysqlCluster objects matching the config in the app to make everything work correctly.
+
+> Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
 ## Cleanup
 
-k delete all,cm,secret,crd -l kubernetes.courselabs.co=operators
+Delete the basic objects and CRDs first:
 
-> Order is important, deleting CRDs delete custom resources - make sure the controller still exists to tidy up
+```
+kubectl delete all,cm,secret,crd -l kubernetes.courselabs.co=operators
+```
 
-k delete -f labs\operators\specs\nats/operator
+> The order is important, deleting CRDs delete custom resources - make sure the controller still exists to tidy up
 
-k delete crd -l app=mysql-operator
+Delete the NATS operator:
+
+```
+kubectl delete -f labs/operators/specs/nats/operator
+```
+
+Delete the MySql CRD and operator:
+
+```
+kubectl delete crd -l app=mysql-operator
 
 helm uninstall mysql-operator
+```
