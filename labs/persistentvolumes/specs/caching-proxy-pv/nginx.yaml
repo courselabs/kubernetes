@@ -35,3 +35,6 @@ spec:
         - name: cache-volume
           persistentVolumeClaim:
             claimName: pi-proxy-pvc-local
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
