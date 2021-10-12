@@ -5,7 +5,7 @@ metadata:
   labels:
     kubernetes.courselabs.co: clusters
 spec:
-  replicas: 4
+  replicas: 6
   selector:
     matchLabels:
       app: whoami

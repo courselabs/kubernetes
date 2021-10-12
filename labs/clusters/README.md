@@ -131,21 +131,50 @@ Control plane nodes have an additional label to identify them, and many platform
 
 ## Taints and tolerations
 
-- whoami with 4 replicas, on each node
+The [Kubernetes scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/) decides which node should run a Pod. When you create a Pod it goes into the _Pending_ state and that's when the scheduler finds a node to run it.
 
-k apply -f labs\clusters\specs\whoami
+Our k3d cluster is set up so all nodes can run pods; this [whoami Deployment](.\specs\whoami\deployment.yaml) runs six replicas, so we should see every node runnig at least one Pod:
 
+```
+kubectl apply -f labs\clusters\specs\whoami
+```
+
+📋 List the whoami Pods, showing which node is running each Pod.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
 kubectl get po -o wide -l app=whoami
+```
 
+</details><br />
+
+> You should see all the nodes running Pods - most likely the agent nodes will run more than the server node. The server node is the control plane, and it has less capacity because it's running the system components.
+
+Other Kubernetes platforms prevent applications running on the control plane by _tainting_ the node(s). Taints are like labels, but they affect Pod scheduling.
+
+There will be no taints on any nodes so far:
+
+```
 kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints --no-headers 
+```
 
+You can create a taint which says Pods should only be scheduled for this node if they _tolerate_ that it's using HDD storage (taints can be any key-value pair):
+
+```
 kubectl taint nodes k3d-lab-clusters-agent-1 disk=hdd:NoSchedule
+```
 
-> Pods still running 
+> a _NoSchedule_ taint doesn't affect Pods which are currently running, so you will still see whoami Pods running on agent-1.
 
+To isolate the control plane you can apply a _NoExecute_ taint which means it shouldn't run any non-system Pods, so no new ones will be scheduled and any existing ones will be removed:
+
+```
 kubectl taint nodes k3d-lab-clusters-server-0 workload=system:NoExecute
+```
 
-> Pods evicted, recreated agent 1 & 0 
+> List the whoamu Pods and you'll see the Pod(s) on the server node get evicted, and recreated on agent 0 
 
 k rollout restart deploy whoami
 
