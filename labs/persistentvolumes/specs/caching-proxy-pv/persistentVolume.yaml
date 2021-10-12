@@ -16,5 +16,5 @@ spec:
     required:
       nodeSelectorTerms:
         - matchExpressions:
-          - key: kubernetes
+          - key: labs-pvc
             operator: Exists

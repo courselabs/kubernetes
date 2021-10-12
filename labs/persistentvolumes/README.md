@@ -265,7 +265,7 @@ The PV can't find a node matching the label selector, and the unhelpul Pod messa
 Add a label to a node and everything will flow through:
 
 ```
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') kubernetes=y
+kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') labs-pvc=1
 
 kubectl get nodes --show-labels
 
