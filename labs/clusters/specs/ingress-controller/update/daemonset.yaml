@@ -50,7 +50,7 @@ spec:
         - key: "workload"
           operator: "Equal"
           value: system
-          effect: "NoSchedule"
+          effect: "NoExecute"
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/control-plane: 'true'
