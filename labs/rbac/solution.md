@@ -20,7 +20,7 @@ kubectl apply -f labs/rbac/solution/service-account-viewer.yaml
 kubectl auth can-i get serviceaccounts -n default --as system:serviceaccount:default:kube-explorer
 ```
 
-Now the app has the permissions it needs, the _Service Account_ link works, but only for the `default` namespace. You should still get a 403 error if you try to view ServiceAccounts in another namespace.
+Now the app has the permissions it needs, the _Service Account_ link works (e.g. http://localhost:30010/ServiceAccounts), but only for the `default` namespace. You should still get a 403 error if you try to view ServiceAccounts in another namespace (http://localhost:30010/ServiceAccounts?ns=kube-system)
 
 ## Securing the sleep Deployment
 
