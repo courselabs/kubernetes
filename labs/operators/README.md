@@ -283,13 +283,15 @@ You'll need to create NatsCluster and MysqlCluster objects matching the config i
 
 ## Cleanup
 
-Delete the basic objects and CRDs first:
+Delete the basic objects and CRDs:
 
 ```
+kubectl delete crd natsclusters.nats.io natsserviceroles.nats.io
+
 kubectl delete all,cm,secret,crd -l kubernetes.courselabs.co=operators
 ```
 
-> The order is important, deleting CRDs delete custom resources - make sure the controller still exists to tidy up
+> The order is important, deleting CRDs deletes custom resources - make sure the controller still exists to tidy up
 
 Delete the NATS operator:
 
