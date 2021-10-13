@@ -173,7 +173,7 @@ kubectl get jobs --watch
 
 </details><br/>
 
-> You'll see the cleanup Job get created, and then the list will be updated until only the failed Pi Jobs remain
+> You'll see the cleanup Job get created, and then the list will be updated with new a new cleanup Job every minute
 
 Confirm that completed Pi Jobs and their Pods have been removed:
 
@@ -185,7 +185,7 @@ kubectl get jobs
 kubectl get pods -l job-name --show-labels
 ```
 
-> The cleanup job is still there because CronJobs don't delete Jobs when they complete
+> The most recent cleanup job is still there because CronJobs don't delete Jobs when they complete
 
 You can check the logs to see what the cleanup script did:
 
