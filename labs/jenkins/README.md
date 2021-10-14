@@ -142,7 +142,7 @@ git fetch --unshallow
 git remote add gogs http://localhost:30300/kiamol/kiamol.git
 
 # and push:
-git push --set-upstream gogs main
+git push gogs main
 ```
 
 > You'll need to authenticate with the server, use `kiamol` as the username and password.

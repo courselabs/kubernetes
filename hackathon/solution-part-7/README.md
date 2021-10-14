@@ -1,17 +1,26 @@
+## Hackathon Part 7 Solution
 
-scale down existing pods if low on resources
+Remember you can scale down existing pods if you're low on resources:
 
-k scale deploy/products-api deploy/stock-api deploy/web sts/products-db --replicas 0
+```
+kubectl scale deploy/products-api deploy/stock-api deploy/web sts/products-db --replicas 0
+```
 
-- helm chart, deploy to separate ns with new domain
+_Deploy the Helm chart to a new namespace using a sample variables file:_
 
-helm install widg-uat -n widg-uat --create-namespace -f hackathon\files\helm\uat.yaml hackathon\solution-part-7\helm\widgetario
+```
+helm install widg-uat -n widg-uat --create-namespace -f hackathon/files/helm/uat.yaml hackathon/solution-part-7/helm/widgetario
+```
 
-k get all -n widg-uat
+_Check the objects:
 
-k get ingress -A
+```
+kubectl get all -n widg-uat
 
-- add hosts
+kubectl get ingress -A
+```
+
+_Add hosts for the new domains:_
 
 ```
 # On Windows (run as Admin)
@@ -23,43 +32,61 @@ k get ingress -A
 ./scripts/add-to-hosts.sh api.widgetario.uat 127.0.0.1
 ```
 
-http://widgetario.uat
+Try the Products API:
 
-> New _Buy_ button
-
+```
 curl -k https://api.widgetario.uat/products
+```
 
-- ci infra
+> Browse to http://widgetario.uat; you'll see a new _Buy_ button from the latest image update
 
-k apply -f hackathon\solution-part-7\infrastructure
+_Deploy the build infrastructure:_
 
-- push code
+```
+kubectl apply -f hackathon/solution-part-7/infrastructure
+```
 
+_When it's all running, push your local code to Gogs:_
+
+```
 git remote add gogs http://localhost:30301/kiamol/kiamol.git
 
-git push --set-upstream gogs main
+git push gogs main
+```
 
-- create registry creds
+_create registry creds - add your details with variables or use the scripts in the [Jenkins lab](../../labs/jenkins/README.md):_
 
+```
 kubectl -n infra create secret docker-registry registry-creds --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
+```
 
+_Create a configmap with the details for the image name - be sure to use a registry and domain you have push access for:_
+
+```
 kubectl -n infra create configmap build-config --from-literal=REGISTRY=docker.io  --from-literal=REPOSITORY=courselabs
+```
 
-> Jenkins http://localhost:30880, sign in 
+_Restart Jenkins to load the latest config:_
 
-http://localhost:30880/job/widgetario/ - enable job, build now
+```
+kubectl rollout restart deploy/jenkins -n infra
+```
 
-- new deployments not in Prom, why? (ns)
+> Browse to Jenkins http://localhost:30880, sign in with the `kiamol` username and password
 
-- add helm deploy to Jenkins
+Open the Widgetario job in Jenkins, enable and build it. Confirm that your images build and are pushed with the correct tags.
 
-copy/paste from solution, or change jenkinsfile path
+_Add the Helm deploy stage to Jenkins:_
+
+You can edit the Jenkisfile, or change the job to use the [part 7 solution Jenkinsfile](./Jenkinsfile):
 
 - open http://localhost:30880/job/widgetario/configure
 - scroll down to _Script Path_
-- change path to `hackathon/solution-part-7/Jenkinsfile`
+- change the path to `hackathon/solution-part-7/Jenkinsfile`
 
+Build again and confirm the latest images are deployed in the new namespace.
 
+_Add smoke test domain to hosts file:_
 
 ```
 # On Windows (run as Admin)
@@ -71,7 +98,10 @@ copy/paste from solution, or change jenkinsfile path
 ./scripts/add-to-hosts.sh api.widgetario.smoke 127.0.0.1
 ```
 
-http://widgetario.smoke
+Check the Products API:
 
-
+```
 curl -k https://api.widgetario.smoke/products
+```
+
+> And test the app at http://widgetario.smoke

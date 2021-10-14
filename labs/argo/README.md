@@ -108,7 +108,7 @@ When the Pod is ready, add the new server as a remote and push a copy of this re
 git remote add labs-argo http://localhost:30300/kiamol/kiamol.git
 
 # push to the expected branch name:
-git push --set-upstream labs-argo main:master
+git push labs-argo main:master
 ```
 
 > This version of ArgoCD expects to find a branch named `master` in the Git repo. This repo uses `main` as the branch name, so the push command uses the expected name in the Git server.

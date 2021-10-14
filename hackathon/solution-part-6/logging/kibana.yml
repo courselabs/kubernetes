@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: kibana-lb
   namespace: logging
+  labels:  
+    kubernetes.courselabs.co: hackathon
 spec:
   selector:    
     app: kibana
@@ -17,6 +19,8 @@ kind: Service
 metadata:
   name: kibana-np
   namespace: logging
+  labels:  
+    kubernetes.courselabs.co: hackathon
 spec:
   selector:    
     app: kibana

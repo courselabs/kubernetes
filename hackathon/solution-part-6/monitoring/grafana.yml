@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: grafana-lb
   namespace: monitoring
+  labels:  
+    kubernetes.courselabs.co: hackathon
 spec:
   selector:
     app: grafana
@@ -17,6 +19,8 @@ kind: Service
 metadata:
   name: grafana-np
   namespace: monitoring
+  labels:  
+    kubernetes.courselabs.co: hackathon
 spec:
   selector:
     app: grafana

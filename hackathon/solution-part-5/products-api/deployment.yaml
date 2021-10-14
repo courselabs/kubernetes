@@ -39,7 +39,7 @@ spec:
             initialDelaySeconds: 20
           resources:
             limits:
-              cpu: 500m
+              cpu: 300m
               memory: 300Mi 
           volumeMounts:
             - name: db-properties

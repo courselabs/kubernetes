@@ -42,8 +42,8 @@ spec:
             initialDelaySeconds: 10
           resources:
             limits:
-              cpu: 125m
-              memory: 150Mi 
+              cpu: 100m
+              memory: 100Mi 
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

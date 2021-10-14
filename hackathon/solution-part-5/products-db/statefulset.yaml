@@ -42,8 +42,8 @@ spec:
             failureThreshold: 2
           resources:
             limits:
-              cpu: 750m
-              memory: 500Mi 
+              cpu: 200m
+              memory: 150Mi 
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data  

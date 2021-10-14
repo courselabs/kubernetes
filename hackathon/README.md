@@ -174,7 +174,7 @@ Deploy the sample solution and you can continue to part 5:
 kubectl apply -f hackathon/solution-part-4/ingress-controller -f hackathon/solution-part-4/products-db -f hackathon/solution-part-4/products-api  -f hackathon/solution-part-4/stock-api -f hackathon/solution-part-4/web
 ```
 
-Update your hosts:
+Update your hosts file:
 
 ```
 # Windows (run as Admin)
@@ -197,7 +197,7 @@ All right!
 
 We've commissioned a 200-node Kubernetes cluster in the cloud and we're ready to go. 
 
-Now's your chance to make any last updates you think we need before we go to production.
+Now's your chance to make any last updates to the Pod spec you think we need before we go to production.
 
 <details>
   <summary>Hints</summary>
@@ -227,7 +227,7 @@ Deploy:
 kubectl apply -f hackathon/solution-part-5/ingress-controller -f hackathon/solution-part-5/products-db -f hackathon/solution-part-5/products-api  -f hackathon/solution-part-5/stock-api -f hackathon/solution-part-5/web
 ```
 
-(The StatefulSet rollout takes a few minutes, and the app may not be responsive until both Pods are up.)
+The StatefulSet rollout takes a few minutes, and the app may not be responsive until both Pods are up. **And** there are CPU resources in the specs, so if your cluster doesn't have enough capacity you may see Pods stuck in the _Pending_ status, so you'll need to adjust the values.
 
 And we're good to go.
 
@@ -236,37 +236,136 @@ And we're good to go.
 
 ## Part 6 - Observability
 
-- run monitoring stack
-- add annotations to pods: opt-in for apis & web; path for products-api; port for web
-- load grafana dashboard
+Not quite. The SRE team won't let the app go live without any observability into the components. They want to confirm the app will integrate nicely with the standard stacks they use. 
 
-- run efk stack
-- add logging sidecar to web pod
-- load kibana dashboard
+All the API and web servers publish metrics, so we don't need to change any code. To prove monitoring is usable you'll need to:
 
+- run a monitoring stack with Prometheus and Grafana
+- configure the Pod specs so Prometheus collects metrics - the database doesn't expose any metric but the other components do
+- the app devs have said the Products API using a custom metrics path `/actuator/prometheus`, and the web app might be running with a custom port
+- deploy the changes and check all the components are having metrics stored in Prometheus
+- open Grafana and load the dashboard from `hackathon/files/grafana-dashboard.json`; use the app and confirm all the visualizations show data.
+
+Here's the dashboard you should see:
+
+![](/img/hackathon-grafana.png)
+
+And then you'll also need to set up centralized logging:
+
+- run the EFK stack to collect and store logs in the app namespace
+- the dev team say the web app writes logs to a file, so you'll need to add a sidecar container to print logs from `/logs/app.log` in the app container
+- open Kibana and load the dashboard from `hackathon/files/kibana-dashboard.ndjson`; check the visualizations to see every component is writing logs
+
+Here's what the Kibana dashboard should look like:
+
+![](/img/hackathon-kibana.png)
+
+<details>
+  <summary>Hints</summary>
+
+The monitoring and logging stacks are standard components, so you can run them from the specs we used in earlier labs. 
+
+You won't need to tweak the Prometheus or Fluent Bit configuration, unless you're using a custom namespace for your Widgetario Pods...
+
+</details><br />
+
+The app will still look the same. You should see those fancy dashboards and be able to search for logs for each component. 
+
+<details>
+  <summary>Solution</summary>
+
+If you didn't get part 6 finished, you can check out the specs in the sample solution from `hackathon/solution-part-6`. The specs in the `widgetario` folder have been re-organised to have one YAML files for each component.
+
+Deploy the sample solution and you can continue to part 7:
+
+```
+kubectl apply -f hackathon/solution-part-6/monitoring -f hackathon/solution-part-6/logging -f hackathon/solution-part-6/ingress-controller -f hackathon/solution-part-6/widgetario
+```
+
+There's a change to the StatefulSet spec (to explicitly opt out of metrics collection), and it will take a while for the rollout to complete.
+
+You can browse to the UIs using NodePort or LoadBalancer Services:
+
+```
+kubectl get svc -A -l kubernetes.courselabs.co=hackathon
+```
+* Grafana on http://localhost:30300 or http://localhost:3000
+
+* Kibana on http://localhost:30561 or http://localhost:5601
+
+</details><br/>
 
 ## Part 7 - CI/CD
 
-- build helm chart
--- support image tags
--- multiple installs one cluster
+The last thing we need is a full CI/CD pipeline to build from source code and deploy to a test environment.
 
-- ci build
--- buildkit, gogs, jenkins
--- registry secret
--- registry & domain configmap
+We've settled on Helm for packaging, so the first task is to work up the YAML specs into a Helm chart. The chart should support:
 
-- cd
--- add helm deployment
+- multiple release in the same namespace
+- variables for image tags, replica counts, and whether resource limits should be included
+- app configuration per release, including the database password and the web theme
+
+> We'll be using standard deployments for the ingress controller, monitoring and logging stacks so you don't need to build Helm charts for those
+
+Deploy a second instance of the Widgetario app in your cluster using Helm, with the values file [hackathon/files/helm/uat.yaml](./files/helm/uat.yaml). Confirm you can access it on a different port from the original, and all the Pods are talking to the right components.
+
+Then we need to put together the continuous integration pipeline:
+
+- we'll use Jenkins, BuildKit and Gogs to power the pipeline
+- you'll need to create a registry Secret to push to Docker Hub (or your own registry)
+- the source code is all in the `/hackathon/project` folder, which is where you'll find the [Jenkinsfile](./project/Jenkinsfile) with the build steps already in it
+
+You should be able to add your local Gogs server as a new Git remote and push this repository to it. Then your Jenkins build should build images for the database, APIs and web server and push them all to your container registry, with a version number in the tag.
+
+So then we're ready to add continuous deployment:
+
+- extend the Jenkinsfile to add the deployment steps
+- use the Helm chart for deploying to a test namespace
+- deploy the chart with the values file [hackathon/files/helm/smoke-test.yaml](./files/helm/smoke-test.yaml)
+- the deployment needs to use the latest images which were pushed in the build.
+
+Now when you trigger the build from Jenkins you should see a new version of the app deployed in your test namespace, running all the latest image versions.
+
+<details>
+  <summary>Hints</summary>
+
+If you've got this far, you probably don't need any hints :) The infrastructure stack we want to run is the same one we used in an earlier lab, so you can use those specs as the basis.
+
+The default Jenkins setup from that lab creates a project which points to a different Jenkinsfile - you'll need to edit the path in the job.
+
+You may be running low on resources, so you can scale down the existing deployment:
+
+```
+kubectl scale deploy/products-api deploy/stock-api deploy/web sts/products-db --replicas 0
+```
+
+And remember the registry secret needs to contain your own credentials, and the image name you build needs to use a repository which you have permission to push to.
+
+</details><br />
+
+<details>
+  <summary>Solution</summary>
+
+If you didn't get part 7 finished, you can check out the specs in the sample solution from `hackathon/solution-part-7`. There's a `helm` folder with the chart, and an `infrastructure` folder with the CI/CD setup.
+
+There are some more details for setting up and running the pipeline in the [part 7 solution doc](./solution-part-7/README.md).
 
 ___ 
 
 ## Cleanup
 
-```
-kubectl delete all,ingress,cm,secret,pvc,rolebinding,clusterrolebinding,role,clusterrole,ns -l kubernetes.courselabs.co=hackathon
+Uninstall your Helm charts, e.g:
 
+```
 helm uninstall -n widg-smoke widg-smoke
 
 helm uninstall -n widg-uat widg-uat
+```
+
+And then delete objects - the sample solution applies a label we can select on:
+
+```
+kubectl delete all,ingress,cm,secret,pvc,rolebinding,clusterrolebinding,role,clusterrole,ns -l kubernetes.courselabs.co=hackathon
+
+kubectl delete ns widg-smoke widg-uat
 ```
