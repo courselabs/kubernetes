@@ -196,7 +196,7 @@ Make a call to the Spring Boot API:
 curl http://localhost:30811/documents
 ```
 
-Click _Refesh_ in Kibana and you'll see a log entry recording the HTTP request you just made.
+Click _Refresh_ in Kibana and you'll see a log entry recording the HTTP request you just made.
 
 ## Add system logs to Kibana
 

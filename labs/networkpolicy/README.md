@@ -279,15 +279,15 @@ ___
 
 ## Cleanup
 
-If you want to reuse your k3d cluster, you can delete all the exercise resources:
+**If** you want to reuse your k3d cluster, you can delete all the exercise resources:
 
 ```
-kubectl delte ns apod
+kubectl delete ns apod
 
 kubectl delete all,netpol -A -l kubernetes.courselabs.co=network-policy
 ```
 
-Or if you want to delete this cluster and switch back to your old one:
+**Or** if you want to delete this cluster and switch back to your old one:
 
 ```
 k3d cluster delete labs-netpol
