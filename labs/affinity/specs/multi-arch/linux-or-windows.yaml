@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sleep
+  name: hello-web
   labels:
     kubernetes.courselabs.co: affinity
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: sleep
+      app: hello-web
   template:
     metadata:
       labels:
-        app: sleep
+        app: hello-web
     spec:
       containers:
-      - name: sleep
-        image: kiamol/ch03-sleep
+      - name: app
+        image: diamol/ch02-hello-diamol-web
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

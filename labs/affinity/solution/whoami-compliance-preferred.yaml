@@ -39,6 +39,6 @@ spec:
                 matchExpressions:
                   - key: cis-compliance
                     operator: In
-                    values: ['requested']
+                    values: ['in-progress']
               weight: 1
         

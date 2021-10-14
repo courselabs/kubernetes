@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: whoami
+        update: colocate-region
     spec:
       containers:
         - name: app

@@ -1,18 +1,39 @@
+# Lab Solution
 
 ## Apply labels
 
-- do this first, so labels are in place when the pods are scheduled
+We'll do this first, so the labels are in place when Pods are scheduled.
 
-k label node k3d-lab-affinity-agent-1 cis-compliance=verified
+Add the `verified` label to agent-1:
 
-k label node k3d-lab-affinity-agent-0 cis-compliance=requested
+```
+# this label may already exist from the exercises
+# if you see an error you can ignore it
+k label node k3d-labs-affinity-agent-1 cis-compliance=verified
+```
 
+Add the `in-progress` label to agent-0:
+
+```
+k label node k3d-labs-affinity-agent-0 cis-compliance=requested
+```
+
+Print the labels to make sure the values are correct:
+
+```
 k get nodes -L cis-compliance -l cis-compliance
+```
 
 ## Deploy
+
+My solution uses required rules to ensure Pods only run on valid nodes, and preferred rules to place more Pods on verified nodes:
+
+- [whoami-compliance-preferred.yaml](.\solution\whoami-compliance-preferred.yaml) 
 
 k apply -f labs\affinity\solution
 
 k get po -o wide -l app=whoami
 
-> Majority on agent -1, up to max for node - rest on agent 0. May be 4-2 etc. depending on scheduler
+> You should see the majority of Pods the verified node agent-1, up to the node's maximum of 5. The rest will be on agent 0. 
+
+You can't gaurantee to get a 5-1 split because there could be other Pods running on agent-1 (on my cluster the DNS Pod is running on agent-1 so I get a 4-2 split).
