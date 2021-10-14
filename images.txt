@@ -1,3 +1,8 @@
+alpine:3.13
+golang:1.16.4-alpine
+golang:1.16.3-alpine3.12
+alpine:3.8
+golang:1.17.1-alpine3.14
 widgetario/products-api:21.03
 widgetario/products-db-replicated:21.03
 widgetario/stock-api:21.03

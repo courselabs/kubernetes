@@ -68,6 +68,7 @@ _On Windows, use PowerShell to store your credentials:_
 ```
 $REGISTRY_SERVER='https://index.docker.io/v1/'
 $REGISTRY_USER=Read-Host -Prompt 'Username'
+$password = Read-Host -Prompt 'Password'-AsSecureString
 $REGISTRY_PASSWORD = [System.Net.NetworkCredential]::new("", $password).Password
 ```
 
@@ -134,6 +135,9 @@ The local build infrastructure is all running, and Jenkins is configured with a 
 To run a build we need to push our local code to Gogs. You can do this with the Git CLI - these commands adds the local server as a new remote and push a copy of the repo there:
 
 ```
+# fetch the full history of the GitHub repo:
+git fetch --unshallow
+
 # add the local Git server:
 git remote add gogs http://localhost:30300/kiamol/kiamol.git
 
