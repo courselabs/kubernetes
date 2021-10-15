@@ -42,7 +42,7 @@ spec:
           image: kiamol/ch03-numbers-web
           env:
           - name: RngApi__Url
-            value: http:/k get /numbers-api.rng.svc.cluster.local/rng
+            value: http://numbers-api.rng.svc.cluster.local/rng
           ports:
             - containerPort: 80
               name: http
