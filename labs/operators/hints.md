@@ -19,7 +19,7 @@ And:
 kubectl logs -l app=todo-list,component=web --tail 100
 ```
 
-Shows that the webstie can't connect to the database:
+Shows that the website can't connect to the database:
 
 ```
 ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts

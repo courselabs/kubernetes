@@ -41,7 +41,7 @@ kubectl describe crd students
 
 Now your Kubernetes cluster understands _Student_ resources, you can define them with YAML:
 
-- [edwin.yaml](/specs/students/edwin.yaml) - describes a student who works at Microsoft
+- [edwin.yaml](./specs/students/edwin.yaml) - describes a student who works at Microsoft
 - [priti.yaml](./specs/students/priti.yaml) - a student who works at Google
 
 📋 Create all the Students in the `labs/operators/specs/students` folder, list them and print the details for Priti.

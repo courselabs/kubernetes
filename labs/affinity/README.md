@@ -218,7 +218,7 @@ kubectl get po -l app=whoami -o wide
 
 > Pods will be scheduled on both agent nodes, which are both in the same region
 
-Zones are used to define different failure areas within a regions - each zone may have dedicated power and networking, so if one zone fails the servers in another zone keep running. 
+Zones are used to define different failure areas within a region - each zone may have dedicated power and networking, so if one zone fails the servers in another zone keep running. 
 
 In a cluster with zones you may want to ensure Pods run on nodes in different zones, for high availability. You do that with anti-affinity:
 
@@ -249,7 +249,7 @@ So when a Pod is running on agent-1, no more Pods will be scheduled for nodes in
 
 </details><br/>
 
-This is probably not what you want. The rule might instead be: _all Pods must run in the same region, and within the region Pods should be spread across zones - but it's OK to run multiple Pods in the same region_. This spec does expresses that rule:
+This is probably not what you want. The rule might instead be: _all Pods **must** run in the same region, and within the region Pods **should** be spread across zones - but it's OK to run multiple Pods in the same zone_. This spec does expresses that rule:
 
 - [prefer-spread-zone/deployment.yaml](./specs/whoami/prefer-spread-zone/deployment.yaml) - has a required affinity rule at the region level, and a preferred rule at the zone level
 
@@ -261,7 +261,7 @@ kubectl delete deploy whoami
 kubectl apply -f labs/affinity/specs/whoami/prefer-spread-zone
 ```
 
-Now you should find all six replicas running, with at least one Pod on each node:
+Now you should find all six replicas running, with at least one Pod on each node (_but this rule is a soft preference so you may find all Pods on one node_):
 
 ```
 kubectl get po -l app=whoami,update=prefer-spread-zone -o wide
