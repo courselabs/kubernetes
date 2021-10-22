@@ -66,7 +66,7 @@ kubectl describe sa rng-admin-user -n kubernetes-dashboard
 kubectl get secret -n kubernetes-dashboard rng-admin-user-token
 ```
 
-> SA auth tokena are stored in a secret, Kubernetes generates the values
+> SA auth tokens are stored in Secrets of the special type `kubernetes.io/service-account-token`. Wnen you create those Secrets, Kubernetes generates the token
 
 Print the auth token:
 
@@ -237,3 +237,23 @@ Try deleting a Pod and see the notifications in Slack:
 kubectl delete po -n rng -l app=numbers-api
 ```
 
+
+## Cleanup
+
+Delete the namespaces & RBAC used for the RNG app and the Dashboard:
+
+```
+kubectl delete ns,clusterrolebinding -l kubernetes.courselabs.co=tools
+```
+
+Delete metrics server if you deployed it:
+
+```
+kubectl delete -f labs/tools/specs/metrics-server
+```
+
+And uninstall Kubewatch if you deployed it:
+
+```
+helm uninstall kubewatch
+```
