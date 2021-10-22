@@ -59,7 +59,7 @@ Deploy and try the app:
 kubectl apply -f labs/persistentvolumes/specs/pi
 ```
 
-> Browse to localhost:30010/pi?dp=30000 or localhost:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
+> Browse to http://localhost:30010/pi?dp=30000 or http://localhost:8010/pi?dp=30000 you'll see it takes over a second to calculate the response and send it
 
 📋 Refresh and the response will be instant - check the response cache in Nginx, you can see it in the `/tmp` folder.
 
@@ -203,7 +203,7 @@ Try the app again and the new Pod still serves the response from the cache, so i
 
 </details><br />
 
-> i Data in PersistentVolumes has its own lifecycle. It survives until the PV is removed.
+> ℹ Data in PersistentVolumes has its own lifecycle. It survives until the PV is removed.
 
 
 ## Lab

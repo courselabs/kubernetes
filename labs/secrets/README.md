@@ -17,7 +17,7 @@ Secret values can be base-64 encoded and set in YAML data:
 
 ```
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: configurable-secret-env
 data:
@@ -130,7 +130,7 @@ kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Envi
 kubectl get secret configurable-env-plain -o jsonpath="{.data.Configurable__Environment}" | base64 -d
 ```
 
-> In production you'll need to understand how your cluster secures Secrets at rest. You'll also use Role-Based Access Control (coming later in the course) to limit who can work with Secrets in Kubectl.
+> In production you'll need to understand how your cluster secures Secrets at rest. You'll also use Role-Based Access Control (which you can learn about in the [RBAC lab](../rbac/README.md)) to limit who can work with Secrets in Kubectl.
 
 ## Creating Secrets from files
 

@@ -92,6 +92,7 @@ kubectl logs whoami
 Connect to the container inside the Pod:
 
 ```
+# this will fail:
 kubectl exec -it whoami -- sh
 ```
 
@@ -132,6 +133,7 @@ And the Kubernetes network:
 ```
 nslookup kubernetes
 
+# this will fail:
 ping kubernetes
 ```
 
