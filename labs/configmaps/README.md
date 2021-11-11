@@ -98,7 +98,7 @@ The demo app for this lab has the logic to merge config from multiple sources.
 Defaults are built into the `appsettings.json` file inside the Docker image - run a Pod with no config applied to see the defaults:
 
 ```
-kubectl run configurable --image=sixeyed/configurable:21.04
+kubectl run configurable --image=sixeyed/configurable:21.04 --labels='kubernetes.courselabs.co=configmaps'
 
 kubectl wait --for=condition=Ready pod configurable
 
@@ -228,7 +228,7 @@ Something's not quite right though - the release setting is still coming from th
 ```
 kubectl exec deploy/configurable -- cat /app/config/override.json
 
-kubectl exec deploy/configurable -- printenv | grep Co
+kubectl exec deploy/configurable -- printenv | grep __
 ```
 
 > The config hierarchy in this app puts environment variables ahead of settings in files, so they get overidden. You'll need to understand the hierarchy for your apps to model config correctly.
@@ -293,5 +293,5 @@ ___
 Cleanup by removing objects with this lab's label:
 
 ```
-kubectl delete configmap,deploy,svc -l kubernetes.courselabs.co=configmaps
+kubectl delete configmap,deploy,svc,pod -l kubernetes.courselabs.co=configmaps
 ```

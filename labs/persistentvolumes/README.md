@@ -121,6 +121,8 @@ kubectl exec deploy/pi-proxy -- ls /tmp
 
 Refresh the site with the new container and it loads instantly.
 
+If you delete the Pod then the Deployment will create a replacement - with a new EmptyDir volume which will be empty.
+
 > ℹ Data in EmptyDir volumes has the same lifecycle as the Pod. When the Pod is replaced, the data is lost.
 
 ## External storage with PersistentVolumeClaims

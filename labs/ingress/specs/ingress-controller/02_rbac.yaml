@@ -9,6 +9,8 @@ kind: ClusterRole
 metadata:
   name: ingress-nginx
   namespace: ingress-nginx
+  labels:
+    kubernetes.courselabs.co: ingress
 rules:
   - apiGroups:
       - ''
@@ -73,6 +75,8 @@ kind: ClusterRoleBinding
 metadata:
   name: ingress-nginx
   namespace: ingress-nginx
+  labels:
+    kubernetes.courselabs.co: ingress
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
