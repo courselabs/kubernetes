@@ -212,7 +212,7 @@ You may have different Ingress rules - one for all static content which has the 
 
 Two parts to this lab. First we want to take the configurable web app and publish it through the ingress controller. 
 
-The app spec is already in place to get you started:
+The app spec is already in place to get you started, your job is to build and deploy the Ingress routing:
 
 ```
 kubectl apply -f labs/ingress/specs/configurable

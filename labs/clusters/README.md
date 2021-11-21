@@ -230,7 +230,7 @@ There are only two. The spec tolerates the `disk=hdd` taint so there's a Pod on 
 
 </details><br />
 
-In some cases you might want Pods to run on the control plane only - this [updated DaemonSet spec](labs/clusters/specs/ingress-controller/update/daemonset.yaml) tolerates the workload taint and selects nodes with the control plane label.
+In some cases you might want Pods to run on the control plane only - this [updated DaemonSet spec](./specs/ingress-controller/update/daemonset.yaml) tolerates the workload taint and selects nodes with the control plane label.
 
 Deploy the update and check the Pods:
 

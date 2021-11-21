@@ -15,7 +15,7 @@ kubectl cordon k3d-lab-clusters-agent-1
 Drain the node to remove all Pods, using the flag to ignore the Pods which are managed by DaemonSets (otherwise those Pods would not be removed):
 
 ```
-kubectl drain k3d-lab-clusters-agent-1 --ignore-daemonsets
+kubectl drain k3d-lab-clusters-agent-1 --ignore-daemonsets --delete-emptydir-data
 ```
 
 Check the Pod list now and you'll see the agent-1 Pods are terminated, and replacements get created; check the node list and you'll see the status of the cordoned node:
