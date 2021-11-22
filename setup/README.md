@@ -47,8 +47,10 @@ curl -fsSL https://get.docker.com | sh
 
 curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 
-k3d cluster create k8s -p "30000-30040:30000-30040@server[0]"
+k3d cluster create k8s -p "30000-30040:30000-30040@server:0"
 ```
+
+> This syntax uses the latest k3d command (v5); previous releases used a different syntax so you'll need to upgrade to v5.
 
 </details><br />
 
