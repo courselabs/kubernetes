@@ -104,7 +104,7 @@ Secrets are always surfaced as plaintext inside the container environment.
 <details>
   <summary>They **may** be encrypted in the Kubernetes database</summary>
 
-But that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault ([external-secrets](https://github.com/external-secrets/kubernetes-external-secrets) is one option).
+But that is not the default setup. You can also integrate Kubernetes with third-party secure stores like Hashicorp Vault and Azure KeyVault (the [Secrets CSI driver](https://secrets-store-csi-driver.sigs.k8s.io) and [external-secrets](https://github.com/external-secrets/kubernetes-external-secrets) projects are popular options).
 
 </details><br/>
 
