@@ -214,6 +214,8 @@ There's an easier way to get persistent storage, but it's not as flexible as usi
 
 Run a simple sleep Pod with a different type of volume, that gives you access to the root drive on the host node where the Pod runs.
 
+Can you use the sleep Pod to find the cache files from the Nginx Pod?
+
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
 ___

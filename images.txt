@@ -13,6 +13,7 @@ quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0
 courselabs/elasticsearch:7.10
 fluent/fluent-bit:1.8.3
 courselabs/prometheus:v2.28.1
+courselabs/grafana:8.0.5
 moby/buildkit:v0.9.0
 kiamol/ch11-gogs
 kiamol/ch11-jenkins:2.289.3
