@@ -28,7 +28,7 @@ spec:
     - name: grafana
       port: 3000
       targetPort: grafana
-      nodePort: 30300
+      nodePort: 30003
   type: NodePort
 ---
 apiVersion: v1

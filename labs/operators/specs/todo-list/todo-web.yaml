@@ -8,7 +8,7 @@ spec:
   ports:
     - port: 8020
       targetPort: 80
-      nodePort: 30820
+      nodePort: 30028
   selector:    
     app: todo-list
     component: web

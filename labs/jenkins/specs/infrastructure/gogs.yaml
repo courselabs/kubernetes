@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - port: 3000
-      nodePort: 30300
+      nodePort: 30030
       targetPort: gogs
   selector:
     app: gogs

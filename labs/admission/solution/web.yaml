@@ -7,7 +7,7 @@ spec:
   ports:
     - port: 8016
       targetPort: web
-      nodePort: 30816
+      nodePort: 30016
   selector:
     app: apod-web
   type: NodePort

@@ -24,7 +24,7 @@ spec:
   ports:
     - port: 8080
       targetPort: http
-      nodePort: 30080
+      nodePort: 30008
   selector:
     app: widgetario
     component: web

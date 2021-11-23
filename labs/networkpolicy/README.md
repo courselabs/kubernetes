@@ -29,7 +29,7 @@ _Create the resources:_
 kubectl apply -f labs/networkpolicy/specs/apod
 ```
 
-> Wait for all the Pods to be ready then browse to http://localhost:30816, you should see the working app
+> Wait for all the Pods to be ready then browse to http://localhost:30016, you should see the working app
 
 Now we'll enforce a deny-all network policy:
 
@@ -56,14 +56,20 @@ kubectl get netpol
 
 This **should** block traffic, so the web app can't communicate with the APIs. But your Kubernetes cluster probably doesn't enforce network policy, so the policy gets created but not applied.
 
-> Refresh http://localhost:30816 the app (probably) still works
+> Refresh http://localhost:30016 the app (probably) still works
 
 We'll switch to a new cluster and build it with a network provider which does enforce policy. 
 
-_Remov the existing app to free up resources:_
+_Remove the existing app to free up resources:_
 
 ```
 kubectl delete  -f labs/networkpolicy/specs/apod
+```
+
+** If you're using K3d already, stop your cluster so we don't get a port collision:**
+
+```
+k3d cluster stop k8s
 ```
 
 ## Install k3d CLI
@@ -104,7 +110,7 @@ k3d clusters use the Flannel CNI plugin by default (like most clusters), but you
 _Create a new cluster with no networking:_
 
 ```
-k3d cluster create labs-netpol -p "30800-30900:30800-30900@server:0" --k3s-arg '--flannel-backend=none@server:0' --k3s-arg '--disable=servicelb@server:0' --k3s-arg '--disable=traefik@server:0' --k3s-arg '--disable=metrics-server@server:0'
+k3d cluster create labs-netpol -p "30000-30040:30000-30040@server:0" --k3s-arg '--flannel-backend=none@server:0' --k3s-arg '--disable=servicelb@server:0' --k3s-arg '--disable=traefik@server:0' --k3s-arg '--disable=metrics-server@server:0'
 ```
 
 - this creates a single-node cluster without the Flannel CNI installed
@@ -177,7 +183,7 @@ Now we have a network-policy enforcing cluster, we can try the APOD app again:
 kubectl apply -f labs/networkpolicy/specs/apod
 ```
 
-> This runs the same app on the new cluster. When the Pods are running browse to http://localhost:30816 and check it all works
+> This runs the same app on the new cluster. When the Pods are running browse to http://localhost:30016 and check it all works
 
 Apply the same deny-all policy:
 
@@ -187,7 +193,7 @@ kubectl apply -f labs/networkpolicy/specs/deny-all
 kubectl get netpol
 ```
 
-> Calico will enforce this policy. Refresh http://localhost:30816, the app times out
+> Calico will enforce this policy. Refresh http://localhost:30016, the app times out
  
 There is no egress policy allowing communication from the web app to the API **or even to the DNS server**.
 
@@ -248,7 +254,7 @@ The API fetches data from the NASA APIs:
 kubectl describe netpol apod-api
 ```
 
-> Refresh http://localhost:30816 and the app will be working again
+> Refresh http://localhost:30016 and the app will be working again
 
 ## Lab
 

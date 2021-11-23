@@ -32,7 +32,7 @@ spec:
     - name: https
       port: 443
       targetPort: https
-      nodePort: 30040
+      nodePort: 30004
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx

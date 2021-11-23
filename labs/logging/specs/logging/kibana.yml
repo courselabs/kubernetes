@@ -24,7 +24,7 @@ spec:
   - name: kibana
     port: 5601
     targetPort: 5601
-    nodePort: 30561
+    nodePort: 30016
   type: NodePort
 ---
 apiVersion: apps/v1

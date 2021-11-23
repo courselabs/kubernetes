@@ -14,9 +14,9 @@ You should still have the default deny policy:
 kubectl get netpol
 ```
 
-My solution (in labs\networkpolicy\solution\apod) adds a namespace to all the Pod selectors:
+My solution (in labs/networkpolicy/solution/apod) adds a namespace to all the Pod selectors:
 
-- [network-policies.yaml](.\solution\apod\network-policies.yaml)
+- [network-policies.yaml](./solution/apod/network-policies.yaml)
 
 Deploy the app:
 
@@ -30,7 +30,7 @@ Test the web app can access the API, and the API can access the external API:
 kubectl exec -n apod deploy/apod-web -- wget -O- -T2 http://apod-api/image
 ```
 
-> Refresh http://localhost:30816, the app should be working correctly
+> Refresh http://localhost:30016, the app should be working correctly
 
 Try to access the API from the sleep Pod:
 

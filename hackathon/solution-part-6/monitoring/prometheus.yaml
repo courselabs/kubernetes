@@ -23,7 +23,7 @@ spec:
   ports:
     - port: 9090
       targetPort: prometheus
-      nodePort: 30990
+      nodePort: 30009
 ---
 apiVersion: apps/v1
 kind: Deployment

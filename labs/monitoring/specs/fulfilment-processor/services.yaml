@@ -28,5 +28,5 @@ spec:
     - name: http
       port: 9110
       targetPort: metrics
-      nodePort: 30910
+      nodePort: 30011
   type: NodePort

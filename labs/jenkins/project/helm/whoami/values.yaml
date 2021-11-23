@@ -1,7 +1,7 @@
 # service
 servicePort: 8020
 serviceType: NodePort
-serviceNodePort: 30820
+serviceNodePort: 30028
 
 # deployment
 replicaCount: 1
