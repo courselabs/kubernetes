@@ -35,7 +35,7 @@ The component names in the diagram are the DNS names the app expects to use. And
 
 </details><br/>
 
-When you're done you should be able to browse to port 8080 on your cluster and see this:
+When you're done you should be able to browse to the Service port on your cluster and see this:
 
 ![](/img/widgetario-solution-1.png)
 
@@ -289,9 +289,9 @@ You can browse to the UIs using NodePort or LoadBalancer Services:
 ```
 kubectl get svc -A -l kubernetes.courselabs.co=hackathon
 ```
-* Grafana on http://localhost:30300 or http://localhost:3000
+* Grafana on http://localhost:30003 or http://localhost:3000
 
-* Kibana on http://localhost:30561 or http://localhost:5601
+* Kibana on http://localhost:30005 or http://localhost:5601
 
 </details><br/>
 

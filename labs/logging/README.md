@@ -141,6 +141,12 @@ kubectl get all -n logging
 
 Elasticsearch uses a REST API on port 9200 to insert & query data. We can use it from the jumpbox Pod.
 
+Generate some application logs by making a call to the fulfilment REST API:
+
+```
+curl localhost:30018/documents
+```
+
 📋 Connect to the jumpbox Pod and make an HTTP request with curl, to the `/_cat/indices` path on the Elasticsearch Pod.
 
 <details>
@@ -174,7 +180,7 @@ You can do everything with the REST API, but the Kibana UI is much easier to use
 
 ## View application logs in Kibana
 
-Browse to Kibana on http://localhost:5601 or http://localhost:30561 
+Browse to Kibana on http://localhost:5601 or http://localhost:30016 
 
 From the left menu:
 
@@ -190,10 +196,10 @@ Now from the left menu
 
 > You can see all the container logs, plus metadata (namespace, pod, image etc.)
 
-Make a call to the Spring Boot API:
+Make another call to the Spring Boot API:
 
 ```
-curl http://localhost:30811/documents
+curl localhost:30018/documents
 ```
 
 Click _Refresh_ in Kibana and you'll see a log entry recording the HTTP request you just made.
