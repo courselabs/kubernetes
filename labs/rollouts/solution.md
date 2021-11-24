@@ -20,7 +20,7 @@ You'll see all the Pods in the Service - the selector is not choosing by the slo
 kubectl describe svc vweb-web
 ```
 
-Browse to the app at http://localhost:30899; requests are load-balanced between the blue and green Pods.
+Browse to the app at http://localhost:30019; requests are load-balanced between the blue and green Pods.
 
 ## Fixing the chart
 
@@ -34,7 +34,7 @@ Update the chart to use the new template:
 helm upgrade vweb labs/rollouts/solution/helm/vweb
 ```
 
-Refresh at http://localhost:30899 - all responses are blue (v1), which is the default slot in the values file.
+Refresh at http://localhost:30019 - all responses are blue (v1), which is the default slot in the values file.
 
 Switch to the green slot:
 

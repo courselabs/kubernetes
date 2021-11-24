@@ -36,12 +36,12 @@ kubectl apply -f labs/rollouts/specs/vweb
 
 In the watch window you'll see the Pods start, the init container runs, then the Pod initializes and enters the running state
 
-Check the Services and you'll see there's a NodePort listening on port 30890:
+Check the Services and you'll see there's a NodePort listening on port 30018:
 
 ```
 kubectl get svc 
 
-curl localhost:30890/v.txt
+curl localhost:30018/v.txt
 ```
 
 </details><br/>
@@ -78,7 +78,7 @@ kubectl get rs -l app=vweb
 You can try the app while the rollout is happening:
 
 ```
-curl localhost:30890/v.txt
+curl localhost:30018/v.txt
 ```
 
 All the v1 and v2 Pods match the Service selector so you'll get load-balanced responses from both versions.
@@ -173,7 +173,7 @@ With 0 Pods ready, there are no endpoints in the Service and the app is unavaila
 Be careful using the Recreate strategy - a bad update will take your application offline:
 
 ```
-curl localhost:30890/v.txt
+curl localhost:30018/v.txt
 ```
 
 **There is no automatic rollback in Kubernetes.** Updates need to be monitored and failed releases manually rolled back.
