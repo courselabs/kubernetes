@@ -45,7 +45,7 @@ These are hands-on resources to help you learn Kubernetes.
 ## Continuous Integration and Continuous Deployment (CI/CD)
 
 - [Image optimizing](labs/docker/README.md)
-- [BuildKit](labs/helm/README.md)
+- [BuildKit](labs/buildkit/README.md)
 - [Helm](labs/helm/README.md)
 - [Rollouts](labs/rollouts/README.md)
 - [Jenkins](labs/jenkins/README.md)

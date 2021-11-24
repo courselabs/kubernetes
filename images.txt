@@ -11,6 +11,7 @@ widgetario/web:21.03-v2
 widgetario/web:21.03
 quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0
 courselabs/elasticsearch:7.10
+courselabs/kibana:7.10
 fluent/fluent-bit:1.8.3
 courselabs/prometheus:v2.28.1
 courselabs/grafana:8.0.5
