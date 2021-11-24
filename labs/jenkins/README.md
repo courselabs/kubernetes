@@ -200,7 +200,7 @@ We'll add the CD stage to the build, deploying to a new namespace.
   <summary>Not sure how?</summary>
 
 ```
-kubectl create ns integration-test
+kubectl create ns integration-test 
 
 kubectl label ns integration-test kubernetes.courselabs.co=jenkins
 ```
@@ -272,4 +272,17 @@ And all the other components:
 
 ```
 kubectl delete ns -l kubernetes.courselabs.co=jenkins
+```
+
+👩‍🏫 **For the instructor** - remember to reset the Dockerfile and Jenkinsfile for the next class :)
+
+```
+cp labs/jenkins/project/src/Dockerfile.original labs/jenkins/project/src/Dockerfile
+cp labs/jenkins/project/Jenkinsfile.original labs/jenkins/project/Jenkinsfile
+
+git add labs/jenkins/project/src/Dockerfile
+git add labs/jenkins/project/Jenkinsfile
+
+git commit -m 'Reset Jenkins lab'
+git push origin
 ```
