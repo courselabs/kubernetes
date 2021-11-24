@@ -147,7 +147,7 @@ kubectl create configmap build-config --from-literal=REGISTRY=docker.io  --from-
 
 Now we can run a Pod from an image which has the BuildKit CLI already installed, surfacing the registry details we've created:
 
-- [buildkit-cli.yaml](.\specs\buildkit-cli\buildkit-cli.yaml) - mounts the registry credentials in the default path used by Docker and buildctl
+- [buildkit-cli.yaml](./specs/buildkit-cli/buildkit-cli.yaml) - mounts the registry credentials in the default path used by Docker and buildctl
 
 
 📋 Run the BuildKit CLI Pod, and exec into a shell session.
