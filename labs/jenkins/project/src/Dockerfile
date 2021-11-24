@@ -1,4 +1,4 @@
-FROM golang:1.16.3-alpine3.12 AS builder
+FROM golang:1.17.1-alpine3.14 AS builder
 ENV CGO_ENABLED=0
 
 RUN apk --no-cache --no-progress add git ca-certificates tzdata make \
@@ -13,7 +13,7 @@ COPY app.go .
 RUN go build -o /out/whoami
 
 # app
-FROM alpine:3.8
+FROM scratch
 
 ENTRYPOINT ["/app/whoami"]
 EXPOSE 80
