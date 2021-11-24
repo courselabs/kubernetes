@@ -26,7 +26,7 @@ The build components will all run as Deployments in a custom namespace:
 
 - [infrastructure/buildkitd.yaml](./specs/infrastructure/buildkitd.yaml) - runs a BuildKit server, with a ClusterIP Service for internal access
 
-- [infrastructure/jenkins.yaml](./specs/infrastructure/jenkins.yaml) - runs Jenkins with a NodePort to access on port 30880, plus setup scripts in a ConfigMap and RBAC rules for Jenkins to use the Kubernetes API server
+- [infrastructure/jenkins.yaml](./specs/infrastructure/jenkins.yaml) - runs Jenkins with a NodePort to access on port 30008, plus setup scripts in a ConfigMap and RBAC rules for Jenkins to use the Kubernetes API server
 
 Start by deploying all the infrastructure components:
 
@@ -139,7 +139,7 @@ To run a build we need to push our local code to Gogs. You can do this with the 
 git fetch --unshallow
 
 # add the local Git server:
-git remote add gogs http://localhost:30300/kiamol/kiamol.git
+git remote add gogs http://localhost:30030/kiamol/kiamol.git
 
 # and push:
 git push gogs main
@@ -147,15 +147,15 @@ git push gogs main
 
 > You'll need to authenticate with the server, use `kiamol` as the username and password.
 
-Now all the code from this repo is in your local Git server. You can browse here and see the build pipeline: http://localhost:30300/kiamol/kiamol/src/main/labs/jenkins/project/Jenkinsfile.
+Now all the code from this repo is in your local Git server. You can browse here and see the build pipeline: http://localhost:30030/kiamol/kiamol/src/main/labs/jenkins/project/Jenkinsfile.
 
 This is a Jenkins pipeline definition. If you're not familiar with the syntax, you can see we're mostly running shell scripts which use the BuildKit CLI to build and push images.
 
 ## Run the pipeline in Jenkins
 
-Browse to Jenkins at http://localhost:30880. Click _log in_ at the top right of the screen, and use `kiamol` as the username and password.
+Browse to Jenkins at http://localhost:30008. Click _log in_ at the top right of the screen, and use `kiamol` as the username and password.
 
-Now browse to project at http://localhost:30880/job/kiamol/ (the project is created in the setup scripts in [jenkins.yaml](./specs/infrastructure/jenkins.yaml)).
+Now browse to project at http://localhost:30008/job/kiamol/ (the project is created in the setup scripts in [jenkins.yaml](./specs/infrastructure/jenkins.yaml)).
 
 Click _Enable_ and then click _Build Now_.
 
@@ -190,7 +190,7 @@ Install a local release to verify the chart - using a public image:
 helm upgrade --install whoami-dev --set serverImage=docker.io/courselabs/whoami-lab:21.09-1 labs/jenkins/project/helm/whoami
 ```
 
-When the app is running, test it at http://localhost:30820
+When the app is running, test it at http://localhost:30028
 
 We'll add the CD stage to the build, deploying to a new namespace. 
 
@@ -229,14 +229,14 @@ git commit -m 'Enable CD'
 git push gogs
 ```
 
-Browse back to your build at http://localhost:30880/job/kiamol/ - click _Build Now_ a few times to push images with different version numbers.
+Browse back to your build at http://localhost:30008/job/kiamol/ - click _Build Now_ a few times to push images with different version numbers.
 
 Check the CI/CD deployment works and is running the latest version:
 
 ```
 helm ls -n integration-test
 
-curl localhost:30821
+curl localhost:30029
 
 kubectl get rs -n integration-test -o wide
 ```

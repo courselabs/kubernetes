@@ -26,11 +26,11 @@ git commit -m 'Jenkins lab solution'
 git push gogs
 ```
 
-Check the build at http://localhost:30880/job/kiamol/
+Check the build at http://localhost:30008/job/kiamol/
 
 > The new build should trigger an update and when the Helm upgrade has finished, the app should work in the same way 
 
-Test the app with `curl localhost:30821`. Then pull your two latest images and compare them. My optimized image is 1/3 smaller than the previous one:
+Test the app with `curl localhost:30028`. Then pull your two latest images and compare them. My optimized image is 1/3 smaller than the previous one:
 
 ```
 > docker image ls courselabs/whoami-lab
