@@ -37,6 +37,6 @@ Check the Service to confirm the type and port:
 kubectl get svc -n ingress
 ```
 
-> Browse to http://localhost:30080
+> Browse to http://localhost:30040
 
 And that's a production-grade 404 you're seeing :)

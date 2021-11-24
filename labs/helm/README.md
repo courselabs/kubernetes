@@ -93,7 +93,7 @@ kubectl describe svc whoami-default-server
 Try the app:
 
 ```
-curl localhost:30820
+curl localhost:30028
 ```
 
 If you repeat the call you'll see responses load-balanced between Pods. The replica count and server mode are variables, currently using the default settings in the values file.
@@ -104,7 +104,7 @@ Any field in the values file can be overridden when you install or upgrade a rel
 
 - [values.yaml](./charts/whoami/values.yaml) - contains all the variable names for the whoami app, together with the default values
 
-📋 Install a new release from the same whoami chart, called `whoami-custom`. Set the replica count to 1 and the Service port to `30821`.
+📋 Install a new release from the same whoami chart, called `whoami-custom`. Set the replica count to 1 and the Service port to `30038`.
 
 <details>
   <summary>Not sure how?</summary>
@@ -112,7 +112,7 @@ Any field in the values file can be overridden when you install or upgrade a rel
 You can use multiple `set` flags, providing the variable name and value:
 
 ```
-helm install whoami-custom --set replicaCount=1 --set serviceNodePort=30821 labs/helm/charts/whoami
+helm install whoami-custom --set replicaCount=1 --set serviceNodePort=30038 labs/helm/charts/whoami
 ```
 
 </details><br/>
@@ -130,7 +130,7 @@ kubectl get pods -l component=server -L app
 Your new Service should be listening at the specified port:
 
 ```
-curl localhost:30821
+curl localhost:30038
 ```
 
 ## Upgrade a release with custom values
@@ -164,7 +164,7 @@ helm upgrade whoami-custom --reuse-values --set serverMode=V labs/helm/charts/wh
 Try the app now:
 
 ```
-curl localhost:30821
+curl localhost:30038
 ```
 
 Check the ReplicaSets for the custom install and you can see that Helm just makes changes to the Kubernetes objects - the Deployment got updated and it rolled out the change in the usual way:
@@ -198,7 +198,7 @@ kubectl get rs -l app=whoami-custom
 And the app is working with the "quiet" server mode:
 
 ```
-curl localhost:30821
+curl localhost:30038
 ```
 
 ## Using chart repositories
@@ -242,7 +242,7 @@ helm show values kiamol/vweb --version 2.0.0
 
 The values file is YAML, so it can contain comments - very helpful for users.
 
-📋 Install a release called `vweb` from the `kiamol/vweb` chart at version `2.0.0`, using a NodePort service listening on port 30890.
+📋 Install a release called `vweb` from the `kiamol/vweb` chart at version `2.0.0`, using a NodePort service listening on port 30039.
 
 <details>
   <summary>Not sure how?</summary>
@@ -250,7 +250,7 @@ The values file is YAML, so it can contain comments - very helpful for users.
 It's the same install command, specifying the chart version and the location includes the repo name:
 
 ```
-helm install --set replicaCount=1 --set serviceType=NodePort --set servicePort=30890 vweb kiamol/vweb --version 2.0.0
+helm install --set replicaCount=1 --set serviceType=NodePort --set servicePort=30039 vweb kiamol/vweb --version 2.0.0
 ```
 
 </details><br/>
@@ -261,7 +261,7 @@ List the Services to confirm the deployment:
 kubectl get svc -l app.kubernetes.io/instance=vweb
 ```
 
-> You should be able to browse to the app at http://localhost:30890. It's not very exciting.
+> You should be able to browse to the app at http://localhost:30039. It's not very exciting.
 
 Upgrades don't have to use a newer version. You can downgrade to the version `1.0.0` chart of this app, but it might not do what you think.
 
@@ -280,7 +280,7 @@ helm upgrade --reuse-values vweb kiamol/vweb --version 1.0.0
 
 </details><br/>
 
-> The "upgrade" works, but the v1 chart doesn't have a variable for the Service type, it's fixed as LoadBalancer. The app is still available at http://localhost:30890, but only if your cluster supports LoadBalancer services. 
+> The "upgrade" works, but the v1 chart doesn't have a variable for the Service type, it's fixed as LoadBalancer. The app is still available at http://localhost:30039, but only if your cluster supports LoadBalancer services. 
 
 ## Lab
 
