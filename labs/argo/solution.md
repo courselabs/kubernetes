@@ -12,7 +12,7 @@ Check the app has been created:
 argocd app list
 ```
 
-Watch in the ArgCD UI at https://localhost:30881/applications/lab or use Kubectl to see the Pods being created:
+Watch in the ArgCD UI at https://localhost:30018/applications/lab or use Kubectl to see the Pods being created:
 
 ```
 kubectl get po -n default -l project=apod --watch
@@ -20,6 +20,6 @@ kubectl get po -n default -l project=apod --watch
 
 When the Pods are all ready, you can find the app URL by looking for public Services in the ArgoCD UI or Kubectl.
 
-Try the app at http://localhost:30810. You should see NASA's Astronomy Picture of the Day.
+Try the app at http://localhost:30008. You should see NASA's Astronomy Picture of the Day.
 
 

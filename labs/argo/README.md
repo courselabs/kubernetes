@@ -79,11 +79,11 @@ This installation of ArgoCD includes a web UI. The initial admin password is sto
 kubectl -n argocd get secret argocd-initial-admin-secret -o go-template="{{.data.password | base64decode}}"
 ```
 
-Open the UI at http://localhost:30881, log in with username `admin` and the password from your Secret.
+Open the UI at http://localhost:30018, log in with username `admin` and the password from your Secret.
 
 > You'll be redirected to HTTPS with a self-signed certificate, so you'll need to accept the security warning in your browser.
 
-Open https://localhost:30881/settings/clusters - ArgoCD is registered with the local cluster so it can manage applications, but there are no apps yet.
+Open https://localhost:30018/settings/clusters - ArgoCD is registered with the local cluster so it can manage applications, but there are no apps yet.
 
 ## Create an application
 
@@ -105,7 +105,7 @@ When the Pod is ready, add the new server as a remote and push a copy of this re
 
 ```
 # add the local Git server:
-git remote add labs-argo http://localhost:30300/kiamol/kiamol.git
+git remote add labs-argo http://localhost:30030/kiamol/kiamol.git
 
 # push to the expected branch name:
 git push labs-argo main:master
@@ -116,7 +116,7 @@ git push labs-argo main:master
 Now connect the ArgoCD CLI to the ArgoCD server, using your password from the Secret:
 
 ```
-argocd login localhost:30881 --insecure --username admin --password <your-password>
+argocd login localhost:30018 --insecure --username admin --password <your-password>
 
 argocd cluster list
 ```
@@ -155,7 +155,7 @@ argocd app get whoami
 </details><br/>
 
 
-Check the new application in the UI at https://localhost:30881/applications. You'll see the status is _OutOfSync_ which means the application in the cluster is not in sync with the definition in source.
+Check the new application in the UI at https://localhost:30018/applications. You'll see the status is _OutOfSync_ which means the application in the cluster is not in sync with the definition in source.
 
 Select the whoami app and you can see the resources it defines, even though it's not running yet. Click _App Details_ then _Paramaters_ - these are all read from the Helm chart, and can be edited here (which defies the point of GitOps really...)
  
@@ -209,7 +209,7 @@ argocd app sync whoami
 
 </details><br/>
 
-ArgoCD has deployed the app from the Helm chart in the repo - with no pipeline or scripts to maintain. You can test the app at http://localhost:30820.
+ArgoCD has deployed the app from the Helm chart in the repo - with no pipeline or scripts to maintain. You can test the app at http://localhost:30028.
 
 
 ## Update the app
@@ -236,7 +236,7 @@ git push labs-argo main:master
 
 </details><br/>
 
-You can watch the update happening in the UI at https://localhost:30881/applications/whoami
+You can watch the update happening in the UI at https://localhost:30018/applications/whoami
 
 > ArgoCD updates the Deployment - in a minute or so you'll see a new ReplicaSet gets created with 3 Pods, and the old one scales down
 
