@@ -109,6 +109,8 @@ git remote add labs-argo http://localhost:30030/kiamol/kiamol.git
 
 # push to the expected branch name:
 git push labs-argo main:master
+
+# login with username kiamol and password kiamol
 ```
 
 > This version of ArgoCD expects to find a branch named `master` in the Git repo. This repo uses `main` as the branch name, so the push command uses the expected name in the Git server.
@@ -295,4 +297,10 @@ Then delete the lab namespaces:
 kubectl delete ns -l kubernetes.courselabs.co=argo
 
 kubectl delete ns whoami
+```
+
+And remove your Git remote:
+
+```
+git remote rm labs-argo
 ```

@@ -135,14 +135,11 @@ The local build infrastructure is all running, and Jenkins is configured with a 
 To run a build we need to push our local code to Gogs. You can do this with the Git CLI - these commands adds the local server as a new remote and push a copy of the repo there:
 
 ```
-# fetch the full history of the GitHub repo:
-git fetch --unshallow
-
 # add the local Git server:
-git remote add gogs http://localhost:30030/kiamol/kiamol.git
+git remote add labs-jenkins http://localhost:30030/kiamol/kiamol.git
 
 # and push:
-git push gogs main
+git push labs-jenkins main
 ```
 
 > You'll need to authenticate with the server, use `kiamol` as the username and password.
@@ -226,7 +223,7 @@ git add labs/jenkins/project/Jenkinsfile
 
 git commit -m 'Enable CD'
 
-git push gogs
+git push labs-jenkins
 ```
 
 Browse back to your build at http://localhost:30008/job/kiamol/ - click _Build Now_ a few times to push images with different version numbers.
@@ -272,6 +269,12 @@ And all the other components:
 
 ```
 kubectl delete ns -l kubernetes.courselabs.co=jenkins
+```
+
+Then remove your Git remote:
+
+```
+git remote rm labs-jenkins
 ```
 
 👩‍🏫 **For the instructor** - remember to reset the Dockerfile and Jenkinsfile for the next class :)

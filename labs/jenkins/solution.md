@@ -23,7 +23,7 @@ git add labs/jenkins/project/src/Dockerfile
 
 git commit -m 'Jenkins lab solution'
 
-git push gogs
+git push labs-jenkins
 ```
 
 Check the build at http://localhost:30008/job/kiamol/
