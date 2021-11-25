@@ -5,3 +5,5 @@ metadata:
 spec:
   replicas: 2
   secretName: db-password
+  # specify MySql version
+  image: percona:5.7.35
