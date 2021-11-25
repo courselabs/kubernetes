@@ -23,7 +23,7 @@ You may need to restart the message handler if it's in a backoff state:
 ```
 kubectl rollout restart deploy todo-save-handler
 
-k logs -l app=todo-list,component=save-handler
+kubectl logs -l app=todo-list,component=save-handler
 ```
 
 Check the database gets created:

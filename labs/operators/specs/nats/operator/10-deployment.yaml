@@ -18,7 +18,7 @@ spec:
       serviceAccountName: nats-operator
       containers:
       - name: nats-operator
-        image: connecteverything/nats-operator:0.7.4
+        image: courselabs/nats-operator:v0.8.3
         imagePullPolicy: IfNotPresent
         args:
         - nats-operator

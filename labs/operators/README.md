@@ -37,7 +37,7 @@ kubectl describe crd students
 
 </details><br/>
 
-> The CRD is just the object schema. Kubernetes opnly stores objects if it understands the type, which is what the CRD describes.
+> The CRD is just the object schema. Kubernetes only stores objects if it understands the type, which is what the CRD describes.
 
 Now your Kubernetes cluster understands _Student_ resources, you can define them with YAML:
 
@@ -273,7 +273,7 @@ Now deploy a simple to-do list application:
 kubectl apply -f labs/operators/specs/todo-list
 ```
 
-The app has a website listening on http://localhost:30820 which posts messages to a queue when you create a new to-do item. A message handler listens on the same queue and creates items in the database.
+The app has a website listening on http://localhost:30028 which posts messages to a queue when you create a new to-do item. A message handler listens on the same queue and creates items in the database.
 
 > Browse to the app now and you'll see an error - the components it needs don't exist yet
 
