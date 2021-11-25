@@ -3,3 +3,4 @@ user.key
 tls.crt
 tls.key
 0
+debug.log

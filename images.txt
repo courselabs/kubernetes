@@ -66,3 +66,6 @@ kubernetesui/dashboard:v2.3.1
 kubernetesui/metrics-scraper:v1.0.6
 kiamol/ch03-numbers-api
 kiamol/ch03-numbers-web
+sixeyed/image-gallery:v3.0
+sixeyed/image-of-the-day:v3.0
+sixeyed/access-log:v3.0

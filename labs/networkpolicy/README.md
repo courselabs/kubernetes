@@ -302,3 +302,9 @@ kubectl config use-context docker-desktop # OR your old cluster name
 
 kubectl delete all,netpol -A -l kubernetes.courselabs.co=network-policy
 ```
+
+**And** if you were originally using a K3d cluster which you stopped, you'll need to start it again:
+
+```
+k3d cluster start k8s
+```
