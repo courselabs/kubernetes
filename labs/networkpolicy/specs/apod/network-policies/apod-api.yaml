@@ -33,9 +33,9 @@ spec:
 
   - to: # NASA APIs - api.nasa.gov
     - ipBlock:
-        cidr: 3.217.44.1/24
+        cidr: 34.224.119.141/24
     - ipBlock:
-        cidr: 34.206.6.1/24
+        cidr: 54.227.149.47/24
     ports:
     - protocol: TCP
       port: 443
