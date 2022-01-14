@@ -65,7 +65,7 @@ What happens if you try the same command without specifying a node name?
 
 Every object in Kubernetes can have **labels** - they are key-value pairs used to record additional information about the object.
 
-Use Kubectl to find labels for you node, which will confirm the CPU architecture and operating system it's using.
+Use Kubectl to find labels for your node, which will confirm the CPU architecture and operating system it's using.
 
 > Stuck? Try [hints](hints.md) or check the [solution](solution.md).
 
