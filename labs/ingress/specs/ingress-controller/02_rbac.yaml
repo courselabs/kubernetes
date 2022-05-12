@@ -146,8 +146,6 @@ rules:
       - ''
     resources:
       - configmaps
-    resourceNames:
-      - ingress-controller-leader-nginx
     verbs:
       - get
       - update

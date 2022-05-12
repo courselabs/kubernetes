@@ -24,7 +24,8 @@ spec:
             - --publish-service=ingress-nginx/ingress-nginx-controller-lb
             - --publish-service=ingress-nginx/ingress-nginx-controller-np
             - --election-id=ingress-controller-leader
-            - --ingress-class=nginx
+            - --ingress-class=nginx            
+            - --controller-class=k8s.io/ingress-nginx
             - --configmap=ingress-nginx/ingress-nginx-controller
           securityContext:
             runAsUser: 101
