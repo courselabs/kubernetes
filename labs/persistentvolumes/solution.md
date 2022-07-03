@@ -25,3 +25,5 @@ kubectl exec pod/sleep -- ls -l /node-root/secret/hacker
 ```
 
 > That's why its not secure :) If you do need access to the node's disk you should use a hostPath with a more restrictive scope, not the entire root drive.
+
+> Back to the [exercises](README.md).

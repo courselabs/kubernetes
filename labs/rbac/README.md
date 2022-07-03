@@ -71,7 +71,7 @@ ___
 
 ## * **Do this first if you use Docker Desktop** *
 
-There's a [bug in the default RBAC setup](https://github.com/docker/for-mac/issues/4774) in Docker Desktop, which means permissions are not applied correctly. If you're using Kubernetes in Docker Desktop, run this to fix the bug:
+There's a [bug in the default RBAC setup](https://github.com/docker/for-mac/issues/4774) in older versions of Docker Desktop, which means permissions are not applied correctly. If you're using Kubernetes in Docker Desktop v4.2 or earlier, run this to fix the bug:
 
 ```
 # on Docker Desktop for Mac (or WSL2 on Windows):
@@ -82,6 +82,8 @@ sudo chmod +x ./scripts/fix-rbac-docker-desktop.sh
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
 ./scripts/fix-rbac-docker-desktop.ps1
 ```
+
+> Docker Desktop 4.3.0 fixes the issue,so if you run the command and you see _Error from server (NotFound): clusterrolebindings.rbac.authorization.k8s.io "docker-for-desktop-binding" not found_ - that means your version doesn't have the bug and you're good to go. 
 ___
 
 ## Securing API access with Service Accounts

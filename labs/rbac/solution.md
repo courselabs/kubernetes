@@ -54,3 +54,5 @@ A better approach is to use a custom ServiceAccount with `automountServiceAccoun
 Any app which doesn't use the API server can use this SA - apps which do use the API server will each have their own SA with the permissions the app needs.
 
 - [sleep-with-no-token-sa.yaml](solution/sleep-with-no-token-sa.yaml) - a new SA and Pod configured to use it
+
+> Back to the [exercises](README.md).

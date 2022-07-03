@@ -51,3 +51,5 @@ kubectl exec sleep -- curl -v http://whoami
 ```
 
 > The IP in the response is the Pod IP, the requested IP is the Service. Repeat the call and the Pod IP in the response changes - the Service load-balances requests between Pods.
+
+> Back to the [exercises](README.md).

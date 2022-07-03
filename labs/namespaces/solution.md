@@ -44,3 +44,5 @@ kubectl exec -n front-end deploy/pi-proxy -- ls /tmp
 ```
 
 > Refresh the web app and your response will be instant
+
+> Back to the [exercises](README.md).

@@ -72,3 +72,5 @@ kubectl rollout undo deploy/configurable-lab
 ```
 
 > Which of these works for a project depends on your organization, how you store configuration, and whether you want deployments to be fully automated or you need to decouple config management from app deployments.
+
+> Back to the [exercises](README.md).
