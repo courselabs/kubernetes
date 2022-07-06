@@ -242,7 +242,7 @@ kubectl get pv
 
 When you need more control you can manually manage the PV lifecycle:
 
-- [persistentVolume.yaml](specs/caching-proxy-pv/persistentVolume.yaml) defines a PV which uses `local` storage, and attaches to a node with has a label `kubernetes`
+- [persistentVolume.yaml](specs/caching-proxy-pv/persistentVolume.yaml) defines a PV which uses `local` storage, and attaches to a node which has a label `labs-pvc`
 - [caching-proxy-pv/pvc.yaml](specs/caching-proxy-pv/pvc.yaml) requests a volume by name, instead of using a Storage Class
 - [caching-proxy-pv/nginx.yaml](specs/caching-proxy-pv/nginx.yaml) updates the proxy deployment to use the new PVC 
 

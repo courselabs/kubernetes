@@ -176,7 +176,7 @@ curl http://localhost:30010
 
 ## Updating the application
 
-Application updates usually mean a change to the Pod spec - a new container image, or a configuraion change. You can't change the spec of a running Pod, but you can change the Pod spec in a Deployment. It makes the change by starting up new Pods and terminating the old ones.
+Application updates usually mean a change to the Pod spec - a new container image, or a configuration change. You can't change the spec of a running Pod, but you can change the Pod spec in a Deployment. It makes the change by starting up new Pods and terminating the old ones.
 
 - [whoami-v2.yaml](specs/deployments/whoami-v2.yaml) changes a configuration setting for the app. It's an environment variable update, but those are fixed for the life of a Pod container, so this change means new Pods.
 
