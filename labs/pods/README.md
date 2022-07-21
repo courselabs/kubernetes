@@ -60,7 +60,7 @@ Or the path to the YAML file can be a web address:
 kubectl apply -f https://kubernetes.courselabs.co/labs/pods/specs/whoami-pod.yaml
 ```
 
-> The output shows you that nothing has changed. Kubernetes works on **desired state** deployment
+> The output shows you that nothing has changed. Kubernetes works on **desired state** deployment.
 
 Now you can use the familiar commands to print information:
 
@@ -70,7 +70,7 @@ kubectl get pods
 kubectl get po -o wide
 ```
 
-> The second command uses the short name `po` and adds extra columns, including the Pod IP address
+> The second command uses the short name `po` and adds extra columns, including the Pod IP address.
 
 What extra information do you see in the second output, and how would you print all the Pod information in a readble format?
 
@@ -137,7 +137,7 @@ nslookup kubernetes
 ping kubernetes
 ```
 
-> The Kubernetes API server is available for Pod containers to use, but internal addresses don't support ping
+> The Kubernetes API server is available for Pod containers to use, but internal addresses don't support ping.
 
 ## Connecting from one Pod to another
 
@@ -157,7 +157,7 @@ kubectl get pods -o wide whoami
 ```
 </details><br/>
 
-> That's the internal IP address of the Pod - any other Pod in the cluster can connect on that address
+> That's the internal IP address of the Pod - only Pods in the cluster can connect to that address.
 
 Make a request to the HTTP server in the whoami Pod from the sleep Pod:
 
@@ -165,7 +165,7 @@ Make a request to the HTTP server in the whoami Pod from the sleep Pod:
 kubectl exec sleep -- curl -s <whoami-pod-ip>
 ```
 
-> The output is the response from the whoami server - it includes the  hostname and IP addresses
+> The output is the response from the whoami server - it includes the  hostname and IP addresses.
 
 ## Lab
 
