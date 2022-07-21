@@ -28,24 +28,24 @@ kubectl get pod sleep-lab --watch
 After around 30 seconds, the application in the container ends, so the container exits - then Kubernetes restarts the Pod. You'll see a new line in the watch output, with the restart count increased to 1:
 
 ```
-NAME        READY   STATUS    RESTARTS   AGE
-sleep-lab   1/1     Running   0          3s
+NAME        READY   STATUS      RESTARTS   AGE
+sleep-lab   1/1     Running     0          3s
 sleep-lab   0/1     Completed   0          33s
 sleep-lab   1/1     Running     1          35s
 ```
 
-> Pods restart by creating a new container **not** by restarting the existing container
+> Pods restart by creating a new container **not** by restarting the existing container.
 
-The new container runs until the app exits after 30 seconds. Kubernetes restarts the Pod - but if the Pod containers keep exiting, Kubernetes adds an increasing delay before restarting.
+The new container runs until the app exits after 30 seconds, then Kubernetes restarts the Pod - but if the Pod containers keep exiting, Kubernetes adds an increasing delay before restarting.
 
 > The status changes to `Completed` then `Running` again, but Kubernets the Pod enters `CrashLoopBackOff` status:
 
 ```
-NAME        READY   STATUS    RESTARTS   AGE
-sleep-lab   1/1     Running   0          3s
-sleep-lab   0/1     Completed   0          33s
-sleep-lab   1/1     Running     1          35s
-sleep-lab   0/1     Completed   1          64s
+NAME        READY   STATUS             RESTARTS   AGE
+sleep-lab   1/1     Running            0          3s
+sleep-lab   0/1     Completed          0          33s
+sleep-lab   1/1     Running            1          35s
+sleep-lab   0/1     Completed          1          64s
 sleep-lab   0/1     CrashLoopBackOff   1          79s
 sleep-lab   1/1     Running            2          80s
 sleep-lab   0/1     Completed          2          110s
