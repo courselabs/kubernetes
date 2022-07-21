@@ -113,7 +113,7 @@ kubectl get service whoami
 kubectl describe svc whoami
 ```
 
-> The `get` and `describe` commands are the same for all objects; Services have the alias `svc`
+> The `get` and `describe` commands are the same for all objects; Services have the alias `svc`.
 
 </details><br/>
 
@@ -148,7 +148,7 @@ kubectl get pods -o wide -l app=whoami
 kubectl delete pods -l app=whoami
 ```
 
-> You can use label selectors in Kubectl too - labels are a powerful management tool
+> You can use label selectors in Kubectl too - labels are a powerful management tool.
 
 Create a replacement Pod and check its IP address:
 
@@ -181,7 +181,7 @@ They both listen for traffic coming into the cluster and route it to Pods, but t
 
 - LoadBalancer Services integrate with the platform they're running on to get a real IP address. In a managed Kubernetes service in the cloud you'll get a unique public IP address for every Service, integrated with a cloud load balancer to direct traffic to your nodes. In Docker Desktop the IP address will be `localhost`; in k3s it will be a local network address.
 
-- NodePorts don't need any external setup so they work in the same way on all Kubernetes clusters. Every node in the cluster listens on the specified port and forwards traffic to Pods. The external port number must be >= 30000 - a security feature so Kubernetes components don't need to run with elevated privileges on the node.
+- NodePorts don't need any external setup so they work in the same way on all Kubernetes clusters. Every node in the cluster listens on the specified port and forwards traffic to any of the Pods that are coupled with the service. The external port number must be in the range 30,000 to 32,767 - a security feature so Kubernetes components don't need to run with elevated privileges on the node.
 
 Platform | LoadBalancer | NodePort 
 --- | --- | --- |
@@ -222,7 +222,7 @@ kubectl get svc -l app=whoami
 
 </details><br/>
 
-> If your cluster doesn't have LoadBalancer support, the `EXTERNAL-IP` field will stay at `<pending>` forever
+> If your cluster doesn't have LoadBalancer support, the `EXTERNAL-IP` field will stay at `<pending>` forever.
 
 External Services **also** create a ClusterIP, so you can access them internally. 
 
@@ -234,7 +234,7 @@ kubectl exec sleep -- curl -s http://whoami-lb:8080
 kubectl exec sleep -- curl -s http://whoami-np:8010
 ```
 
-> The Services all have the same label selector, so they all direct traffic to the same Pod
+> The Services all have the same label selector, so they all direct traffic to the same Pod.
 
 Now you can call the whoami app from your local machine:
 
@@ -246,7 +246,7 @@ curl http://localhost:8080
 curl http://localhost:30010
 ```
 
-> If your cluster isn't running locally, use the node's IP address for NodePort access or the EXTERNAL-IP address field for the LoadBalancer
+> If your cluster isn't running locally, use the node's IP address for NodePort access or the EXTERNAL-IP address field for the LoadBalancer.
 
 ## Lab
 
