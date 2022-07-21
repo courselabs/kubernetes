@@ -54,7 +54,7 @@ Check the help to see what other output formats you can use.
 One is [JSON Path](https://kubernetes.io/docs/reference/kubectl/jsonpath/), which is a query language you can use to print specific fields:
 
 ```
-kubectl get node <your-node> -o jsonpath='{.status.capacity.cpu}'
+kubectl get node <your-node> -o jsonpath='{.item[0].status.capacity.cpu}'
 ```
 
 > This tells you the number of CPU cores Kubernetes sees for that node.
