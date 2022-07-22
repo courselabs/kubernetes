@@ -40,7 +40,7 @@ The labels in the Pod metadata must include the labels in the selector for the D
 
 * `spec.selector`- list of labels to find Pods
 * `spec.template` - the template to use to create Pods
-* `spec.template.metadata` - metadata for the Pods - no `name` field
+* `spec.template.metadata` - metadata for the Pods - no `name` field because kubernetes will give a name to the various Pods (replicas)
 * `spec.template.metadata.labels` - labels to apply to Pods, must include those in the selector
 * `spec.template.spec` - full Pod spec
 
@@ -60,7 +60,7 @@ kubectl apply -f labs/deployments/specs/deployments/whoami-v1.yaml
 kubectl get pods -l app=whoami 
 ```
 
-> Deployments apply their own naming system when they create Pods, they end with a random string
+> Deployments apply their own naming system when they create Pods, they end with a random string.
 
 Deployments are first-class objects, you work with them in Kubectl in the usual way. 
 
@@ -118,7 +118,7 @@ kubectl get pods -l app=whoami
 
 </details><br/>
 
-> The Deployment removes one Pod, because the current state (3 replicas) does not match the desired state in the YAML (2 replicas)
+> The Deployment removes one Pod, because the current state (3 replicas) does not match the desired state in the YAML (2 replicas).
 
 ## Working with managed Pods
 
@@ -200,7 +200,7 @@ kubectl rollout undo deploy/whoami
 kubectl get po -l app=whoami
 ```
 
-> Try the app again and you'll see we're back to the full output
+> Try the app again and you'll see we're back to the full output.
 
 ## Lab
 
