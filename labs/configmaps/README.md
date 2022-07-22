@@ -258,7 +258,7 @@ Loading ConfigMaps into volume mounts is very powerful, but there are a couple o
 
 You can easily break your app if you get the volume mounts wrong:
 
-- [deployment-broken.yaml](specs/configurable/config-broken/deployment-broken.yaml) - mounts a ConfigMap into the `/app` directorry, which overwrites the actual app folder from the image
+- [deployment-broken.yaml](specs/configurable/config-broken/deployment-broken.yaml) - mounts a ConfigMap into the `/app` directory, which overwrites the actual app folder from the image
 
 ```
 kubectl apply -f labs/configmaps/specs/configurable/config-broken/
