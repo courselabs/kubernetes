@@ -213,7 +213,7 @@ The Pi-calculating web app is compute-intensive, so to keep our cluster usable f
 - [pi/02-cpu-limit-quota.yaml](specs/pi/02-cpu-limit-quota.yaml) - defines a quota which sets a total limits of 4 CPU cores across all Pods in the namespace
 - [pi/web-deployment.yaml](specs/pi/web-deployment.yaml) - defines a Deployment with one Pod which has a limit of 125 millicores (0.125 of one core)
 
-Resource **requests** specify how much memory or CPU the Pod would like allocated when it is created; resource **limits** specify the maximum memory or CPU the Pod can access.
+Resource **requests** specify how much memory or CPU it needs to be allocated for the Pod; resource **limits** specify the maximum memory or CPU the Pod can use (If the Pod tries to use more memory it will be terminated).
 
 There's no Nginx proxy for this release of the Pi app and the CPU allocation is very small, so the calculations will be slow.
 
