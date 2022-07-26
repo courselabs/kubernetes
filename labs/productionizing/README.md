@@ -141,7 +141,7 @@ If this was a real app the `503` could be happening if the app is overloaded. Re
 
 Readiness probes isolate failed Pods from the Service load balancer, but they don't take action to repair the app. 
 
-For that you can use a liveness probe which will restart the Pod with a new container if the probe fails:
+For that you can use a liveness probe which will restart the Pod with a new container if the probe fails (the Pod is the same, the container is restarted):
 
 - [deployment-with-liveness.yaml](specs/whoami/update2/deployment-with-liveness.yaml) - adds a liveness check; this one uses the same test as the readiness probe
 
