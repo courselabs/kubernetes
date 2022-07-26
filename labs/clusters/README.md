@@ -1,6 +1,6 @@
 # Kubernetes Clusters
 
-A single-node cluster is fine for a local environment, but a real cluster will always be multi-node for high availability and scale. 
+A single-node cluster is fine for a local environment, but a real cluster will always be multi-node for high availability and scalability. 
 
 In a production cluster the core Kubernetes components - called the control plane - run in dedicated nodes. You won't run any of your own app components on those nodes, so they're dedicated to Kubernetes. The control plane is usually replicated across three nodes. Then you have as many worker nodes as you need to run your apps, which could be tens or hundreds.
 
@@ -10,7 +10,7 @@ You can install Kubernetes on servers or VMs using the [Kubeadm](https://kuberne
 
 - [kubeadm init](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/) - to initialize a new cluster
 - [kubeadm join](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/) - to join a new node to an existing cluster
-- [k3d cluster create](https://k3d.io/v5.0.0/usage/commands/k3d_cluster_create/) - creating local clusers with k3d
+- [k3d cluster create](https://k3d.io/v5.0.0/usage/commands/k3d_cluster_create/) - creating local clusters with k3d
 - [Taints and tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) - marking nodes
 - [Deprecated API Migration Guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/) - managing API version upgrades
 
@@ -41,7 +41,7 @@ Test you have the CLI working:
 k3d version
 ```
 
-> The exercises use k3d **v5**. Options have changed a lot since older versions, so if youre on v4 or earlier you'll need to upgrade.
+> The exercises use k3d **v5**. Options have changed a lot since older versions, so if you're on v4 or earlier you'll need to upgrade.
 
 Create two clusters, one using a recent Kubernetes version and one using an old release:
 
