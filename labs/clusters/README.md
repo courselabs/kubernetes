@@ -20,7 +20,7 @@ Kubernetes moves fast - there are three releases per year, and a release may add
 
 k3d is great for spinning up specific Kubernetes versions quickly, so you can run the exact version you have in your production environment.
 
-- Install k3d from the install instructions https://k3d.io/v5.0.0/#installation **OR**
+- Install k3d from the install instructions https://k3d.io/v5.4.4/#installation **OR**
 
 The simple way, if you have a package manager installed:
 
