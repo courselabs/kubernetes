@@ -139,7 +139,7 @@ Control plane nodes have an additional label to identify them, and many platform
 
 The [Kubernetes scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/) decides which node should run a Pod. When you create a Pod it goes into the _Pending_ state and that's when the scheduler finds a node to run it.
 
-Our k3d cluster is set up so all nodes can run pods; this [whoami Deployment](./specs/whoami/deployment.yaml) runs six replicas, so we should see every node runnig at least one Pod:
+Our k3d cluster is set up so all nodes can run pods; this [whoami Deployment](./specs/whoami/deployment.yaml) runs six replicas, so we should see every node running at least one Pod:
 
 ```
 kubectl apply -f labs/clusters/specs/whoami

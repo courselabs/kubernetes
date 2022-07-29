@@ -254,7 +254,7 @@ kubectl get po -l app=nginx --watch
 
 DaemonSets are upgraded one node at a time, so by default Pods are taken down and replaced individually:
 
-- [nginx-daemonset/1.18.yaml](labs/rollouts/specs/nginx-daemonset/1.18.yaml) - runs a simple DaemonSet with no extra config
+- [nginx-daemonset/1.18.yaml](./specs/nginx-daemonset/1.18.yaml) - runs a simple DaemonSet with no extra config
 
 Create the DaemonSet with default update settings:
 
