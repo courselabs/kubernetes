@@ -19,3 +19,5 @@ kubectl logs -l app=fulfilment,component=processor -c logger
 Browse to Kibana and load the app logs index pattern in the Discover tab. Filter on the labels - app=fulfilment, component=processor - and you'll see the logs flowing in from Fluent Bit.
 
 > The downside is that the log metadata refers to logger container, e.g. no app image
+
+> Back to the [exercises](README.md)

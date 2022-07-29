@@ -23,3 +23,5 @@ kubectl -n monitoring rollout restart deploy/prometheus
 Then load the new dashbaord into Grafana:
 
 ![](/img/monitoring-lab-dashboard.png)
+
+> Back to the [exercises](README.md)

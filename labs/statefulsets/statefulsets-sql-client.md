@@ -83,3 +83,5 @@ ___
 ```
 kubectl delete svc,cm,secret,statefulset,deployment,pod -l kubernetes.courselabs.co=statefulsets
 ```
+
+> Back to the [exercises](README.md).

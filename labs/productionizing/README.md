@@ -280,7 +280,7 @@ kubectl exec deploy/pi-web -- chown root:root /app/Pi.Web.dll
 
 This alternative spec fixes those security issues:
 
-- [pi-secure/deployment.yaml](labs/productionizing/specs/pi-secure/deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
+- [pi-secure/deployment.yaml](specs/pi-secure/deployment.yaml) - sets a non-root user, doesn't mount the SA token and drops Linux capabilities
 
 ```
 kubectl apply -f labs/productionizing/specs/pi-secure/

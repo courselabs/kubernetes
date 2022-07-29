@@ -37,3 +37,5 @@ kubectl get po -l app=nginx
 ```
 
 The DaemonSet is removed, but the Pod which it used to control is still there.
+
+> Back to the [exercises](README.md).

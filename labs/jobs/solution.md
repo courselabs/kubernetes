@@ -41,3 +41,5 @@ Adding the lab label will help with cleanup:
 ```
 kubectl label job db-backup-job kubernetes.courselabs.co=jobs
 ```
+
+> Back to the [exercises](README.md)
