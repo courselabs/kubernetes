@@ -290,7 +290,7 @@ ___
 ```
 kubectl delete ns apod
 
-kubectl delete all,netpol -A -l kubernetes.courselabs.co=network-policy
+kubectl delete all,netpol -A -l kubernetes.courselabs.co=networkpolicy
 ```
 
 **Or** if you want to delete this cluster and switch back to your old one:
@@ -300,7 +300,7 @@ k3d cluster delete labs-netpol
 
 kubectl config use-context docker-desktop # OR your old cluster name
 
-kubectl delete all,netpol -A -l kubernetes.courselabs.co=network-policy
+kubectl delete all,netpol -A -l kubernetes.courselabs.co=networkpolicy
 ```
 
 **And** if you were originally using a K3d cluster which you stopped, you'll need to start it again:
