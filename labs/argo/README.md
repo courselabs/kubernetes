@@ -77,7 +77,7 @@ This installation of ArgoCD includes a web UI. The initial admin password is sto
 
 ```
 kubectl -n argocd get secret argocd-initial-admin-secret -o go-template="{{.data.password | base64decode}}"
-```
+```  <!-- -->
 
 Open the UI at http://localhost:30018, log in with username `admin` and the password from your Secret.
 
