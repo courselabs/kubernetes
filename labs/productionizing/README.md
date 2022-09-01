@@ -220,6 +220,9 @@ kubectl get hpa pi-cpu --watch
 
 **If your cluster honours CPU limits** the HPA will start more Pods.  After the requests have been processed workload falls so the average CPU across Pods is below the threshold and then the HPA scales down.
 
+> Docker Desktop currently has an issue reporting the metrics for Pods. If you run `kubectl top pod` and you see _error: Metrics not available for pod..._ then the HPA won't trigger. [Here is the issue](https://github.com/kubernetes-sigs/metrics-server/issues/1061#issuecomment-1200287201
+) - but I don't recommend following the procedure to fix it.
+
 The default settings wait a few minutes before scaling up and a few more before scaling down. Here's my output:
 
 ```

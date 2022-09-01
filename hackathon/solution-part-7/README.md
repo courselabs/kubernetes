@@ -12,7 +12,7 @@ _Deploy the Helm chart to a new namespace using a sample variables file:_
 helm install widg-uat -n widg-uat --create-namespace -f hackathon/files/helm/uat.yaml hackathon/solution-part-7/helm/widgetario
 ```
 
-_Check the objects:
+_Check the objects:_
 
 ```
 kubectl get all -n widg-uat
@@ -49,9 +49,9 @@ kubectl apply -f hackathon/solution-part-7/infrastructure
 _When it's all running, push your local code to Gogs:_
 
 ```
-git remote add gogs http://localhost:30301/kiamol/kiamol.git
+git remote add hackathon http://localhost:30031/kiamol/kiamol.git
 
-git push gogs main
+git push hackathon main
 ```
 
 _create registry creds - add your details with variables or use the scripts in the [Jenkins lab](../../labs/jenkins/README.md):_
@@ -63,7 +63,7 @@ kubectl -n infra create secret docker-registry registry-creds --docker-server=$R
 _Create a configmap with the details for the image name - be sure to use a registry and domain you have push access for:_
 
 ```
-kubectl -n infra create configmap build-config --from-literal=REGISTRY=docker.io  --from-literal=REPOSITORY=courselabs
+kubectl -n infra create configmap build-config --from-literal=REGISTRY=docker.io  --from-literal=REPOSITORY=$REGISTRY_USER 
 ```
 
 _Restart Jenkins to load the latest config:_
@@ -72,7 +72,7 @@ _Restart Jenkins to load the latest config:_
 kubectl rollout restart deploy/jenkins -n infra
 ```
 
-> Browse to Jenkins http://localhost:30880, sign in with the `kiamol` username and password
+> Browse to Jenkins http://localhost:30007, sign in with the `kiamol` username and password
 
 Open the Widgetario job in Jenkins, enable and build it. Confirm that your images build and are pushed with the correct tags.
 

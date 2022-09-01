@@ -65,3 +65,5 @@ helm upgrade --reuse-values --set blueImage=kiamol/ch09-vweb:v3 --atomic --timeo
 > You'll see the new v3 Pods fail, and after the timeout Helm rolls back they get terminated. The v1 Pods keep running because the update fails.
 
 Specifying `reuse-values` means the green release is still active, so the failed blue update doesn't affect the app.
+
+> Back to the [exercises](README.md)

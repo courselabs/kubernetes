@@ -46,7 +46,9 @@ Try with the IP address instead:
 kubectl get po -n apod -l app=apod-api -o wide
 
 # this will fail with a timeout
-kubectl exec sleep -- wget -O- -T2 http://192.168.39.200/image
+kubectl exec sleep -- wget -O- -T2 http://<pod-ip-address>/image
 ```
 
 > Now you'll get a timeout error, because Calico is blocking the connection
+
+> Back to the [exercises](README.md)

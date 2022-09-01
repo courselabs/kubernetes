@@ -41,3 +41,5 @@ courselabs/whoami-lab   21.09-4   061235acbb98   About a minute ago   8.22MB
 
 courselabs/whoami-lab   21.09-3   4deca9963c2a   5 hours ago          12.7MB
 ```
+
+> Back to the [exercises](README.md)

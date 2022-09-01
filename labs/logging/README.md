@@ -5,7 +5,7 @@ It's difficult to work with Pod logs at scale - Kubectl doesn't let you search o
 ## Reference
 
 - [Kubernetes logging architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/#logging-at-the-node-level)
-- [Fluent Bit configuration for Kubernetes]() 
+- [Fluent Bit configuration for Kubernetes](https://docs.fluentbit.io/manual/installation/kubernetes) 
 
 <details>
   <summary>Fluent Bit configuration</summary>
@@ -144,7 +144,11 @@ Elasticsearch uses a REST API on port 9200 to insert & query data. We can use it
 Generate some application logs by making a call to the fulfilment REST API:
 
 ```
-curl localhost:30018/documents
+# you can use the NodePort address:
+curl http://localhost:30018/documents
+
+# or the LoadBalancer
+curl http://localhost:8011/documents
 ```
 
 📋 Connect to the jumpbox Pod and make an HTTP request with curl, to the `/_cat/indices` path on the Elasticsearch Pod.
