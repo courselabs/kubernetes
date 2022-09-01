@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - port: 8080
-      nodePort: 30008
+      nodePort: 30007
       targetPort: jenkins
   selector:
     app: jenkins
@@ -33,7 +33,7 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: kiamol/ch11-jenkins:2.289.3
+          image: kiamol/ch11-jenkins:2.319.1
           envFrom:
             - configMapRef:
                 name: build-config
@@ -88,6 +88,9 @@ rules:
   verbs: ["get","list","create","delete","patch","update"]
 - apiGroups: ["apps"]
   resources: ["deployments","statefulsets","replicasets"]
+  verbs: ["get","list","create","delete","patch","update"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
   verbs: ["get","list","create","delete","patch","update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
