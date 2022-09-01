@@ -9,6 +9,8 @@ kind: ClusterRole
 metadata:
   name: ingress-nginx
   namespace: ingress-nginx
+  labels:
+    kubernetes.courselabs.co: hackathon
 rules:
   - apiGroups:
       - ''
@@ -73,6 +75,8 @@ kind: ClusterRoleBinding
 metadata:
   name: ingress-nginx
   namespace: ingress-nginx
+  labels:
+    kubernetes.courselabs.co: hackathon
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -142,8 +146,6 @@ rules:
       - ''
     resources:
       - configmaps
-    resourceNames:
-      - ingress-controller-leader-nginx
     verbs:
       - get
       - update

@@ -18,13 +18,14 @@ spec:
     spec:
       containers:
         - name: controller
-          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0
+          image: k8s.gcr.io/ingress-nginx/controller:v1.2.0 #quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0
           args:
             - /nginx-ingress-controller
             - --publish-service=ingress-nginx/ingress-nginx-controller-lb
             - --publish-service=ingress-nginx/ingress-nginx-controller-np
             - --election-id=ingress-controller-leader
-            - --ingress-class=nginx
+            - --ingress-class=nginx            
+            - --controller-class=k8s.io/ingress-nginx
             - --configmap=ingress-nginx/ingress-nginx-controller
           securityContext:
             runAsUser: 101

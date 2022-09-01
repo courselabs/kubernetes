@@ -51,4 +51,5 @@ spec:
               mountPath: "/cache"
       volumes:
         - name: cache
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
