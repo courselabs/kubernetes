@@ -72,9 +72,9 @@ spec:
       port: 53 
   - to:
     - ipBlock:
-        cidr: 34.224.119.141/24
+        cidr: 3.30.35.101/24
     - ipBlock:
-        cidr: 54.227.149.47/24
+        cidr: 15.200.69.242/24
     ports:
     - protocol: TCP
       port: 443
