@@ -4,11 +4,13 @@ Some applications need a lot of operational knowledge - not just the complexity 
 
 That's what the [operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) does. It's a loose definition for an approach where you install an application which extends Kubernetes. So in that stateful application your operator would deploy the app, and it would also create a custom _DataBackup_ resource in the cluster. Any time you want to take a backup, you deploy a backup object, the operator sees the object and performs all the backup tasks.
 
+> One of the problems with public operators is that you take a dependency on a third-party to maintain and update their deployments. The operators we use in this lab are good examples - they don't support ARM64 processors, so if you're using Apple Silicon then you won't be able to run all the exercises.
+
 ## Reference
 
 - [Custom Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) - extending Kubernetes with your own object type
 - [NATS Operator](https://github.com/nats-io/nats-operator) - a sample operator for deploying message queues
-- [Presslabs MySql Operator](https://github.com/presslabs/charts) - operator for managing MySql databases
+- [Bitpoke MySql Operator](https://github.com/bitpoke/mysql-operator#readme) - operator for managing MySql databases
 
 ## Custom Resources
 
@@ -110,7 +112,7 @@ kubectl auth can-i create crds --as system:serviceaccount:default:nats-operator
 
 We can use a _NatsCluster_ object to create a clustered, highly-available message queue for applications to use:
 
-- [msq.yaml](./specs/nats/cluster/msq.yaml) - defines a cluster with 3 NATS servers, running version 2.5
+- [msgq.yaml](./specs/nats/cluster/msgq.yaml) - defines a cluster with 3 NATS servers, running version 2.5
 
 Create the cluster resource:
 
@@ -184,6 +186,9 @@ Install the operator (you'll need the [Helm CLI](https://helm.sh/docs/intro/inst
 
 ```
 helm install mysql-operator labs/operators/specs/mysql/operator/
+
+# the operator pod might restart and take a few minutes to be ready:
+kubectl get po -l app.kubernetes.io/name=mysql-operator -w
 ```
 
 📋 What resources do you need to create to deploy a MySql database cluster using the operator?
@@ -302,7 +307,7 @@ kubectl delete -f labs/operators/specs/nats/operator
 Delete the MySql CRD and operator:
 
 ```
-kubectl delete crd -l app=mysql-operator
+kubectl delete crd -l app.kubernetes.io/name=mysql-operator
 
 helm uninstall mysql-operator
 ```

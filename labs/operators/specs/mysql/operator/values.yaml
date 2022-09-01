@@ -1,63 +1,67 @@
 # Default values for mysql-operator.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+replicaCount: 1
 
-replicas: 1
-image: quay.io/presslabs/mysql-operator:0.4.0
-sidecarImage: quay.io/presslabs/mysql-operator-sidecar:0.4.0
-imagePullPolicy: IfNotPresent
+image:
+  repository: docker.io/bitpoke/mysql-operator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
 
-# whether or not to install CRDs
-installCRDs: true
-# in which namespace to watch for resource, leave empty to watch in all namespaces
-watchNamespace:
+sidecar57:
+  image:
+    repository: docker.io/bitpoke/mysql-operator-sidecar-5.7
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
 
-# The operator will install a ServiceMonitor if you have prometheus-operator installed.
-serviceMonitor:
-  enabled: true
-  ## Additional labels for the serviceMonitor. Useful if you have multiple prometheus operators running to select only specific ServiceMonitors
-  # additionalLabels:
-  #   prometheus: prom-internal
-  interval: 10s
-  scrapeTimeout: 3s
-  # jobLabel:
-  # targetLabels:
-  # podTargetLabels:
-  namespaceSelector:
-    any: true
-  selector:
-    matchLabels:
-      app.kubernetes.io/managed-by: mysql.presslabs.org
-      app.kubernetes.io/name: mysql
+sidecar80:
+  image:
+    repository: docker.io/bitpoke/mysql-operator-sidecar-8.0
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
 
-nodeSelector: {}
-tolerations: []
-resources: {}
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+metricsExporter:
+  image:
+    repository: docker.io/prom/mysqld-exporter
+    tag: "v0.13.0"
 
-## nodeAffinity settings
-# nodeAffinity:
-#   requiredDuringSchedulingIgnoredDuringExecution:
-#     nodeSelectorTerms:
-#     - matchExpressions:
-#       - key: cloud.google.com/gke-preemptible
-#         operator: NotIn
-#         values:
-#         - true
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
 
-## Anti-Affinity setting. The default "hard" will use pod anti-affinity that is
-## requiredDuringSchedulingIgnoredDuringExecution to ensure 2 services don't
-## end up on the same node. Setting this to "soft" will use
-## preferredDuringSchedulingIgnoredDuringExecution. If set to anything else,
-## no anti-affinity rules will be configured.
-antiAffinity: "none"
+extraEnv: []
 
 extraArgs: []
+
+rbac:
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  # 65532 is the UID for nonroot user from distroless image
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
 podDisruptionBudget:
   enabled: true
@@ -69,20 +73,93 @@ podSecurityPolicy:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
     seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
 
-rbac:
-  create: true
-  # if rbac is false this service account is used
-  serviceAccountName: default
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Insert a pre-stop lifecycle hook and trigger a failover. NOTE: Use this when your cluster network
+# policy allows to connect across namespaces and the mysql node is able to connecto to operator pod
+gracefulShutdown:
+  enabled: true
+
+# in which namespace to watch for resource, leave empty to watch in all namespaces
+watchNamespace:
+
+# Install a ServiceMonitor for monitoring the operator
+serviceMonitor:
+  # enabled should be set to true to enable prometheus-operator discovery of this service
+  enabled: false
+  # the Service port.name where prometheus metrics are exposed
+  servicePortName: prometheus
+  # the Service port.port where metrics are exposed
+  servicePort: 9125
+  # interval is the interval at which metrics should be scraped
+  # interval: 30s
+  # scrapeTimeout is the timeout after which the scrape is ended
+  # scrapeTimeout: 10s
+  # additionalLabels is the set of additional labels to add to the ServiceMonitor
+  additionalLabels: {}
+  jobLabel: ""
+  targetLabels: []
+  podTargetLabels: []
+  metricRelabelings: []
+
+# The operator will install a ServiceMonitor if you have prometheus-operator installed.
+mysqlClustersGlobalServiceMonitor:
+  enabled: false
+  ## Additional labels for the serviceMonitor. Useful if you have multiple prometheus operators running to select only specific ServiceMonitors
+  # additionalLabels:
+  #   prometheus: prom-internal
+  interval: 10s
+  scrapeTimeout: 3s
+  # jobLabel:
+  # targetLabels:
+  # podTargetLabels:
+  # metricRelabelings:
+  servicePortName: prometheus
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/managed-by: mysql.presslabs.org
+      app.kubernetes.io/name: mysql
 
 orchestrator:
-  image: quay.io/presslabs/mysql-operator-orchestrator:0.4.0
+  image:
+    repository: docker.io/bitpoke/mysql-operator-orchestrator
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
 
-  # orchestrator user and password to manage MySQL clusters
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  # secretName:  # specify an existing secret to use for orchestrator topology credentials
+
+  # if a secret is not specified one will be created for orchestrator user and password used to manage MySQL clusters
   topologyUser: orchestrator
   topologyPassword:  # this is empty and will be random generated if not specified
-  # secretName:  # you can specify which secret to use for orchestrator topology credentials
 
-  resources:
+  resources: {}
     # For example
     # limits:
     #  cpu: 100m
@@ -98,17 +175,20 @@ orchestrator:
 
   ingress:
     enabled: false
+    className: ""
     annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
     hosts:
-    - host: chart-example.local
-      paths: []
-
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+
 
   persistence:
     enabled: true
@@ -119,8 +199,15 @@ orchestrator:
     ##   GKE, AWS & OpenStack)
     ##
     # storageClass: "-"
+    # annotations: {}
+    # selector:
+    #  matchLabels: {}
     accessMode: "ReadWriteOnce"
     size: 1Gi
+    # inject an init container which properly sets the ownership for the orchestrator's data volume
+    # this is needed when the PV provisioner does not properly sets permissions for fsGroup
+    # when enabling this, you MUST change the securityContext.runAsNonRoot to false
+    fsGroupWorkaroundEnabled: false
 
   # key value map of orchestrator conf directives.
   # see: https://github.com/github/orchestrator/blob/master/conf/orchestrator-sample.conf.json
@@ -146,7 +233,7 @@ orchestrator:
     RemoveTextFromHostnameDisplay: ":3306"
     DetectClusterAliasQuery: "SELECT CONCAT(SUBSTRING(@@hostname, 1, LENGTH(@@hostname) - 1 - LENGTH(SUBSTRING_INDEX(@@hostname,'-',-2))),'.',SUBSTRING_INDEX(@@report_host,'.',-1))"
     DetectInstanceAliasQuery: "SELECT @@hostname"
-    SlaveLagQuery: "SELECT TIMESTAMPDIFF(SECOND,ts,NOW()) as drift FROM sys_operator.heartbeat ORDER BY drift ASC LIMIT 1"
+    SlaveLagQuery: "SELECT TIMESTAMPDIFF(SECOND,ts,UTC_TIMESTAMP()) as drift FROM sys_operator.heartbeat ORDER BY drift ASC LIMIT 1"
 
     # Automated recovery (this is opt-in, so we need to set these)
     # Prevent recovery flip-flop, by disabling auto-recovery for 5 minutes per
@@ -158,18 +245,19 @@ orchestrator:
     RecoverMasterClusterFilters: ['.*']
     RecoverIntermediateMasterClusterFilters: ['.*']
     # `reset slave all` and `set read_only=0` on promoted master
-    ApplyMySQLPromotionAfterMasterFailover: false
-    MasterFailoverDetachReplicaMasterHost: true
+    ApplyMySQLPromotionAfterMasterFailover: true
     # https://github.com/github/orchestrator/blob/master/docs/configuration-recovery.md#promotion-actions
     # Safety! do not disable unless you know what you are doing
     FailMasterPromotionIfSQLThreadNotUpToDate: true
     DetachLostReplicasAfterMasterFailover: true
+    # set downtime on the failed master
+    MasterFailoverLostInstancesDowntimeMinutes: 10
 
     # orchestrator hooks called in the following order
     # for more information about template: https://github.com/github/orchestrator/blob/master/go/logic/topology_recovery.go#L256
     ProcessesShellCommand: "sh"
 
-    OnFailureDetectionProcesses: 
+    OnFailureDetectionProcesses:
       - "/usr/local/bin/orc-helper event -w '{failureClusterAlias}' 'OrcFailureDetection' 'Failure: {failureType}, failed host: {failedHost}, lost replcas: {lostReplicas}' || true"
       - "/usr/local/bin/orc-helper failover-in-progress '{failureClusterAlias}' '{failureDescription}' || true"
 

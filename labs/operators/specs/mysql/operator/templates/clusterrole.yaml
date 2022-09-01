@@ -2,102 +2,138 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: {{ include "mysql-operator.fullname" . }}
   labels:
-    app: '{{ template "mysql-operator.name" . }}'
-    chart: '{{ template "mysql-operator.chart" . }}'
-    heritage: '{{ .Release.Service }}'
-    release: '{{ .Release.Name }}'
-  name: '{{ template "mysql-operator.fullname" . }}'
+    {{- include "mysql-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
-  - batch
+    - apps
   resources:
-  - jobs
+    - statefulsets
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - mysql.presslabs.org
+    - batch
   resources:
-  - mysqlbackups
+    - jobs
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - apps
+    - coordination.k8s.io
   resources:
-  - statefulsets
+    - leases
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - ""
+    - ""
   resources:
-  - configmaps
-  - secrets
-  - services
-  - events
-  - jobs
-  - pods
-  - persistentvolumeclaims
+    - configmaps
+    - events
+    - jobs
+    - persistentvolumeclaims
+    - pods
+    - secrets
+    - services
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - mysql.presslabs.org
+    - ""
   resources:
-  - mysqlclusters
-  - mysqlclusters/status
+    - pods/status
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - policy
+    - mysql.presslabs.org
   resources:
-  - poddisruptionbudgets
+    - mysqlbackups
+    - mysqlbackups/status
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - ""
+    - mysql.presslabs.org
   resources:
-  - pods/status
+    - mysqlclusters
+    - mysqlclusters/status
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+- apiGroups:
+    - mysql.presslabs.org
+  resources:
+    - mysqldatabases
+    - mysqldatabases/status
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+- apiGroups:
+    - mysql.presslabs.org
+  resources:
+    - mysqlusers
+    - mysqlusers/status
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+- apiGroups:
+    - policy
+  resources:
+    - poddisruptionbudgets
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 {{- end }}

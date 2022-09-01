@@ -32,7 +32,7 @@ Check the database gets created:
 kubectl get po,svc -l app.kubernetes.io/instance=todo-db
 ```
 
-> Try the app at http://localhost:30820
+> Try the app at http://localhost:30028
 
 - Add a new item
 - Refresh list
