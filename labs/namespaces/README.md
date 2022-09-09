@@ -269,7 +269,7 @@ That Pi service takes too long to run, it performs better when you run it with a
 
 Add a caching proxy in front of the Pi app, and be aware that the ops team want all proxies in a namespace called `front-end`.
 
-You can use the reverse proxy setup from here as a starting point, but the specs don't include a namespace: [reverse-proxy/nginx.yaml](labs/namespaces/specs/reverse-proxy/nginx.yaml).
+You can use the reverse proxy setup from here as a starting point, but the specs don't include a namespace: [reverse-proxy/nginx.yaml](specs/reverse-proxy/nginx.yaml).
 
 Browse to http://localhost:30040 and you'll find an error - you'll need to fix the configuration to get it working.
 
