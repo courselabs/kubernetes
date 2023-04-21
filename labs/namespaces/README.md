@@ -206,7 +206,7 @@ kubectl exec pod/sleep -- nslookup whoami-np.whoami.svc.cluster.local
 
 Namespaces aren't just for logically grouping components, you can also enforce quotas on a namespace to limit the resources available.
 
-This ensures apps don't use all the processing power of the cluster, starving other apps. [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) at the namespace level work together with [resource limits and requests](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) at the Pod level. 
+This ensures apps don't use all the processing power of the cluster, starving other apps. [Resource quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) and [limit ranges](https://kubernetes.io/docs/concepts/policy/limit-range/) at the namespace level work together with [resource limits and requests](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) at the Pod level. 
 
 The Pi-calculating web app is compute-intensive, so to keep our cluster usable for other apps we'll deploy it in a new namespace with a CPU quota applied:
 
