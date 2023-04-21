@@ -38,7 +38,7 @@ sleep-lab   1/1     Running     1          35s
 
 The new container runs until the app exits after 30 seconds. Kubernetes restarts the Pod - but if the Pod containers keep exiting, Kubernetes adds an increasing delay before restarting.
 
-> The status changes to `Completed` then `Running` again, but Kubernets the Pod enters `CrashLoopBackOff` status:
+> The status changes to `Completed` then `Running` again, but eventually the Pod enters `CrashLoopBackOff` status:
 
 ```
 NAME        READY   STATUS    RESTARTS   AGE

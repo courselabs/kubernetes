@@ -229,7 +229,7 @@ kubectl -n pi get po
 
 <details>
   <summary>ℹ Not every dev Kubernetes setup enforces CPU limitations</summary> 
-  You might not see the app responding slowly if you're using Kind or k3d. Docker Desktop does enforce them, and so do all the production Kubernetes platforms.
+  You might not see the app responding slowly if you're using Kind or Minikube. Docker Desktop and k3d do enforce them, and so do all the production Kubernetes platforms.
 </details><br/>
 
 Let's speed it up:
