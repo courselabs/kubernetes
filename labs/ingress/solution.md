@@ -19,7 +19,7 @@ It's a new domain so you need to add it to your hosts file:
 ./scripts/add-to-hosts.sh configurable.local 127.0.0.1
 ```
 
-> Now you can browse to http://configurable.local:8000
+> Now you can browse to http://configurable.local:8000 (or http://configurable.local:30000)
 
 ## Using standard HTTP and HTTPS ports
 

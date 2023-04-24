@@ -69,7 +69,7 @@ kubectl get endpoints nginx-np
 
 </details><br />
 
-> Browse to the app localhost:30010 or localhost:8010 and you'll see the standard Nginx page
+> Browse to the app at http://localhost:30010 or http://localhost:8010 and you'll see the standard Nginx page
 
 ## Updating DaemonSets
 
