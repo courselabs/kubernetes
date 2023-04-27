@@ -113,7 +113,7 @@ kubectl apply -f labs/rbac/specs/kube-explorer
 
 </details><br />
 
-> Browse to the app at localhost:8010 or localhost:30010
+> Browse to the app at http://localhost:8010 or http://localhost:30010
 
 You'll see an error. The app is trying to connect to the Kubernetes REST API to get a list of Pods, but it's getting a 403 Forbidden error message.
 
