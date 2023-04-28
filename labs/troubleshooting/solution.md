@@ -9,9 +9,9 @@ Deploy it and the app will work:
 
 ```
 kubectl apply -f labs/troubleshooting/solution
-
-curl http://localhost:8020
 ```
+
+> Browse to http://localhost:8020 OR http://localhost:30020
 
 ## Troubleshooting Deployments
 
