@@ -30,8 +30,8 @@ Try the proxy:
 ```
 curl -v localhost:8040
 
-# OR on Windows:
-curl.exe -v localhost:8040
+# OR 
+curl -v localhost:30040
 ```
 
 > Repeat and you'll see `X-Cache: HIT` in the response headers

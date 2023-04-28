@@ -14,7 +14,7 @@ kubectl apply -f labs/statefulsets/specs/adminer
 kubectl wait --for=condition=Ready pod -l app=adminer-web
 ```
 
-> Browse to localhost:8020 / localhost:30020 and sign in:
+> Browse to http://localhost:8020 OR http://localhost:30020 and sign in:
 
 * _System (dropdown)_: **PostgreSQL**
 * _Server (already filled in)_: **products-db-0.products-db.default.svc.cluster.local**

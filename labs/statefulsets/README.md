@@ -120,7 +120,7 @@ kubectl get endpoints simple-statefulset
 
 There's one Service with 3 Pod IP addresses, but those Pods can also be  reached using individual domain names.
 
-📋 Run sleep Pod from `labs/statefulsets/specs/sleep-pod.yaml` and do a DNS lookup for `simple-statefulset` and `simple-statefulset-2.simple-statefulset.default.svc.cluster.local`.
+📋 Run a sleep Pod from `labs/statefulsets/specs/sleep-pod.yaml` and do a DNS lookup for `simple-statefulset` and `simple-statefulset-2.simple-statefulset.default.svc.cluster.local`.
 
 <details>
   <summary>Not sure how?</summary>
@@ -135,7 +135,7 @@ kubectl exec sleep -- nslookup simple-statefulset-2.simple-statefulset.default.s
 
 </details><br/>
 
-> The internal Service returns all Pod IPs, but each Pod also has it's own DNS entry using the name of the Pod `-0`, `-1` etc.
+> The internal Service returns all Pod IPs, but each Pod also has its own DNS entry using the name of the Pod `-0`, `-1` etc.
 
 This app has LoadBalancer and NodePort Services with the same Pod selector. These make the app available externally and they load-balance requests in the usual way.
 
@@ -181,8 +181,6 @@ kubectl get pvc -l app=products-db --watch
   <summary>Not sure how?</summary>
 
 ```
-# Ctrl-C to exit the watch
-
 kubectl logs products-db-0
 ```
 
