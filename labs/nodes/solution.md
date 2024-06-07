@@ -21,12 +21,11 @@ kubectl get node <your-node> -o jsonpath='{.metadata.labels}'
 Or you can query for specific values with a Go template:
 
 ```
-# with Bash:
-kubectl get node <your-node> -o go-template=$'{{index .metadata.labels "kubernetes.io/arch"}}'
+# with Bash/pwsh:
+kubectl get node <your-node> -o go-template='{{index .metadata.labels "kubernetes.io/arch"}}'
 
-# or with PowerShell:
-kubectl get node docker-desktop -o go-template='{{index 
-.metadata.labels `"kubernetes.io/arch`"}}'
+# or with PowerShell on Windows:
+kubectl get node docker-desktop -o go-template='{{index .metadata.labels `"kubernetes.io/arch`"}}'
 ```
 
 (JSONPath doesn't like the forward slash in the label key)

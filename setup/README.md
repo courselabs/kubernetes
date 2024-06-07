@@ -13,13 +13,13 @@ Git is a free, open source tool for source control:
 
 ## Docker Desktop - Mac or Windows
 
-If you're on macOS or Windows 10 Docker Desktop is the easiest way to get Kubernetes:
+If you're on macOS or Windows 10/11 Docker Desktop is the easiest way to get Kubernetes:
 
 - [Install Docker Desktop](https://www.docker.com/products/docker-desktop)
 
 The download and install takes a few minutes. When it's done, run the _Docker_ app and you'll see the Docker whale logo in your taskbar (Windows) or menu bar (macOS).
 
-> On Windows 10 the install may need a restart before you get here.
+> On Windows the install may need a restart before you get here.
 
 Right-click that whale and click _Settings_:
 

@@ -36,6 +36,8 @@ kubectl exec sleep -- curl -v -m 5 http://whoami-zero-matches
 
 Many Pods can run with the same labels. Deploy a second whoami Pod with the same spec as the first - only the name needs to change:
 
+- [whoami-pod-2.yaml](solution/whoami-pod-2.yaml)
+
 ```
 kubectl apply -f labs/services/solution/whoami-pod-2.yaml
 

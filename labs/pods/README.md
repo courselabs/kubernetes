@@ -7,7 +7,7 @@ Pod specs are very simple. The minimal YAML needs some metadata, and the name of
 
 ## API specs
 
-- [Pod](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#pod-v1-core)
+- [Pod](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/)
 
 <details>
   <summary>YAML overview</summary>
@@ -27,7 +27,7 @@ spec:
 
 Every Kubernetes resource requires these four fields:
 
-* `apiVersion` - resources are versioned to support backwards compatibility
+* `apiVersion` - resource specifications are versioned to support backwards compatibility
 * `kind` - the type of the object
 * `metadata` - collection of additional object data
 * `name` - the name of the object
@@ -74,10 +74,20 @@ kubectl get po -o wide
 
 What extra information do you see in the second output, and how would you print all the Pod information in a readble format?
 
+📋 Print the Pod details.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# the get and describe commands work for all resources:
+kubectl describe pod whoami
+```
+</details><br/>
 
 ## Working with Pods
 
-In a production cluster the Pod could be running on any node. You manage it using Kubectl so you don't need access to the server directly.
+Production Kubernetes clusters have many nodes to run workloads, and the Pod could be running on any one. You manage it using Kubectl so you don't need access to the server directly.
 
 📋 Print the container logs.
 
@@ -89,14 +99,13 @@ kubectl logs whoami
 ```
 </details><br/>
 
-Connect to the container inside the Pod:
+You can get the logs from any type of application running in a Pod. You can also execute commands inside the Pod container and see the output:
 
 ```
-# this will fail:
-kubectl exec -it whoami -- sh
+kubectl exec whoami -- /app/whoami
 ```
 
-> This container image doesn't have a shell installed!
+> This tries to run another copy of the application in the container, but only one app can listen on port 80, so it exits with an error.
 
 Let's try another app:
 
@@ -114,7 +123,7 @@ kubectl get pods
 ```
 </details><br/>
 
-This Pod container does have a shell, and it has some useful tools installed.
+This Pod container has a Linux shell and some useful tools installed. You can start a shell inside the contianer and connect to it using the interactive flag:
 
 ```
 kubectl exec -it sleep -- sh
@@ -123,21 +132,29 @@ kubectl exec -it sleep -- sh
 Now you're connected inside the container; you can explore the container environment:
 
 ```
+# print the name of the "computer"
 hostname
 
-whoami
+# print all the environment variables:
+printenv
 ```
 
-And the Kubernetes network:
+The container has some networking tools installed:
+
+- `nslookup` does a domain name (DNS) lookup and returns with an IP address for the name
+- `ping` sends network traffic to an address
+
+Those are useful for checking connectivity in the Pod container:
 
 ```
+# find the address of the Kubernetes API server:
 nslookup kubernetes
 
-# this will fail:
-ping kubernetes
+# try to ping the API server:
+ping kubernetes -c1 -W2
 ```
 
-> The Kubernetes API server is available for Pod containers to use, but internal addresses don't support ping
+> The Kubernetes API server is available for Pod containers to use, but not all Kubernetes deployments support the ping protocol for internal addresses, so you may see `100% packet loss`
 
 ## Connecting from one Pod to another
 
@@ -157,9 +174,9 @@ kubectl get pods -o wide whoami
 ```
 </details><br/>
 
-> That's the internal IP address of the Pod - any other Pod in the cluster can connect on that address
+> That shows the internal IP address of the Pod - any other Pod in the cluster can connect on that address
 
-Make a request to the HTTP server in the whoami Pod from the sleep Pod:
+The sleep Pod container has cURL installed, which you can use to make a request to the HTTP server in the whoami Pod:
 
 ```
 kubectl exec sleep -- curl -s <whoami-pod-ip>
@@ -169,9 +186,9 @@ kubectl exec sleep -- curl -s <whoami-pod-ip>
 
 ## Lab
 
-Pods are an abstraction over containers. They monitor the container and if it exits the Pod restarts, creating a new container to keep your app running. This is the first layer of high-availability Kubernetes provides.
+Pods are an abstraction over containers. They wrap the container and monitor it - if it exits the Pod restarts, creating a new container to keep your app running. This is the first layer of high-availability Kubernetes provides.
 
-You can see this in action with a badly-configured app, where the container keeps exiting. Write a Pod spec to run a container from the Docker Hub image `courselabs/bad-sleep`. Deploy your spec and watch the Pod - what happens after about 30 seconds? And after a couple of minutes?
+You can see this in action with a badly-configured app, where the container keeps exiting. Write your own Pod spec to run a container from the Docker Hub image `courselabs/bad-sleep`. Deploy your spec and watch the Pod - what happens after about 30 seconds? And after a couple of minutes?
 
 Kubernetes will keep trying to make the Pod work, so you'll want to remove it when you're done.
 

@@ -1,14 +1,14 @@
 # Scaling and Managing Pods with Deployments
 
-You don't often create Pods directly because that isn't flexible - you can't update Pods to release application updates, and you can only scale them by manually deploying new Pods.
+You don't usually create Pods directly because that isn't flexible - you can't change a Pod to release application updates, and you can only scale them by manually deploying new Pods. Don't do that.
 
-Instead you'll use a [controller](https://kubernetes.io/docs/concepts/architecture/controller/) - a Kubernetes object which manages other objects. The controller you'll use most for Pods is the Deployment, which has features to support upgrades and scale.
+Instead you'll use a [controller](https://kubernetes.io/docs/concepts/architecture/controller/) - a Kubernetes object which manages other objects. The controller you'll use most for Pods is the [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), which has features to support upgrades and scale.
 
 Deployments use a template to create Pods, and a label selector to identify the Pods they own.
 
 ## API specs
 
-- [Deployment](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#deployment-v1-apps)
+- [Deployment](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/)
 
 <details>
   <summary>YAML overview</summary>
@@ -79,7 +79,7 @@ kubectl describe deploy whoami
 
 </details><br/>
 
-> The events talk about another object called a ReplicaSet - we'll get to that soon.
+> The events talk about another object called a ReplicaSet - we'll get to that soon
 
 ## Scaling Deployments
 
@@ -99,9 +99,9 @@ But now your running Deployment object is different from the spec you have in so
   <summary>Why?</summary>
 Source control should be the true description of the application - in a production environment all your deployments will be automated from the YAML in source control and any changes someone makes manually with Kubectl will get overwritten.
 
-So it's better to make the changes **declaratively in YAML**.
-
 </details><br />
+
+It's better to make the changes **declaratively** in YAML.
 
 - [whoami-v1-scale.yaml](specs/deployments/whoami-v1-scale.yaml) sets a replica level of 2
 
@@ -122,20 +122,20 @@ kubectl get pods -l app=whoami
 
 ## Working with managed Pods
 
-Because Pod names are random, you'll manage them in Kubectl using labels. We've done that with `get`, and it works for `logs` too:
+Because Pod names are random, the easiest way to manage them with Kubectl is to use labels. We've done that with `get`, and it works for `logs` too:
 
 ```
 kubectl logs -l app=whoami 
 ```
 
-And if you need to run commands in the Pod, you can use exec at the Deployment level:
+And if you need to run commands in the Pod, you can use `exec` at the Deployment level:
 
 ```
 # this will fail
-kubectl exec deploy/whoami -- hostname
+kubectl exec deploy/whoami -- /app/whoami
 ```
 
-> There's no shell in this container image :)
+> Kubernetes runs the command, but it errors. You can't run two copies of this app in one container, as they both try to bind to the same app
 
 The Pod spec in the Deployment template applies a label.
 
@@ -188,7 +188,15 @@ kubectl get po -l app=whoami --watch
 kubectl apply -f labs/deployments/specs/deployments/whoami-v2.yaml
 ```
 
-Try the app again - you'll see a smaller output and if you repeat your requests are load-balanced.
+You'll see new Pods created, and when they're running the old Pods are terminated. Try the app again - you'll see a smaller output and if you repeat your requests are load-balanced:
+
+```
+# either
+curl http://localhost:8080
+
+# or
+curl http://localhost:30010
+```
 
 Deployments store previous specifications in the Kubernetes database, and you can easily rollback if your release is broken:
 
@@ -208,7 +216,7 @@ Rolling updates aren't always what you want - they mean the old and new versions
 
 You may want a blue-green deployment instead, where you have both versions running but only one is receiving traffic.
 
-Write Deployments and Services to create a blue-green update for the whoami app. Start by running two replicas for v1 and two for v2, but only the v1 Pods should receive traffic. 
+Write your own Deployment and Service YAMLs to create a blue-green update for the whoami app. Start by running two replicas for v1 and two for v2, but only the v1 Pods should receive traffic. 
 
 Then make your update to switch traffic to the v2 Pods without any changes to Deployments.
 
@@ -224,7 +232,7 @@ Did you notice a pattern in the Pod names in the rollback exercise? When you rol
 
 Deployments create the Pod names but they're not totally random - the pattern is `[deployment-name]-[template-hash]-[random-suffix]`. You can update a Deployment spec without changing the Pod spec (e.g. to set replicas) and that doesn't cause Pod replacement.
 
-When you change the Pod spec in the template, that does mean new Pods - and the Deployment delegates responsibility for creating Pods to ReplicaSets:
+When you change the Pod spec in the template, that does mean new Pods - and the Deployment delegates responsibility for creating Pods to a [ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/):
 
 ```
 kubectl get replicaset
