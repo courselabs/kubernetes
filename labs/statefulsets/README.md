@@ -8,7 +8,7 @@ StatefulSets are Pod controllers which can create multiple replicas in a stable 
 
 ## API specs
 
-- [StatefulSet (apps/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#statefulset-v1-apps)
+- [StatefulSet (apps/v1)](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/)
 
 <details>
   <summary>YAML overview</summary>
@@ -207,7 +207,7 @@ kubectl logs -l app=products-db --tail 3
 
 StatefulSets are complex and not as common as other controllers, but they have one big advantage over Deployments - they can dynamically provision a PVC for each Pod.
 
-Deployments don't let you do this ([yet](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes)), so you can use a StatefulSet instead to benefit from volume claim templates.
+Deployments let you do this [with ephemeral volumes](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes), but StatefulSets make it easier with volume claim templates.
 
 The [simple-proxy/deployment.yaml](specs/simple-proxy/deployment.yaml) is a spec to run an Nginx proxy over the StatefulSet website we have running.
 
