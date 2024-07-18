@@ -34,7 +34,7 @@ sleep-lab   0/1     Completed   0          33s
 sleep-lab   1/1     Running     1          35s
 ```
 
-> Pods restart by creating a new container **not** by restarting the existing container
+> Pods restart by deleting the old conainer and creating a replacement **not** by restarting the existing container
 
 The new container runs until the app exits again after 30 seconds. Kubernetes restarts the Pod - but if the Pod containers keep exiting, Kubernetes adds an increasing delay before restarting.
 
