@@ -1,0 +1,66 @@
+{
+  "name": "lab-test-harness",
+  "displayName": "Kubernetes Lab Test Harness",
+  "description": "Execute code blocks from Kubernetes lab README files in VS Code terminal",
+  "version": "1.7.3",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:lab-test-harness.runLab",
+    "onCommand:lab-test-harness.runCodeBlock",
+    "onCommand:lab-test-harness.stopExecution"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lab-test-harness.runLab",
+        "title": "Run Lab Test Harness",
+        "category": "Lab"
+      },
+      {
+        "command": "lab-test-harness.runCodeBlock",
+        "title": "Run Selected Code Block",
+        "category": "Lab"
+      },
+      {
+        "command": "lab-test-harness.stopExecution",
+        "title": "Stop Lab Execution",
+        "category": "Lab"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "lab-test-harness.runCodeBlock",
+        "key": "ctrl+shift+enter",
+        "mac": "cmd+shift+enter",
+        "when": "editorFocus"
+      },
+      {
+        "command": "lab-test-harness.stopExecution",
+        "key": "ctrl+shift+escape",
+        "mac": "cmd+shift+escape"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceFilename == README.md",
+          "command": "lab-test-harness.runLab",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "echo 'No TypeScript compilation needed'",
+    "watch": "echo 'No TypeScript compilation needed'"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x"
+  }
+}

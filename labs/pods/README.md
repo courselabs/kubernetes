@@ -50,13 +50,13 @@ You use Kubectl to query objects, but also to manage them. You create any object
 
 Deploy the app from your local copy of the course repo:
 
-```
+```powershell
 kubectl apply -f labs/pods/specs/whoami-pod.yaml
 ```
 
 Or the path to the YAML file can be a web address:
 
-```
+```powershell
 kubectl apply -f https://kubernetes.courselabs.co/labs/pods/specs/whoami-pod.yaml
 ```
 
@@ -64,7 +64,7 @@ kubectl apply -f https://kubernetes.courselabs.co/labs/pods/specs/whoami-pod.yam
 
 Now you can use the familiar commands to print information:
 
-```
+```powershell
 kubectl get pods
 
 kubectl get po -o wide
@@ -81,7 +81,7 @@ What extra information do you see in the `wide` output, and how would you print 
 
 The wide output for Pods shows additional columns for the IP address of the Pod, and the node it is running on. You can see that and more if you `describe` the Pod:
 
-```
+```powershell
 # the get and describe commands work for all resources:
 kubectl describe pod whoami
 ```
@@ -96,14 +96,14 @@ Production Kubernetes clusters have many nodes to run workloads, and the Pod cou
 <details>
   <summary>Not sure how?</summary>
 
-```
+```powershell
 kubectl logs whoami
 ```
 </details><br/>
 
 You can get the logs from any type of application running in a Pod. You can also execute commands inside the Pod container and see the output:
 
-```
+```powershell
 kubectl exec whoami -- date
 ```
 
@@ -120,7 +120,7 @@ Let's try another Pod:
 <details>
   <summary>Not sure how?</summary>
 
-```
+```powershell
 kubectl apply -f labs/pods/specs/sleep-pod.yaml
 
 kubectl get pods
@@ -129,13 +129,13 @@ kubectl get pods
 
 This Pod container has a Linux shell and some useful tools installed. You can start a shell inside the contianer and connect to it using the interactive `-it` flag:
 
-```
+```powershell
 kubectl exec -it sleep -- sh
 ```
 
 Now you're connected inside the container; you can explore the container environment:
 
-```
+```container
 # print the name of the computer - which is really a container:
 hostname
 
@@ -150,11 +150,11 @@ The container images has some networking tools installed:
 
 Those are useful for checking connectivity in the Pod container:
 
-```
+```container
 # find the address of the Kubernetes API server:
 nslookup kubernetes
 
-# try to ping the API server:
+# try to ping the API server (this_could_fail):
 ping kubernetes -c1 -W2
 ```
 
@@ -164,7 +164,7 @@ ping kubernetes -c1 -W2
 
 Exit the shell session on the sleep Pod:
 
-```
+```container
 exit
 ```
 
@@ -175,17 +175,19 @@ exit
 
 Lots of ways to see this, but the wide output is the easiest:
 
-```
+```powershell
 kubectl get pods -o wide whoami
 ```
 </details><br/>
 
 > That shows the internal IP address of the Pod - any other Pod in the cluster can connect on that address.
 
-The sleep Pod container has cURL installed, which you can use to make a request to the HTTP server in the whoami Pod:
+The sleep Pod container has cURL installed, which you can use to make a request to the HTTP server in the whoami Pod. We'll store the IP address in a variable to make the commands easier:
 
-```
-kubectl exec sleep -- curl -s <whoami-pod-ip>
+```powershell
+$ip = kubectl get pod whoami -o jsonpath='{.status.podIP}'
+echo "whoami pod IP address: $ip"
+kubectl exec sleep -- curl -s $ip
 ```
 
 > The output is the response from the HTTP server running in the whoami Pod - it includes the hostname and IP addresses
@@ -206,6 +208,6 @@ ___
 
 We'll clean up before we move on, deleting all the Pods we created:
 
-```
-kubectl delete pod sleep whoami sleep-lab
+```powershell
+kubectl delete pod sleep whoami sleep-lab --ignore-not-found
 ```
