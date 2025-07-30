@@ -1,0 +1,251 @@
+{
+  "sections": {
+    "Core Kubernetes": ["nodes", "pods", "services", "deployments"],
+    "Application Modelling": ["configmaps", "secrets", "persistentvolumes", "namespaces"],
+    "Advanced Application Modelling": ["rbac", "daemonsets", "ingress", "jobs", "statefulsets"],
+    "Operating Kubernetes": ["productionizing", "monitoring", "logging"],
+    "Continuous Integration and Continuous Deployment (CI/CD)": ["docker", "buildkit", "helm", "rollouts", "jenkins", "argo"],
+    "Advanced Kubernetes": ["networkpolicy", "admission", "operators"],
+    "Production Operations": ["clusters", "affinity", "tools"],
+    "Real Kubernetes": ["troubleshooting", "troubleshooting-2", "troubleshooting-3"],
+    "Additional Labs": ["keda"]
+  },
+  "labs": {
+    "admission": [
+      "kiamol/ch05-pi",
+      "kiamol/ch03-sleep",
+      "kiamol/ch14-access-log",
+      "kiamol/ch14-image-gallery",
+      "kiamol/ch14-image-of-the-day",
+      "kiamol/ch16-admission-webhook",
+      "openpolicyagent/gatekeeper:v3.5.2",
+      "quay.io/jetstack/cert-manager-cainjector:v1.5.3",
+      "quay.io/jetstack/cert-manager-controller:v1.5.3",
+      "quay.io/jetstack/cert-manager-webhook:v1.5.3",
+      "sixeyed/whoami:21.04"
+    ],
+    "affinity": [
+      "diamol/ch02-hello-diamol-web",
+      "sixeyed/whoami:21.04"
+    ],
+    "argo": [
+      "ghcr.io/dexidp/dex:v2.27.0",
+      "kiamol/ch11-gogs",
+      "quay.io/argoproj/argocd:v2.1.2",
+      "redis:6.2.4-alpine"
+    ],
+    "buildkit": [
+      "kiamol/ch03-sleep",
+      "moby/buildkit:v0.9.0"
+    ],
+    "clusters": [
+      "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0",
+      "sixeyed/whoami:21.04"
+    ],
+    "configmaps": [
+      "sixeyed/configurable:21.04"
+    ],
+    "daemonsets": [
+      "nginx:1.18-alpine",
+      "kiamol/ch03-sleep"
+    ],
+    "deployments": [
+      "sixeyed/whoami:21.04"
+    ],
+    "docker": [],
+    "helm": [],
+    "ingress": [
+      "kiamol/ch05-pi",
+      "nginx:1.18-alpine",
+      "k8s.gcr.io/ingress-nginx/controller:v1.2.0",
+      "kiamol/ch15-cert-generator",
+      "sixeyed/configurable:21.04",
+      "sixeyed/whoami:21.04"
+    ],
+    "jenkins": [
+      "kiamol/ch11-gogs",
+      "kiamol/ch11-jenkins:2.319.1",
+      "moby/buildkit:v0.9.0"
+    ],
+    "jobs": [
+      "alpine:3.13",
+      "kiamol/ch03-sleep",
+      "kiamol/ch05-pi",
+      "sixeyed/kubectl:1.21.0"
+    ],
+    "keda": [
+      "courselabs/keda-web:latest",
+      "courselabs/keda-worker:latest",
+      "redis:7-alpine",
+      "registry.k8s.io/metrics-server/metrics-server:v0.8.0"
+    ],
+    "logging": [
+      "courselabs/elasticsearch:7.10",
+      "courselabs/kibana:7.10",
+      "alpine:3.14",
+      "courselabs/fulfilment-api",
+      "courselabs/fulfilment-processor",
+      "fluent/fluent-bit:1.8.3",
+      "kiamol/ch03-sleep"
+    ],
+    "monitoring": [
+      "courselabs/grafana:8.0.5",
+      "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.2.0",
+      "courselabs/fulfilment-processor",
+      "courselabs/prometheus:v2.28.1",
+      "gcr.io/cadvisor/cadvisor:v0.45.0"
+    ],
+    "namespaces": [
+      "kiamol/ch05-pi",
+      "nginx:1.18-alpine",
+      "kiamol/ch03-sleep",
+      "sixeyed/configurable:21.04",
+      "sixeyed/whoami:21.04"
+    ],
+    "networkpolicy": [
+      "calico/cni:v3.15.0",
+      "calico/kube-controllers:v3.15.0",
+      "calico/node:v3.15.0",
+      "calico/pod2daemon-flexvol:v3.15.0",
+      "kiamol/ch03-sleep",
+      "kiamol/ch14-access-log",
+      "kiamol/ch14-image-gallery",
+      "kiamol/ch14-image-of-the-day"
+    ],
+    "nodes": [],
+    "operators": [
+      "busybox:1.34.0",
+      "courselabs/nats-operator:v0.8.3",
+      "kiamol/ch20-todo-list",
+      "kiamol/ch20-todo-save-handler",
+      "percona:5.7.35"
+    ],
+    "persistentvolumes": [
+      "kiamol/ch05-pi",
+      "nginx:1.18-alpine",
+      "kiamol/ch03-sleep"
+    ],
+    "pods": [
+      "courselabs/bad-sleep",
+      "kiamol/ch03-sleep",
+      "sixeyed/whoami:24.07"
+    ],
+    "productionizing": [
+      "kiamol/ch05-pi",
+      "k8s.gcr.io/metrics-server/metrics-server:v0.6.1",
+      "sixeyed/configurable:21.04",
+      "sixeyed/whoami:21.04",
+      "widgetario/products-db:postgres"
+    ],
+    "rbac": [
+      "kiamol/ch17-kube-explorer",
+      "kiamol/ch03-sleep",
+      "kiamol/ch17-user-cert-generator"
+    ],
+    "rollouts": [
+      "nginx:1.18-alpine",
+      "nginx:1.20-alpine",
+      "kiamol/ch03-sleep",
+      "kiamol/ch09-vweb:v1",
+      "kiamol/ch09-vweb:v2",
+      "kiamol/ch09-vweb:v3"
+    ],
+    "secrets": [
+      "sixeyed/configurable:21.04"
+    ],
+    "services": [
+      "kiamol/ch03-sleep",
+      "sixeyed/whoami:21.04"
+    ],
+    "statefulsets": [
+      "adminer:4-standalone",
+      "kiamol/ch03-sleep",
+      "nginx:1.18-alpine",
+      "widgetario/products-db:postgres-replicated"
+    ],
+    "tools": [
+      "k8s.gcr.io/metrics-server-amd64:v0.3.6",
+      "kiamol/ch03-numbers-api",
+      "kiamol/ch03-numbers-web",
+      "kubernetesui/dashboard:v2.3.1",
+      "kubernetesui/metrics-scraper:v1.0.6"
+    ],
+    "troubleshooting": [
+      "kiamol/ch05-pi",
+      "kiamol/ch05-pi-app"
+    ],
+    "troubleshooting-2": [
+      "nginx:1.23-alpine"
+    ],
+    "troubleshooting-3": []
+  },
+  "all_images": [
+    "adminer:4-standalone",
+    "alpine:3.13",
+    "alpine:3.14",
+    "busybox:1.34.0",
+    "calico/cni:v3.15.0",
+    "calico/kube-controllers:v3.15.0",
+    "calico/node:v3.15.0",
+    "calico/pod2daemon-flexvol:v3.15.0",
+    "courselabs/bad-sleep",
+    "courselabs/elasticsearch:7.10",
+    "courselabs/fulfilment-api",
+    "courselabs/fulfilment-processor",
+    "courselabs/grafana:8.0.5",
+    "courselabs/keda-web:latest",
+    "courselabs/keda-worker:latest",
+    "courselabs/kibana:7.10",
+    "courselabs/nats-operator:v0.8.3",
+    "courselabs/prometheus:v2.28.1",
+    "diamol/ch02-hello-diamol-web",
+    "fluent/fluent-bit:1.8.3",
+    "gcr.io/cadvisor/cadvisor:v0.45.0",
+    "ghcr.io/dexidp/dex:v2.27.0",
+    "k8s.gcr.io/ingress-nginx/controller:v1.2.0",
+    "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.2.0",
+    "k8s.gcr.io/metrics-server-amd64:v0.3.6",
+    "k8s.gcr.io/metrics-server/metrics-server:v0.6.1",
+    "kiamol/ch03-numbers-api",
+    "kiamol/ch03-numbers-web",
+    "kiamol/ch03-sleep",
+    "kiamol/ch05-pi",
+    "kiamol/ch05-pi-app",
+    "kiamol/ch09-vweb:v1",
+    "kiamol/ch09-vweb:v2",
+    "kiamol/ch09-vweb:v3",
+    "kiamol/ch11-gogs",
+    "kiamol/ch11-jenkins:2.319.1",
+    "kiamol/ch14-access-log",
+    "kiamol/ch14-image-gallery",
+    "kiamol/ch14-image-of-the-day",
+    "kiamol/ch15-cert-generator",
+    "kiamol/ch16-admission-webhook",
+    "kiamol/ch17-kube-explorer",
+    "kiamol/ch17-user-cert-generator",
+    "kiamol/ch20-todo-list",
+    "kiamol/ch20-todo-save-handler",
+    "kubernetesui/dashboard:v2.3.1",
+    "kubernetesui/metrics-scraper:v1.0.6",
+    "moby/buildkit:v0.9.0",
+    "nginx:1.18-alpine",
+    "nginx:1.20-alpine",
+    "nginx:1.23-alpine",
+    "openpolicyagent/gatekeeper:v3.5.2",
+    "percona:5.7.35",
+    "quay.io/argoproj/argocd:v2.1.2",
+    "quay.io/jetstack/cert-manager-cainjector:v1.5.3",
+    "quay.io/jetstack/cert-manager-controller:v1.5.3",
+    "quay.io/jetstack/cert-manager-webhook:v1.5.3",
+    "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.33.0",
+    "redis:6.2.4-alpine",
+    "redis:7-alpine",
+    "registry.k8s.io/metrics-server/metrics-server:v0.8.0",
+    "sixeyed/configurable:21.04",
+    "sixeyed/kubectl:1.21.0",
+    "sixeyed/whoami:21.04",
+    "sixeyed/whoami:24.07",
+    "widgetario/products-db:postgres",
+    "widgetario/products-db:postgres-replicated"
+  ]
+}
