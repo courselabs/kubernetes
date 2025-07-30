@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: troubleshooting-app
+  namespace: troubleshooting-2
+  labels:
+    kubernetes.courselabs.co: troubleshooting-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+        kubernetes.courselabs.co: troubleshooting-2
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.23-alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+        volumeMounts:
+        - name: config
+          mountPath: /etc/app
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: config
+        configMap:
+          name: app-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: app-data-pvc
