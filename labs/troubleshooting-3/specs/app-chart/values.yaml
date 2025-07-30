@@ -1,0 +1,24 @@
+web:
+  replicaCount: 2
+  image:
+    repository: kiamol/ch02-whoami
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+
+database:
+  replicaCount: 3
+  image:
+    repository: postgres
+    tag: 14-alpine
+  password: postgres123
+  storage: 1Gi
+
+ingress:
+  enabled: true
+  host: whoami.local
+  nodePort:
+    enabled: false
+    port: 30030
