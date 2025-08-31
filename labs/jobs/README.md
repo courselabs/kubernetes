@@ -8,8 +8,8 @@ Jobs can have their own controller with a [CronJob](https://kubernetes.io/docs/c
 
 ## API specs
 
-- [Job (batch/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch)
-- [CronJob (batch/v1beta1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#cronjob-v1beta1-batch)
+- [Job (batch/v1)](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/job-v1/)
+- [CronJob (batch/v1)](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/cron-job-v1/)
 
 <details>
   <summary>YAML overview</summary>
