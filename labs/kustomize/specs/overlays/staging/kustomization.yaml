@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base configuration
+resources:
+  - ../../base
+
+# Staging environment customizations
+namespace: staging
+namePrefix: staging-
+
+# Add staging-specific labels
+commonLabels:
+  environment: staging
+  tier: testing
+
+# Override the number of replicas
+replicas:
+  - name: whoami
+    count: 3
+
+# Use a specific image tag for staging
+images:
+  - name: containous/whoami
+    newTag: v1.5.0
