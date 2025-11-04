@@ -6,6 +6,8 @@ But some apps need a stable environment, where objects are created in a known or
 
 StatefulSets are Pod controllers which can create multiple replicas in a stable environment. Replicas have known names, start consecutively and are individually addressable within the cluster.
 
+> **CKAD Exam Prep**: See [CKAD.md](CKAD.md) for CKAD-specific scenarios, practice exercises, and exam tips for StatefulSets.
+
 ## API specs
 
 - [StatefulSet (apps/v1)](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/)
