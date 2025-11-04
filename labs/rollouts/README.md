@@ -1,8 +1,21 @@
 # Updates with Staged Rollouts
 
+> 🎯 **CKAD Exam Relevance**: Deployment strategies are a core topic in the "Application Deployment" domain (20% of exam). You must understand rolling updates, blue/green deployments, and canary deployments.
+
 Pod controllers manage Pods for you - when you update the Pod spec the controller rolls out the change by removing old Pods and creating new ones. You'll do this all the time - every OS patch, library update and new feature will be an update. Depending on your app, config changes might need a rollout too.
 
 You can configure the controller to tweak how the rollout happens - you might choose a slow but safe update for a critical component. Deployment objects are the typical Pod controller, but all the controllers have rollout options.
+
+## Deployment Strategies Overview
+
+CKAD requires understanding of three main deployment strategies:
+
+| Strategy | Description | Risk Level | Downtime | Resource Usage |
+|----------|-------------|------------|----------|----------------|
+| **Rolling Update** | Gradually replace old pods with new ones | Low | None | Medium (extra pods during rollout) |
+| **Blue/Green** | Run two complete environments, switch traffic | Very Low | None | High (2x resources) |
+| **Canary** | Roll out to small subset first, then full | Low | None | Medium (extra pods for canary) |
+| **Recreate** | Delete all old pods, then create new | High | Yes | Low (no extra resources) |
 
 ## Reference 
 
@@ -196,6 +209,266 @@ All the failing Pods are terminated, and then the new Pods are started. They use
 </details><br/>
 
 > The rollback doesn't change the update strategy, so the Deployment is still set to use Recreate.
+
+
+## Blue/Green Deployments
+
+Blue/green deployments minimize risk by running two complete environments side-by-side. Only one version (e.g., "blue") serves production traffic while the other (e.g., "green") is idle or being prepared. To deploy, you switch traffic from blue to green instantly.
+
+### How Blue/Green Works
+
+1. **Deploy green version** alongside existing blue version
+2. **Test green version** thoroughly without affecting users
+3. **Switch traffic** from blue to green by updating Service selector
+4. **Keep blue running** as a rollback option
+5. **Decommission blue** once green is stable
+
+### CKAD Exercise: Blue/Green Deployment
+
+Let's implement a blue/green deployment manually. First, create the blue deployment:
+
+```
+# Create the blue version:
+kubectl apply -f labs/rollouts/specs/blue-green/
+```
+
+Check what was created:
+
+```
+kubectl get deploy,svc -l strategy=blue-green
+
+kubectl get po -l app=vweb-bg
+```
+
+📋 Check which version is currently live by accessing the service.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# Get the service details:
+kubectl get svc vweb-bg-svc
+
+# Access the app (NodePort 30019):
+curl localhost:30019/v.txt
+```
+
+The service selector is set to `version: blue` so you'll get responses from the blue deployment.
+
+</details><br/>
+
+Now let's deploy the green version without affecting users:
+
+```
+# Deploy green version:
+kubectl apply -f labs/rollouts/specs/blue-green/green-deployment.yaml
+
+# Verify both versions are running:
+kubectl get deploy -l app=vweb-bg
+kubectl get po -l app=vweb-bg
+```
+
+> Both blue and green Pods are running, but traffic still goes to blue.
+
+Test the green version directly using Pod port-forwarding:
+
+```
+# Get a green pod name:
+kubectl get po -l version=green
+
+# Port-forward to test green directly:
+kubectl port-forward <green-pod-name> 8081:80
+
+# In another terminal:
+curl localhost:8081/v.txt
+```
+
+📋 Switch production traffic to green by updating the Service selector.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# Patch the service to point to green:
+kubectl patch service vweb-bg-svc -p '{"spec":{"selector":{"version":"green"}}}'
+
+# Verify the switch:
+curl localhost:30019/v.txt
+```
+
+Now all traffic goes to green! The blue deployment is still running as a rollback option.
+
+</details><br/>
+
+To rollback, simply switch the selector back:
+
+```
+# Rollback to blue:
+kubectl patch service vweb-bg-svc -p '{"spec":{"selector":{"version":"blue"}}}'
+
+# Verify:
+curl localhost:30019/v.txt
+```
+
+**Blue/Green Benefits**:
+- Instant switchover (just update Service selector)
+- Easy rollback (switch back immediately)
+- Full testing in production environment before going live
+
+**Blue/Green Drawbacks**:
+- Requires 2x resources (both versions running)
+- Database migrations can be complex
+- Not suitable for stateful applications without careful planning
+
+
+## Canary Deployments
+
+Canary deployments reduce risk by rolling out changes to a small subset of users first. If the canary version works well, gradually increase traffic to it. If issues arise, only a small percentage of users are affected.
+
+### How Canary Works
+
+1. **Deploy canary** with a small percentage of pods (e.g., 1 out of 5 = 20%)
+2. **Monitor metrics** for errors, performance issues, etc.
+3. **Gradually increase** canary pods while decreasing stable pods
+4. **Complete rollout** when canary becomes 100%
+5. **Rollback easily** by scaling canary to 0 if issues found
+
+### CKAD Exercise: Canary Deployment
+
+Let's implement a canary deployment using two Deployments with the same labels.
+
+First, deploy the stable version with 4 replicas:
+
+```
+# Deploy stable version:
+kubectl apply -f labs/rollouts/specs/canary/stable-deployment.yaml
+
+# Check it's running:
+kubectl get deploy vweb-canary-stable
+kubectl get po -l app=vweb-canary
+
+# Apply the service:
+kubectl apply -f labs/rollouts/specs/canary/service.yaml
+```
+
+Test the stable version:
+
+```
+# All requests should show v1:
+for i in {1..10}; do curl -s localhost:30020/v.txt; done
+```
+
+Now deploy the canary with just 1 replica (20% of traffic):
+
+```
+# Deploy canary version:
+kubectl apply -f labs/rollouts/specs/canary/canary-deployment.yaml
+
+# Check both deployments:
+kubectl get deploy -l app=vweb-canary
+kubectl get po -l app=vweb-canary
+```
+
+📋 Test the application multiple times. What percentage shows v2?
+
+<details>
+  <summary>Not sure?</summary>
+
+```
+# Make multiple requests:
+for i in {1..20}; do curl -s localhost:30020/v.txt; done | sort | uniq -c
+```
+
+You should see approximately 80% v1 (stable) and 20% v2 (canary) responses, because traffic is load-balanced across all 5 pods (4 stable + 1 canary).
+
+</details><br/>
+
+### Canary Progression
+
+If the canary is healthy, increase its percentage:
+
+```
+# Increase canary to 50% (3 canary, 3 stable):
+kubectl scale deployment vweb-canary-canary --replicas=3
+kubectl scale deployment vweb-canary-stable --replicas=3
+
+# Test the distribution:
+for i in {1..20}; do curl -s localhost:30020/v.txt; done | sort | uniq -c
+```
+
+📋 Complete the rollout to 100% canary.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# Scale canary up, stable down:
+kubectl scale deployment vweb-canary-canary --replicas=4
+kubectl scale deployment vweb-canary-stable --replicas=0
+
+# Verify all traffic goes to v2:
+for i in {1..10}; do curl -s localhost:30020/v.txt; done
+```
+
+Now you can delete the stable deployment since it's scaled to 0 and no longer needed.
+
+</details><br/>
+
+### Canary Rollback
+
+If issues are detected during canary testing:
+
+```
+# Immediate rollback - scale canary to 0:
+kubectl scale deployment vweb-canary-canary --replicas=0
+
+# Scale stable back up if needed:
+kubectl scale deployment vweb-canary-stable --replicas=4
+
+# Verify all traffic is back to v1:
+for i in {1..10}; do curl -s localhost:30020/v.txt; done
+```
+
+**Canary Benefits**:
+- Minimal user impact (only small percentage exposed to issues)
+- Gradual rollout allows monitoring at each stage
+- Easy to rollback by scaling down canary
+
+**Canary Drawbacks**:
+- More complex than rolling updates
+- Requires good monitoring/metrics to detect issues
+- Load balancing must be traffic-based (not always equal distribution)
+
+
+## Deployment Strategy Decision Matrix
+
+Use this matrix to choose the right strategy for your CKAD scenarios:
+
+| Choose... | When... | CKAD Example Scenario |
+|-----------|---------|----------------------|
+| **Rolling Update** | • Default choice for most apps<br>• App supports multiple versions running<br>• Moderate risk tolerance | "Update nginx deployment to version 1.21, ensuring zero downtime" |
+| **Blue/Green** | • Zero downtime critical<br>• Need thorough pre-production testing<br>• Can afford 2x resources<br>• Easy instant rollback required | "Deploy new payment service version with ability to instantly revert" |
+| **Canary** | • High-risk changes<br>• Want to limit user exposure<br>• Have good monitoring/metrics<br>• Gradual rollout preferred | "Deploy new search algorithm to 10% of users first" |
+| **Recreate** | • App cannot run multiple versions<br>• Database schema changes required<br>• Downtime acceptable<br>• Minimal resources available | "Update legacy app with incompatible database schema" |
+
+### Key CKAD Commands Summary
+
+```
+# Rolling update:
+kubectl set image deployment/app app=app:v2
+kubectl rollout status deployment/app
+kubectl rollout undo deployment/app
+
+# Blue/Green:
+kubectl patch service app-svc -p '{"spec":{"selector":{"version":"green"}}}'
+
+# Canary:
+kubectl scale deployment app-canary --replicas=2
+kubectl scale deployment app-stable --replicas=3
+
+# Configure rollout strategy:
+kubectl patch deployment app -p '{"spec":{"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxSurge":1,"maxUnavailable":0}}}}'
+```
 
 
 ## Lab
