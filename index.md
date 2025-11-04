@@ -28,7 +28,7 @@ These labs align with the [Certified Kubernetes Application Developer (CKAD)](ht
 
 ### Recommended Learning Path
 
-**Estimated Total Study Time: 35-45 hours**
+**Estimated Total Study Time: 40-50 hours**
 
 #### Phase 1: Fundamentals (10-12 hours) 🎯
 *Master the core building blocks - essential for all CKAD domains*
@@ -73,11 +73,12 @@ These labs align with the [Certified Kubernetes Application Developer (CKAD)](ht
 18. [StatefulSets](labs/statefulsets/README.md) - Stateful application patterns (2h)
 19. [DaemonSets](labs/daemonsets/README.md) - Node-level workloads (1h)
 
-#### Phase 7: Practice & Review (4-6 hours) 🎯
+#### Phase 7: Practice & Review (6-9 hours) 🎯
 *Apply your knowledge in realistic scenarios*
 
 20. [Troubleshooting 3](labs/troubleshooting-3/README.md) - Advanced debugging scenarios (2h)
 21. [Hackathon](hackathon/README.md) - End-to-end application deployment (3h)
+22. [CKAD Practice Scenarios](ckad-practice/README.md) - Timed exam-style exercises (2-3h) ⭐ **RECOMMENDED**
 
 ### CKAD Domain Mapping
 

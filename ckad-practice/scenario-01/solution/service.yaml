@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-svc
+  namespace: webapp-ns
+spec:
+  selector:
+    app: webapp
+    tier: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
