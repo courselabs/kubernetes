@@ -1,5 +1,7 @@
 # Troubleshooting Advanced Kubernetes Components
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 More advanced app models use Helm for package management, along with complex resources like Ingress for HTTP routing and StatefulSets for stateful applications.
 
 When these components are misconfigured within a Helm chart, debugging requires understanding both Helm templating and the underlying Kubernetes resources.

@@ -1,5 +1,7 @@
 # Running One-off Pods with Jobs and Recurring Pods with CronJobs
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 Sometimes you want a Pod to execute some work and then stop. You could deploy a Pod spec, but that has limited retry support if the work fails, but you can't use a Deployment because it will replace the Pod if it exits successfully.
 
 [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) are for this use-case - they're a Pod controller which creates a Pod and ensures it runs to completion. If the Pod fails the Job will start a replacement, but when the Pod succeeds the Job is done.

@@ -1,5 +1,7 @@
 # Tools
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 Kubectl is great but sometimes you need something else to help you navigate your cluster.
 
 These exercises will walk you through some of the more popular tools.

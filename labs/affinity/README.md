@@ -1,5 +1,7 @@
 # Scheduling with Pod and Node Affinity
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 Affinity is a feature where you can request Pods to be scheduled in relation to other Pods or nodes. You might want to run multiple Pods in a Deployment and have them all running on different nodes, or you might have a web application where you want web Pods running on the same node as API Pods.
 
 You add affinity rules to your Pod specification. They can be _required_ rules, which means they act as a constraint and if they can't be met then the Pod stays in the pending state. Or they can be _preferred_ rules, which means Kubernetes will try to meet them, but if it can't it will schedule the Pods anyway.

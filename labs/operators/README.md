@@ -1,5 +1,7 @@
 # Managing Apps with Operators
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 Some applications need a lot of operational knowledge - not just the complexity of modelling the app in Kubernetes, but ongoing maintenance tasks. Think of a stateful application where you want to create backups of data. The application deployment is modelled in Kubernetes resources, and it would be great to model the operations in Kubernetes too.
 
 That's what the [operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) does. It's a loose definition for an approach where you install an application which extends Kubernetes. So in that stateful application your operator would deploy the app, and it would also create a custom _DataBackup_ resource in the cluster. Any time you want to take a backup, you deploy a backup object, the operator sees the object and performs all the backup tasks.

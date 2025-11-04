@@ -1,5 +1,7 @@
 # Running Containers in Pods
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 The [Pod](https://kubernetes.io/docs/concepts/workloads/pods/) is the basic unit of compute in Kubernetes. Pods run containers - it's their job to ensure the container keeps running.
 
 Pod specs are very simple. The minimal YAML needs some metadata - like the name of the Pod - and the specification needs a name for the container, and the image to run.

@@ -1,5 +1,7 @@
 # Packaging and Deploying Apps with Helm
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 Helm adds a templating language on top of the standard Kubernetes YAML. You turn your object specs into templates with variables for values which need to change between releases or environments - like the image tag to use, or the number of replicas. Helm has its own CLI which you use to install and upgrade apps, but the deployed objects are standard Kubernetes resources you can manage with Kubectl.
 
 Application packages in Helm are called charts, and you can install a chart from a local folder, a compressed archive, or from a remote chart repository (similar to Docker Hub, but for apps). Charts just contain the YAML templates so they're small downloads - container images are still pulled from the image registry.

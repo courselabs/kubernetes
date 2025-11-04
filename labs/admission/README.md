@@ -1,5 +1,7 @@
 # Controlling Admission
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 Admission control is the process of allowing - or blocking - workloads from running in the cluster. You can use this to enforce your own rules. You might want to block all containers unless they're using an image from an approved registry, or block Pods which don't include resource limits in the spec.
 
 You can do this with admission controller webhooks - HTTP servers which run inside the cluster and get invoked by the API to apply rules when objects are created. Admission controllers can use your own logic, or can use a standard tool like [Open Policy Agent](https://www.openpolicyagent.org).

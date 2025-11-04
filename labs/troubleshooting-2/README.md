@@ -1,5 +1,7 @@
 # Troubleshooting Application Modeling in Kubernetes
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 Modelling apps in Kubernetes involves multiple resources, Even simple apps use ConfigMaps, Secrets, PersistentVolumes, and Namespaces. Any mistakes in configuration will make apps fail in interesting ways.
 
 ## Lab

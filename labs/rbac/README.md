@@ -1,5 +1,7 @@
 # Role-Based Access Control
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 Kubernetes supports fine-grained access control, so you can decide who has permission to work with resources in your cluster, and what they can do with them.
 
 There are two parts to [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/), decoupling permissions and who has the permissions - that lets you model security with a managable number of objects:

@@ -1,5 +1,7 @@
 # Configuring Apps with Secrets
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 ConfigMaps are flexible for pretty much any application config system, but they're not suitable for sensitive data. ConfigMap contents are visible in plain text to anyone who has access to your cluster.
 
 For sensitive information Kubernetes has [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/). The API is very similar - you can surface the contents as environment variables or files in the Pod contianer - but there are additional safeguards around Secrets.
