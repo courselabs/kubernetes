@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-nginx
+  labels:
+    kubernetes.courselabs.co: security
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      securityContext:
+        # Run as non-root (nginx user = 101)
+        runAsNonRoot: true
+        runAsUser: 101
+
+        # Read-only filesystem
+        readOnlyRootFilesystem: true
+
+        # Drop all capabilities, add only NET_BIND_SERVICE
+        capabilities:
+          drop:
+            - ALL
+          add:
+            - NET_BIND_SERVICE
+
+        # Prevent privilege escalation
+        allowPrivilegeEscalation: false
+
+      # Writable directories for nginx
+      volumeMounts:
+        - name: cache
+          mountPath: /var/cache/nginx
+        - name: run
+          mountPath: /var/run
+
+  volumes:
+    - name: cache
+      emptyDir: {}
+    - name: run
+      emptyDir: {}
