@@ -25,12 +25,7 @@ Let's begin by exploring the base configuration.
 First, let's examine the base configuration structure. We have a whoami application that we'll deploy to multiple environments.
 
 Looking at the base directory structure:
-```
-base/
-├── kustomization.yaml
-├── deployment.yaml
-└── service.yaml
-```
+
 
 Let me examine the kustomization.yaml file:
 
@@ -44,31 +39,19 @@ This is the power of Kustomize: the base configuration is pure, readable Kuberne
 
 Let's deploy this base configuration directly:
 
-```bash
-kubectl apply -k labs/kustomize/specs/base
-```
 
 The `-k` flag tells kubectl to process the kustomization.yaml file in that directory.
 
 Let's see what was created:
 
-```bash
-kubectl get all -l app=whoami
-```
 
 We have a deployment with 2 replicas and a service. Let's check the image tag:
 
-```bash
-kubectl get pods -l app=whoami -o jsonpath='{.items[0].spec.containers[0].image}'
-```
 
 This shows the base image tag. Notice the objects don't have any environment-specific naming or configuration.
 
 Now let's delete this base deployment to prepare for using overlays:
 
-```bash
-kubectl delete -k labs/kustomize/specs/base
-```
 
 The `-k` flag works with delete too, removing everything defined in the kustomization.
 
@@ -81,10 +64,7 @@ The `-k` flag works with delete too, removing everything defined in the kustomiz
 Now let's deploy to a development environment using an overlay.
 
 Looking at the dev overlay structure:
-```
-overlays/dev/
-└── kustomization.yaml
-```
+
 
 The dev overlay kustomization references the base and applies customizations:
 - References ../../base (relative path to base)
@@ -95,23 +75,12 @@ This is a simple overlay - just name and namespace changes, no patches needed.
 
 Let's create the dev namespace and deploy:
 
-```bash
-kubectl create namespace dev
-
-kubectl apply -k labs/kustomize/specs/overlays/dev
-```
 
 Check what was created:
 
-```bash
-kubectl get all -n dev
-```
 
 Perfect! Notice all resources have the "dev-" prefix. Let's verify the deployment details:
 
-```bash
-kubectl get deployment -n dev -o wide
-```
 
 The replica count and image tag come from the base configuration. The overlay only changed the name prefix and namespace. This is exactly what we want - reuse the base, customize only what's different.
 
@@ -134,23 +103,9 @@ The images field is a Kustomize built-in feature for updating container image ta
 
 Let's deploy to staging:
 
-```bash
-kubectl create namespace staging
-
-kubectl apply -k labs/kustomize/specs/overlays/staging
-```
 
 Now let's compare dev and staging:
 
-```bash
-kubectl get deploy -n dev dev-whoami -o jsonpath='{.spec.replicas}'
-echo " replicas in dev"
-
-kubectl get deploy -n staging staging-whoami -o jsonpath='{.spec.replicas}'
-echo " replicas in staging"
-
-kubectl get deploy -n staging staging-whoami -o jsonpath='{.spec.template.spec.containers[0].image}'
-```
 
 Excellent! Staging has 3 replicas (vs 2 in dev) and uses a different image tag. All from a simple overlay that only specifies the differences.
 
@@ -165,12 +120,7 @@ This demonstrates Kustomize's efficiency: the base contains common configuration
 Production requires more configuration: higher replica count, resource limits, and specific labels. This needs patches.
 
 Looking at the prod overlay structure:
-```
-overlays/prod/
-├── kustomization.yaml
-├── replica-patch.yaml
-└── resources-patch.yaml
-```
+
 
 The kustomization references:
 - The base
@@ -188,28 +138,14 @@ Strategic merge patches are intuitive: write YAML for the fields you want to mod
 
 Let's deploy to production:
 
-```bash
-kubectl create namespace production
-
-kubectl apply -k labs/kustomize/specs/overlays/prod
-```
 
 Inspect the production deployment:
 
-```bash
-kubectl get deploy -n production prod-whoami -o jsonpath='{.spec.replicas}'
-echo " replicas in production"
-
-kubectl get deploy -n production -o yaml | grep -A 10 resources:
-```
 
 Perfect! Production has 5 replicas and resource limits applied through the patches.
 
 Let's also view what Kustomize generated before it was applied. This is useful for debugging:
 
-```bash
-kubectl kustomize labs/kustomize/specs/overlays/prod
-```
 
 This shows the complete YAML that was sent to kubectl. You can see all the overlays and patches merged together with the base.
 
@@ -225,13 +161,6 @@ Let's explore some other Kustomize features briefly.
 
 Kustomize can generate ConfigMaps from literals or files:
 
-```yaml
-configMapGenerator:
-  - name: app-config
-    literals:
-      - APP_ENV=production
-      - LOG_LEVEL=info
-```
 
 This creates a ConfigMap with a hash suffix for versioning. When values change, a new ConfigMap is created, triggering pod restarts.
 
@@ -239,11 +168,6 @@ This creates a ConfigMap with a hash suffix for versioning. When values change, 
 
 Add labels to all resources:
 
-```yaml
-commonLabels:
-  environment: production
-  team: platform
-```
 
 These labels are applied to every resource in the kustomization, making filtering and management easier.
 
@@ -251,10 +175,6 @@ These labels are applied to every resource in the kustomization, making filterin
 
 We've seen namePrefix in action. nameSuffix works the same way:
 
-```yaml
-namePrefix: prod-
-nameSuffix: -v2
-```
 
 This would create resources named "prod-whoami-v2".
 
@@ -262,18 +182,6 @@ This would create resources named "prod-whoami-v2".
 
 For complex modifications, use JSON patches:
 
-```yaml
-patchesJson6902:
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: myapp
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 3
-```
 
 JSON patches give surgical precision but are more complex. Use strategic merge patches when possible.
 
@@ -296,42 +204,12 @@ Let me work through this step by step:
 
 First, create the overlay directory structure:
 
-```bash
-mkdir -p labs/kustomize/specs/overlays/qa
-```
 
 Now create the kustomization.yaml file:
 
-```bash
-cat > labs/kustomize/specs/overlays/qa/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-bases:
-  - ../../base
-
-namePrefix: qa-
-
-namespace: qa
-
-commonLabels:
-  environment: qa
-
-replicas:
-  - name: whoami
-    count: 4
-
-images:
-  - name: sixeyed/whoami:latest
-    newTag: v1-alpine
-EOF
-```
 
 Let me preview what this will generate:
 
-```bash
-kubectl kustomize labs/kustomize/specs/overlays/qa
-```
 
 Looking at the output:
 - Resources have "qa-" prefix
@@ -342,24 +220,9 @@ Looking at the output:
 
 Perfect! Now let's deploy:
 
-```bash
-kubectl create namespace qa
-
-kubectl apply -k labs/kustomize/specs/overlays/qa
-```
 
 Verify the deployment:
 
-```bash
-kubectl get all -n qa
-
-kubectl get deploy -n qa qa-whoami -o jsonpath='{.spec.replicas}'
-echo " replicas"
-
-kubectl get deploy -n qa qa-whoami -o jsonpath='{.spec.template.spec.containers[0].image}'
-
-kubectl get deploy -n qa qa-whoami -o jsonpath='{.metadata.labels.environment}'
-```
 
 Excellent! All requirements met:
 - QA namespace
@@ -379,29 +242,19 @@ This demonstrates how quickly you can create new environments with Kustomize. Th
 Let's review the essential Kustomize commands:
 
 **Apply a kustomization:**
-```bash
-kubectl apply -k <directory>
-```
+
 
 **View generated YAML without applying:**
-```bash
-kubectl kustomize <directory>
-```
+
 
 **Delete resources from a kustomization:**
-```bash
-kubectl delete -k <directory>
-```
+
 
 **Validate kustomization structure:**
-```bash
-kubectl kustomize <directory> > /dev/null && echo "Valid"
-```
+
 
 **Compare differences between overlays:**
-```bash
-diff <(kubectl kustomize overlays/dev) <(kubectl kustomize overlays/prod)
-```
+
 
 The `-k` flag is the key to remember. It works with apply, delete, diff, and other kubectl commands.
 
@@ -413,14 +266,6 @@ The `-k` flag is the key to remember. It works with apply, delete, diff, and oth
 
 Let's clean up all our environments:
 
-```bash
-kubectl delete -k labs/kustomize/specs/overlays/dev
-kubectl delete -k labs/kustomize/specs/overlays/staging
-kubectl delete -k labs/kustomize/specs/overlays/prod
-kubectl delete -k labs/kustomize/specs/overlays/qa
-
-kubectl delete namespace dev staging production qa
-```
 
 Let's review what we've covered:
 

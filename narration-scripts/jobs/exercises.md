@@ -9,11 +9,7 @@
 "Welcome to the hands-on portion of our Jobs and CronJobs session. We'll work through practical examples that demonstrate the concepts we just covered."
 
 **Preparation check:**
-```bash
-# Ensure clean environment
-kubectl get jobs,cronjobs
-kubectl config get-contexts
-```
+
 
 "Make sure you're connected to your practice cluster and in the default namespace. Let's begin with a simple one-off Job."
 
@@ -26,9 +22,7 @@ kubectl config get-contexts
 "Our first example uses a Pi calculation application. Normally it runs as a web service, but we can also use it for one-off calculations."
 
 **Navigate to the spec:**
-```bash
-cat labs/jobs/specs/pi/one/pi-job-50dp.yaml
-```
+
 
 "Notice the key elements:
 - API version: batch/v1 - Jobs are in the batch API group
@@ -38,11 +32,7 @@ cat labs/jobs/specs/pi/one/pi-job-50dp.yaml
 - The command overrides the default to run a calculation"
 
 **Deploy the Job:**
-```bash
-kubectl apply -f labs/jobs/specs/pi/one
 
-kubectl get jobs
-```
 
 "The Job is created immediately. Let's check its status. You'll see it shows 0/1 completions initially, then transitions to 1/1 when complete."
 
@@ -50,17 +40,9 @@ kubectl get jobs
 
 "Jobs automatically apply a label to the Pods they create. Let's use that to find our Pod."
 
-```bash
-kubectl get pods --show-labels
-```
 
 "See the 'job-name=pi-job-one' label? That's automatically added. We can use it to filter:"
 
-```bash
-kubectl get pods -l job-name=pi-job-one
-
-kubectl logs -l job-name=pi-job-one
-```
 
 "There's our Pi calculation! The Pod ran, computed Pi to 50 decimal places, and exited successfully."
 
@@ -74,15 +56,9 @@ kubectl logs -l job-name=pi-job-one
 
 "Let's try to update our Job to calculate more decimal places."
 
-```bash
-cat labs/jobs/specs/pi/one/update/pi-job-500dp.yaml
-```
 
 "This spec changes the calculation from 50 to 500 decimal places. Let's try to apply it:"
 
-```bash
-kubectl apply -f labs/jobs/specs/pi/one/update
-```
 
 "You'll see an error: 'field is immutable'. This is a critical concept - **Jobs cannot be updated**."
 
@@ -90,14 +66,6 @@ kubectl apply -f labs/jobs/specs/pi/one/update
 
 "To run a different Job, you must delete the old one first:"
 
-```bash
-kubectl delete job pi-job-one
-
-kubectl apply -f labs/jobs/specs/pi/one/update
-
-kubectl get jobs
-kubectl get pods -l job-name=pi-job-one --watch
-```
 
 "Watch as the new Job creates its Pod. When it completes, check the logs - you'll see 500 decimal places this time."
 
@@ -111,9 +79,6 @@ kubectl get pods -l job-name=pi-job-one --watch
 
 "Now let's run multiple Pods to completion using a single Job. This is useful for batch processing where you have a known amount of work to do."
 
-```bash
-cat labs/jobs/specs/pi/many/pi-job-random.yaml
-```
 
 "Notice two new fields:
 - completions: 3 - we need 3 Pods to successfully complete
@@ -123,17 +88,9 @@ Each Pod will calculate Pi to a random number of decimal places."
 
 ### Running Parallel Work (5:45 - 7:00)
 
-```bash
-kubectl apply -f labs/jobs/specs/pi/many
-
-kubectl get jobs -l app=pi-many
-```
 
 "The Job shows 0/3 completions initially. Let's watch the Pods:"
 
-```bash
-kubectl get pods -l job-name=pi-job-many --watch
-```
 
 "Notice all three Pods start simultaneously because parallelism is 3. Watch them progress through ContainerCreating, Running, and then Completed."
 
@@ -141,15 +98,9 @@ kubectl get pods -l job-name=pi-job-many --watch
 
 ### Examining Results (7:00 - 8:00)
 
-```bash
-kubectl logs -l job-name=pi-job-many
-```
 
 "You'll see logs from all three Pods - pages and pages of Pi! Each calculated to a different precision."
 
-```bash
-kubectl describe job pi-job-many
-```
 
 "The describe output shows:
 - Pod Statuses: 3 Succeeded
@@ -166,18 +117,12 @@ This is how you track progress on batch processing jobs."
 
 "Let's move on to CronJobs - Jobs that run on a schedule. We'll create a cleanup CronJob that removes old Jobs."
 
-```bash
-ls labs/jobs/specs/cleanup/
-```
 
 "We have three files:
 - cronjob.yaml - the CronJob definition
 - rbac.yaml - permissions for the cleanup script
 - configmap.yaml - the cleanup script itself"
 
-```bash
-cat labs/jobs/specs/cleanup/cronjob.yaml
-```
 
 "Key elements of this CronJob:
 - schedule: '*/1 * * * *' - runs every minute
@@ -189,17 +134,9 @@ cat labs/jobs/specs/cleanup/cronjob.yaml
 
 ### Deploying and Watching CronJobs (9:30 - 11:30)
 
-```bash
-kubectl apply -f labs/jobs/specs/cleanup
-
-kubectl get cronjob
-```
 
 "The CronJob is created but hasn't run yet. Let's watch for Jobs to be created:"
 
-```bash
-kubectl get jobs --watch
-```
 
 "Wait up to one minute. You'll see a cleanup Job appear with a timestamp in its name. The CronJob controller creates these automatically."
 
@@ -207,17 +144,11 @@ kubectl get jobs --watch
 
 ### Understanding CronJob Behavior (11:30 - 12:00)
 
-```bash
-kubectl get cronjob job-cleanup -o yaml | grep -A 5 lastScheduleTime
-```
 
 "The CronJob tracks when it last ran. You can also see:
 - successfulJobsHistoryLimit: how many successful Jobs to keep
 - failedJobsHistoryLimit: how many failed Jobs to keep"
 
-```bash
-kubectl logs -l app=job-cleanup
-```
 
 "The logs show what the cleanup script did - which Jobs it found and deleted."
 
@@ -229,24 +160,11 @@ kubectl logs -l app=job-cleanup
 
 "The lab asks us to suspend the cleanup CronJob without using kubectl apply. Let's do that using kubectl patch."
 
-```bash
-# First, let's see the current state
-kubectl get cronjob job-cleanup
-
-# Suspend using patch
-kubectl patch cronjob job-cleanup -p '{"spec":{"suspend":true}}'
-
-kubectl get cronjob job-cleanup
-```
 
 "Notice the SUSPEND column now shows True. No new Jobs will be created while suspended."
 
 **Alternative approach:**
-```bash
-# You could also use kubectl edit
-kubectl edit cronjob job-cleanup
-# Change spec.suspend: true
-```
+
 
 "The patch approach is faster for the exam. Learn both methods."
 
@@ -254,11 +172,6 @@ kubectl edit cronjob job-cleanup
 
 "Now let's deploy the backup CronJob from the lab:"
 
-```bash
-kubectl apply -f labs/jobs/specs/backup
-
-kubectl get cronjob
-```
 
 "This CronJob runs daily at 3 AM. We don't want to wait that long to test it!"
 
@@ -266,19 +179,9 @@ kubectl get cronjob
 
 "The second part of the lab asks us to run a Job from this CronJob without using kubectl apply. We use the 'create job --from' command:"
 
-```bash
-kubectl create job backup-manual --from=cronjob/db-backup
-
-kubectl get jobs
-```
 
 "This creates a Job using the CronJob's jobTemplate. It's identical to what would run on schedule, but triggered immediately."
 
-```bash
-kubectl get pods -l job-name=backup-manual
-
-kubectl logs job/backup-manual
-```
 
 "The Job runs successfully. This is how you test CronJobs without waiting for the schedule."
 
@@ -301,19 +204,11 @@ Two important exam techniques demonstrated here:
 
 "If time permits, let's explore the EXTRA section on failure handling. This demonstrates backoff limits and restart policies."
 
-```bash
-cat labs/jobs/specs/pi/one-failing/pi-job.yaml
-```
 
 "This Job has an intentional mistake in the command. Notice:
 - restartPolicy: OnFailure - container will restart in the same Pod
 - No backoffLimit specified - defaults to 6 attempts"
 
-```bash
-kubectl apply -f labs/jobs/specs/pi/one-failing
-
-kubectl get pods -l job-name=pi-job-one-failing --watch
-```
 
 "Watch the RESTARTS column increment. The container fails, restarts, fails again. Eventually it goes into CrashLoopBackoff."
 
@@ -321,29 +216,16 @@ kubectl get pods -l job-name=pi-job-one-failing --watch
 
 "Now let's try the Never restart policy:"
 
-```bash
-kubectl delete jobs pi-job-one-failing
-
-cat labs/jobs/specs/pi/one-failing/update/pi-job-restart.yaml
-```
 
 "Changes:
 - restartPolicy: Never - create new Pods on failure
 - backoffLimit: 4 - try up to 4 times"
 
-```bash
-kubectl apply -f labs/jobs/specs/pi/one-failing/update
-
-kubectl get pods -l job-name=pi-job-one-failing --watch
-```
 
 "Now instead of restarts, you see new Pods being created. Each has 0 restarts but multiple Pods exist."
 
 ### Debugging Failed Jobs (17:30 - 18:00)
 
-```bash
-kubectl describe pods -l job-name=pi-job-one-failing
-```
 
 "The describe output shows why it failed - a typo in the command. In a real scenario, this is how you'd troubleshoot Job failures."
 
@@ -357,11 +239,6 @@ kubectl describe pods -l job-name=pi-job-one-failing
 
 "Let's clean up our lab environment:"
 
-```bash
-kubectl delete job,cronjob,cm,sa,clusterrole,clusterrolebinding -l kubernetes.courselabs.co=jobs
-
-kubectl get jobs,cronjobs
-```
 
 "All cleaned up. Notice we used labels for efficient cleanup - this is best practice."
 

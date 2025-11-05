@@ -9,16 +9,7 @@
 "Welcome to the practical exercises for Kubernetes Security Contexts. We'll work through examples that demonstrate the security concepts we covered, from basic non-root execution to complex capability management."
 
 **Preparation:**
-```bash
-# Verify cluster
-kubectl get nodes
 
-# Clean slate
-kubectl delete pod --all
-
-# Ensure default namespace
-kubectl config set-context --current --namespace default
-```
 
 "Let's start by seeing the problem: containers running as root by default."
 
@@ -30,20 +21,11 @@ kubectl config set-context --current --namespace default
 
 "First, let's create a Pod without any security context and see what user it runs as:"
 
-```bash
-kubectl run insecure --image=nginx
-
-# Check the user
-kubectl exec insecure -- whoami
-```
 
 "Output: 'root'. The container is running as the root user!"
 
 "Let's see more details:"
 
-```bash
-kubectl exec insecure -- id
-```
 
 "This shows UID 0 (root), GID 0 (root), and full group memberships. If an attacker compromises this container, they have root privileges."
 
@@ -51,16 +33,6 @@ kubectl exec insecure -- id
 
 "Let's demonstrate what a root user can do:"
 
-```bash
-# Root can install packages
-kubectl exec insecure -- apt-get update
-
-# Root can read sensitive files (if they existed)
-kubectl exec insecure -- ls -la /root
-
-# Root can modify the application
-kubectl exec insecure -- touch /usr/share/nginx/html/backdoor.html
-```
 
 "All of these succeed because we're root. In a real attack, this could mean:
 - Installing malware
@@ -70,9 +42,6 @@ kubectl exec insecure -- touch /usr/share/nginx/html/backdoor.html
 
 "Let's clean up and do it right:"
 
-```bash
-kubectl delete pod insecure
-```
 
 ---
 
@@ -82,21 +51,12 @@ kubectl delete pod insecure
 
 "Now let's create a Pod with security settings at the Pod level:"
 
-```bash
-cat labs/security/specs/pod-security-context.yaml
-```
 
 "Notice the `securityContext` at the Pod spec level:
 - runAsUser: 1000 - runs as UID 1000
 - runAsGroup: 3000 - primary GID 3000
 - fsGroup: 2000 - volume group ownership"
 
-```bash
-kubectl apply -f labs/security/specs/pod-security-context.yaml
-
-# Check what user it's running as
-kubectl exec pod-security-demo -- id
-```
 
 "Output shows UID 1000, GID 3000, with groups including 2000. No more root!"
 
@@ -104,18 +64,11 @@ kubectl exec pod-security-demo -- id
 
 "Now let's see what this user can and cannot do:"
 
-```bash
-# Check the user
-kubectl exec pod-security-demo -- whoami
-```
 
 "This might fail with 'whoami: cannot find name for user ID 1000'. That's fine - the user exists but doesn't have a name in /etc/passwd. The ID command shows it's working."
 
 "Try to perform a privileged operation:"
 
-```bash
-kubectl exec pod-security-demo -- apt-get update
-```
 
 "It fails! Non-root users can't install packages. This is exactly what we want - limiting the blast radius of a compromise."
 
@@ -129,28 +82,16 @@ kubectl exec pod-security-demo -- apt-get update
 
 "Container-level settings override Pod-level settings and can be more specific:"
 
-```bash
-cat labs/security/specs/container-security-context.yaml
-```
 
 "This spec has both Pod and container-level contexts. The container adds:
 - readOnlyRootFilesystem: true - makes the filesystem immutable
 - allowPrivilegeEscalation: false - prevents escalation"
 
-```bash
-kubectl apply -f labs/security/specs/container-security-context.yaml
-
-kubectl exec container-security-demo -- id
-```
 
 ### Testing Read-Only Filesystem (6:00 - 7:00)
 
 "The read-only filesystem is a powerful security feature:"
 
-```bash
-# Try to write to the filesystem
-kubectl exec container-security-demo -- touch /tmp/test
-```
 
 "It fails! 'Read-only file system'. The container can't modify anything."
 
@@ -180,9 +121,6 @@ We'll see how to handle this in the next exercise with volumes."
 
 "Many applications need to write temporary files. Let's see how to allow that while keeping the root filesystem read-only:"
 
-```bash
-cat labs/security/specs/readonly-with-volume.yaml
-```
 
 "This spec:
 - Sets readOnlyRootFilesystem: true
@@ -191,21 +129,9 @@ cat labs/security/specs/readonly-with-volume.yaml
 
 ### Testing the Solution (8:30 - 9:30)
 
-```bash
-kubectl apply -f labs/security/specs/readonly-with-volume.yaml
-
-# Try to write to root filesystem (should fail)
-kubectl exec readonly-demo -- touch /test.txt
-```
 
 "Fails! Read-only filesystem."
 
-```bash
-# Try to write to /tmp (should succeed)
-kubectl exec readonly-demo -- touch /tmp/test.txt
-
-kubectl exec readonly-demo -- ls -l /tmp/
-```
 
 "Success! The file is created in /tmp because that's a writable volume."
 
@@ -233,20 +159,11 @@ kubectl exec readonly-demo -- ls -l /tmp/
 
 "The most secure approach is to drop all capabilities:"
 
-```bash
-cat labs/security/specs/drop-all-capabilities.yaml
-```
 
 "The capabilities section:
 - drop: [\"ALL\"] - removes all Linux capabilities
 - The container has minimal privileges"
 
-```bash
-kubectl apply -f labs/security/specs/drop-all-capabilities.yaml
-
-# Try a network operation
-kubectl exec capabilities-demo -- ping -c 1 8.8.8.8
-```
 
 "This might fail because we dropped network-related capabilities. The exact behavior depends on how ping is implemented."
 
@@ -254,17 +171,11 @@ kubectl exec capabilities-demo -- ping -c 1 8.8.8.8
 
 "Sometimes you need specific capabilities. Let's see how to add them:"
 
-```bash
-cat labs/security/specs/add-capabilities.yaml
-```
 
 "This spec:
 - Drops ALL capabilities (start secure)
 - Adds NET_ADMIN - allows network configuration"
 
-```bash
-kubectl apply -f labs/security/specs/add-capabilities.yaml
-```
 
 ### Understanding the Pattern (12:30 - 13:00)
 
@@ -289,9 +200,6 @@ kubectl apply -f labs/security/specs/add-capabilities.yaml
 
 "Even with non-root users, some mechanisms could allow privilege escalation:"
 
-```bash
-cat labs/security/specs/no-privilege-escalation.yaml
-```
 
 "The key setting: allowPrivilegeEscalation: false
 
@@ -300,16 +208,9 @@ This prevents:
 - Process gaining more privileges than its parent
 - Exploitation of capability mechanisms"
 
-```bash
-kubectl apply -f labs/security/specs/no-privilege-escalation.yaml
-```
 
 ### Testing the Protection (13:45 - 14:30)
 
-```bash
-# Try to use su (a setuid binary)
-kubectl exec escalation-demo -- /bin/su
-```
 
 "It fails! The setuid mechanism is blocked."
 
@@ -328,33 +229,17 @@ kubectl exec escalation-demo -- /bin/su
 
 "When non-root containers need to access volumes, fsGroup sets the group ownership:"
 
-```bash
-cat labs/security/specs/fsgroup-demo.yaml
-```
 
 "This spec:
 - runAsUser: 1000 - runs as non-root
 - fsGroup: 2000 - volumes owned by group 2000
 - Volume mounted at /data"
 
-```bash
-kubectl apply -f labs/security/specs/fsgroup-demo.yaml
-
-# Check volume permissions
-kubectl exec fsgroup-demo -- ls -la /data
-```
 
 "The /data directory is owned by group 2000. The container is in group 2000, so it can write to it."
 
 ### Testing Volume Access (15:15 - 16:00)
 
-```bash
-# Create a file
-kubectl exec fsgroup-demo -- touch /data/test.txt
-
-# Check ownership
-kubectl exec fsgroup-demo -- ls -l /data/
-```
 
 "The file is created with group 2000 ownership."
 
@@ -381,36 +266,6 @@ kubectl exec fsgroup-demo -- ls -l /data/
 
 "We need to combine several security features:"
 
-```yaml
-securityContext:
-  # Pod level
-  runAsUser: 101
-  runAsNonRoot: true
-  fsGroup: 101
-
-containers:
-  - name: nginx
-    securityContext:
-      # Container level
-      readOnlyRootFilesystem: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop: ["ALL"]
-        add: ["NET_BIND_SERVICE"]
-
-    # Writable volumes
-    volumeMounts:
-      - name: cache
-        mountPath: /var/cache/nginx
-      - name: run
-        mountPath: /var/run
-
-volumes:
-  - name: cache
-    emptyDir: {}
-  - name: run
-    emptyDir: {}
-```
 
 ### Key Decisions (17:30 - 18:00)
 
@@ -425,11 +280,7 @@ volumes:
 "I encourage you to write this YAML yourself. Check the solution.md file for the complete spec."
 
 "Test your deployment:"
-```bash
-kubectl get pod secure-nginx
-kubectl exec secure-nginx -- id
-kubectl exec secure-nginx -- curl -s localhost
-```
+
 
 ---
 
@@ -466,12 +317,6 @@ Plus:
 
 ## Cleanup (18:30)
 
-```bash
-kubectl delete pod pod-security-demo container-security-demo \
-  non-root-demo readonly-demo capabilities-demo \
-  capabilities-net-demo escalation-demo fsgroup-demo \
-  secure-nginx
-```
 
 ---
 

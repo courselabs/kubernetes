@@ -9,16 +9,7 @@
 "Welcome to the practical exercises for Kubernetes Namespaces. We'll work through real scenarios that demonstrate namespace isolation, resource quotas, and cross-namespace communication."
 
 **Preparation:**
-```bash
-# Verify cluster connection
-kubectl get nodes
 
-# Check existing namespaces
-kubectl get namespaces
-
-# Ensure we're in default namespace
-kubectl config set-context --current --namespace default
-```
 
 "Let's start by exploring the namespaces that already exist in your cluster."
 
@@ -30,9 +21,6 @@ kubectl config set-context --current --namespace default
 
 "Every Kubernetes cluster has system namespaces. Let's examine them:"
 
-```bash
-kubectl get namespaces
-```
 
 "You'll see several namespaces:
 - default: Where we've been working
@@ -42,9 +30,6 @@ kubectl get namespaces
 
 "The kube-system namespace contains the core components that make Kubernetes work:"
 
-```bash
-kubectl get pods -n kube-system
-```
 
 "You'll see Pods for:
 - DNS server (CoreDNS or kube-dns)
@@ -55,20 +40,9 @@ kubectl get pods -n kube-system
 
 "By default, kubectl commands use the 'default' namespace. Watch what happens:"
 
-```bash
-# No namespace specified - uses default
-kubectl get pods
-
-# Wrong namespace - no results
-kubectl logs -l k8s-app=kube-dns
-```
 
 "That failed because the DNS server is in kube-system, not default. Let's fix it:"
 
-```bash
-# Correct namespace specified
-kubectl logs -l k8s-app=kube-dns -n kube-system
-```
 
 "Now we see the DNS server logs. The -n flag is essential when working across namespaces."
 
@@ -80,13 +54,6 @@ kubectl logs -l k8s-app=kube-dns -n kube-system
 
 "Adding -n to every command gets tedious. Kubernetes has contexts to set a default namespace:"
 
-```bash
-# View current context
-kubectl config get-contexts
-
-# See your kubeconfig file
-cat ~/.kube/config
-```
 
 "The context includes:
 - Which cluster to connect to
@@ -97,12 +64,6 @@ cat ~/.kube/config
 
 "Let's switch our default namespace to kube-system:"
 
-```bash
-kubectl config set-context --current --namespace kube-system
-
-# Now commands default to kube-system
-kubectl get pods
-```
 
 "Notice we didn't specify -n, but we see system Pods. Our context now defaults to kube-system."
 
@@ -110,12 +71,6 @@ kubectl get pods
 
 "It's dangerous to work in system namespaces. Always switch back:"
 
-```bash
-kubectl config set-context --current --namespace default
-
-# Verify we're back in default
-kubectl get pods
-```
 
 "Develop this habit: switch context for focused work, but always return to default when done."
 
@@ -127,23 +82,9 @@ kubectl get pods
 
 "Let's deploy the same Pod to multiple namespaces:"
 
-```bash
-# Look at the Pod spec
-cat labs/namespaces/specs/sleep-pod.yaml
-```
 
 "Notice there's no namespace in the YAML. Kubectl will decide where it goes:"
 
-```bash
-# Deploy to default namespace
-kubectl apply -f labs/namespaces/specs/sleep-pod.yaml -n default
-
-# Deploy to kube-system (same Pod, different namespace)
-kubectl apply -f labs/namespaces/specs/sleep-pod.yaml -n kube-system
-
-# See both Pods
-kubectl get pods -l app=sleep --all-namespaces
-```
 
 "Same Pod name, same labels, but in different namespaces. They don't conflict because namespaces provide isolation."
 
@@ -151,9 +92,6 @@ kubectl get pods -l app=sleep --all-namespaces
 
 "Now let's deploy a complete application in its own namespace. The whoami app has three files:"
 
-```bash
-ls labs/namespaces/specs/whoami/
-```
 
 "Notice the file naming:
 - 01-namespace.yaml - Creates the namespace first
@@ -162,11 +100,6 @@ ls labs/namespaces/specs/whoami/
 
 The '01' prefix ensures the namespace is created before the other resources."
 
-```bash
-kubectl apply -f labs/namespaces/specs/whoami
-
-kubectl get svc -n whoami
-```
 
 "The application is completely isolated in the 'whoami' namespace. This is how you organize applications or environments."
 
@@ -178,21 +111,12 @@ kubectl get svc -n whoami
 
 "Let's deploy another application in a different namespace:"
 
-```bash
-ls labs/namespaces/specs/configurable/
-```
 
 "This app has:
 - A namespace
 - A ConfigMap with configuration
 - A Deployment that uses the ConfigMap"
 
-```bash
-kubectl apply -f labs/namespaces/specs/configurable
-
-# View Deployments across all namespaces
-kubectl get deploy -A --show-labels
-```
 
 "Notice how we can see Deployments from all namespaces at once with -A (or --all-namespaces)."
 
@@ -200,9 +124,6 @@ kubectl get deploy -A --show-labels
 
 "Both apps have the same label for this lab:"
 
-```bash
-kubectl get svc -A -l kubernetes.courselabs.co=namespaces
-```
 
 "This shows Services across all namespaces that match the label. Labels work across namespace boundaries, but label selectors within resources (like Services selecting Pods) only work within the same namespace."
 
@@ -218,10 +139,6 @@ kubectl get svc -A -l kubernetes.courselabs.co=namespaces
 
 "Let's test from the sleep Pod in default namespace:"
 
-```bash
-# Short name - only works in same namespace
-kubectl exec pod/sleep -- nslookup whoami-np
-```
 
 "That fails! The whoami-np service is in the 'whoami' namespace, not 'default'."
 
@@ -229,21 +146,12 @@ kubectl exec pod/sleep -- nslookup whoami-np
 
 "To access services across namespaces, use the FQDN:"
 
-```bash
-# FQDN - works from any namespace
-kubectl exec pod/sleep -- nslookup whoami-np.whoami.svc.cluster.local
-```
 
 "That works! The FQDN format is:
-```
-<service-name>.<namespace>.svc.cluster.local
-```
+
 
 You can also use the shorter form:"
 
-```bash
-kubectl exec pod/sleep -- nslookup whoami-np.whoami
-```
 
 "Best practice: Always use FQDNs for cross-namespace communication. It's explicit and prevents confusion."
 
@@ -255,9 +163,6 @@ kubectl exec pod/sleep -- nslookup whoami-np.whoami
 
 "Quotas prevent applications from consuming all cluster resources. Let's see them in action with the Pi application:"
 
-```bash
-cat labs/namespaces/specs/pi/02-cpu-limit-quota.yaml
-```
 
 "This ResourceQuota limits:
 - Total CPU limits across all Pods: 4 cores
@@ -265,23 +170,11 @@ cat labs/namespaces/specs/pi/02-cpu-limit-quota.yaml
 
 Let's deploy the Pi app with a small CPU allocation:"
 
-```bash
-kubectl apply -f labs/namespaces/specs/pi
-
-# Check the quota
-kubectl -n pi get quota
-
-kubectl -n pi get po
-```
 
 ### Testing the Application (11:45 - 12:30)
 
 "The app should be running. Let's test it:"
 
-```bash
-# Try a calculation
-curl http://localhost:30030/pi?dp=30000
-```
 
 "On my machine, this takes about 10.5 seconds. The Pod is limited to 125 millicores (0.125 CPU), so it's slow."
 
@@ -291,24 +184,12 @@ curl http://localhost:30030/pi?dp=30000
 
 "Let's give the Pod more CPU:"
 
-```bash
-cat labs/namespaces/specs/pi/mid-cpu/web-deployment.yaml
-```
 
 "This bumps the CPU limit to 2.5 cores. Much more power!"
 
-```bash
-kubectl apply -f labs/namespaces/specs/pi/mid-cpu
-
-# Check the new Pod's resources
-kubectl describe po -l app=pi-web,cpu=mid -n pi
-```
 
 "Try the calculation again:"
 
-```bash
-curl http://localhost:30030/pi?dp=30000
-```
 
 "Much faster! On my machine, down to 1.2 seconds. That's the impact of resource allocation."
 
@@ -316,20 +197,9 @@ curl http://localhost:30030/pi?dp=30000
 
 "What happens if we try to exceed the namespace quota?"
 
-```bash
-cat labs/namespaces/specs/pi/max-cpu/web-deployment.yaml
-```
 
 "This requests 4.5 CPU cores, but our namespace quota is 4 cores total."
 
-```bash
-kubectl apply -f labs/namespaces/specs/pi/max-cpu
-
-# Check the ReplicaSet status
-kubectl -n pi get rs -l app=pi-web
-
-kubectl -n pi describe rs -l app=pi-web,cpu=max
-```
 
 "Look at the events: 'exceeded quota'. The ReplicaSet can't create the Pod because it would violate the namespace quota."
 
@@ -346,9 +216,6 @@ kubectl -n pi describe rs -l app=pi-web,cpu=max
 - The proxy must be in a namespace called 'front-end'
 - Fix any configuration errors"
 
-```bash
-cat labs/namespaces/specs/reverse-proxy/nginx.yaml
-```
 
 "This spec has:
 - Nginx deployment and service
@@ -377,21 +244,11 @@ cat labs/namespaces/specs/reverse-proxy/nginx.yaml
 
 "Namespaces make cleanup easy - just delete the namespace:"
 
-```bash
-# Delete namespaces and everything in them
-kubectl delete ns -l kubernetes.courselabs.co=namespaces
-
-# Check what's left
-kubectl get ns
-```
 
 "The labeled namespaces are gone, along with all their resources."
 
 "Don't forget the sleep Pods we created:"
 
-```bash
-kubectl delete po -A -l kubernetes.courselabs.co=namespaces
-```
 
 ### Key Takeaways
 
