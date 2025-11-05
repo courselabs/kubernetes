@@ -1,4 +1,23 @@
-# Docker Image Optimiziation
+# Container Images and Dockerfiles
+
+> 🎯 **CKAD Exam Relevance**: Container image building is a core topic in the "Application Design and Build" domain (20% of exam). You need to understand how to define, build, and modify container images using Dockerfiles.
+
+## Why Container Images Matter for CKAD
+
+As a Kubernetes developer, you need to understand container images because:
+
+- **You'll build custom application images** - Most real-world applications aren't just stock images from Docker Hub
+- **You'll modify existing images** - Adding configuration, tools, or customizing base images
+- **You'll troubleshoot image issues** - Understanding layers, caching, and build context helps debug problems
+- **You'll optimize for production** - Small, efficient images deploy faster and use fewer resources
+
+In the CKAD exam, you may need to:
+- Write or modify a Dockerfile
+- Build an image from a Dockerfile
+- Use multi-stage builds to create lean production images
+- Tag and reference images correctly in Pod/Deployment specs
+
+## Docker Image Optimization
 
 The key to optimizing Docker builds is to use the right base images, and keep your application images small with multi-stage builds. Multi-stage builds use the standard Dockerfile syntax, with multiple stages separated with `FROM` commands. They give you a repeatable build with minimal dependencies.
 
@@ -200,6 +219,166 @@ curl http://localhost:<port>
 ```
 
 > The server just prints some details about the environment and the request.
+
+## CKAD Practice: Build, Tag, and Deploy
+
+This section walks through a complete CKAD workflow: building a custom image, tagging it properly, and deploying it to Kubernetes.
+
+### Exercise 1: Build and Tag Images
+
+In CKAD scenarios, you'll often need to build an image with a specific tag. Practice the common patterns:
+
+```
+# Build with a version tag:
+docker build -t whoami:v1 ./labs/docker/whoami/
+
+# Build with multiple tags (latest + version):
+docker build -t whoami:v2 -t whoami:latest ./labs/docker/whoami/
+
+# Build and tag for a registry (e.g., for pushing):
+docker build -t myregistry.io/myapp/whoami:v1 ./labs/docker/whoami/
+```
+
+📋 Build the whoami image with three different tags: `whoami:dev`, `whoami:1.0.0`, and `whoami:1.0`.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# You can tag during build:
+docker build -t whoami:dev -t whoami:1.0.0 -t whoami:1.0 ./labs/docker/whoami/
+
+# Or tag an existing image:
+docker tag whoami:dev whoami:1.0.0
+docker tag whoami:dev whoami:1.0
+
+# Verify all tags exist:
+docker image ls whoami
+```
+
+</details><br/>
+
+### Exercise 2: Using Custom Images in Kubernetes
+
+Once you've built a custom image, you need to reference it correctly in your Kubernetes specs. Here's a deployment that uses our whoami image:
+
+📋 Create a deployment using your custom `whoami:v1` image. The spec file is in [specs/whoami-deployment.yaml](./specs/whoami-deployment.yaml).
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# Apply the deployment:
+kubectl apply -f labs/docker/specs/whoami-deployment.yaml
+
+# Check the pods are running:
+kubectl get pods -l app=whoami
+
+# Describe a pod to verify it's using your image:
+kubectl describe pod -l app=whoami | grep Image
+```
+
+</details><br/>
+
+Check the deployment is working by accessing the service:
+
+```
+# Create a service:
+kubectl apply -f labs/docker/specs/whoami-service.yaml
+
+# Get the service port:
+kubectl get svc whoami-svc
+
+# If using a NodePort service, access it:
+curl http://localhost:<nodePort>
+```
+
+### Exercise 3: Update Deployment with New Image Version
+
+A common CKAD task is updating a deployment to use a new image version:
+
+```
+# First, build a new version:
+docker build -t whoami:v2 ./labs/docker/whoami/
+
+# Update the deployment to use v2:
+kubectl set image deployment/whoami whoami=whoami:v2
+
+# Watch the rollout:
+kubectl rollout status deployment/whoami
+
+# Verify the new version is running:
+kubectl describe deployment whoami | grep Image
+```
+
+📋 Rollback the deployment to v1, then check the rollout history.
+
+<details>
+  <summary>Not sure how?</summary>
+
+```
+# Rollback to previous version:
+kubectl rollout undo deployment/whoami
+
+# Check rollout status:
+kubectl rollout status deployment/whoami
+
+# View rollout history:
+kubectl rollout history deployment/whoami
+
+# Verify we're back to v1:
+kubectl describe deployment whoami | grep Image
+```
+
+</details><br/>
+
+### Exercise 4: ImagePullPolicy and Debugging
+
+Understanding `imagePullPolicy` is crucial for CKAD:
+
+- `Always` - Always pull the image from registry (default for `latest` tag)
+- `IfNotPresent` - Use local image if available, otherwise pull
+- `Never` - Only use local image, fail if not present
+
+When using locally-built images in Kubernetes (like Kind, Minikube, Docker Desktop):
+
+```
+# For Kind, load your local image into the cluster:
+kind load docker-image whoami:v1
+
+# For Minikube:
+minikube image load whoami:v1
+
+# For Docker Desktop, images are automatically available
+
+# Then use imagePullPolicy: IfNotPresent or Never in your specs
+```
+
+Common image-related debugging commands:
+
+```
+# Check if pod is in ImagePullBackOff or ErrImagePull:
+kubectl get pods
+
+# Get detailed error information:
+kubectl describe pod <pod-name>
+
+# Check events for image pull issues:
+kubectl get events --sort-by='.lastTimestamp'
+
+# Verify image exists locally:
+docker image ls | grep whoami
+```
+
+### Key Takeaways for CKAD
+
+1. **Tagging**: Always use specific version tags (not `latest`) for production deployments
+2. **Multi-stage builds**: Create small, secure images by separating build and runtime stages
+3. **Image references**: Format is `[registry/][namespace/]name:tag`
+4. **ImagePullPolicy**: Know when to use `Always`, `IfNotPresent`, or `Never`
+5. **Troubleshooting**: Use `kubectl describe pod` to debug image pull issues
+6. **Updates**: Use `kubectl set image` or `kubectl apply` to update image versions
+7. **Rollbacks**: Know how to rollback to previous image versions
 
 ## Lab
 

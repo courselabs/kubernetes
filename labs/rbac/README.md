@@ -1,5 +1,7 @@
 # Role-Based Access Control
 
+> 🎯 **CKAD Exam Relevance**: RBAC is a core topic in the "Application Environment, Configuration and Security" domain (25% of exam). You must understand ServiceAccounts, Roles, RoleBindings, and how Pods access the Kubernetes API.
+
 Kubernetes supports fine-grained access control, so you can decide who has permission to work with resources in your cluster, and what they can do with them.
 
 There are two parts to [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/), decoupling permissions and who has the permissions - that lets you model security with a managable number of objects:
@@ -8,6 +10,18 @@ There are two parts to [RBAC](https://kubernetes.io/docs/reference/access-authn-
 - RoleBindings grant the permissions in a Role to a subject, which could be a Kubectl user or an app running in a Pod.
 
 Roles and RoleBindings apply to objects in a specific namespace; there are also ClusterRole and ClusterRoleBindings which have a similar API and secure access to objects across all namespaces.
+
+## CKAD Key Concepts
+
+For the CKAD exam, focus on these critical concepts:
+
+| Concept | Purpose | CKAD Use Case |
+|---------|---------|---------------|
+| **ServiceAccount** | Identity for Pods | Apps that need to query Kubernetes API |
+| **Role** | Define permissions in a namespace | Grant app access to ConfigMaps, Secrets |
+| **RoleBinding** | Attach Role to ServiceAccount | Connect permissions to your app's identity |
+| **ClusterRole** | Define cluster-wide permissions | Read Pods across all namespaces |
+| **ClusterRoleBinding** | Attach ClusterRole cluster-wide | Grant admin access across cluster |
 
 > **For CKAD Exam Preparation**: This lab covers the basics of RBAC with ServiceAccounts. For advanced topics including complex RBAC rules, built-in ClusterRoles, aggregation, troubleshooting, and production security patterns, see [CKAD.md](CKAD.md)
 
@@ -210,6 +224,267 @@ kubectl auth can-i delete pods -n kube-system --as system:serviceaccount:default
 The app can see Pods in other namespaces now.
 
 RBAC permissions are finely controlled. The app only has access to Pod resources - if you click the _Service Accounts_ link the app shows the 403 Forbidden error again.
+
+## Common Pod-to-API-Server Access Patterns
+
+Understanding how Pods access the Kubernetes API is critical for CKAD. Here are the most common patterns:
+
+### Pattern 1: Creating ServiceAccount for an App
+
+Quick imperative approach (fastest for exam):
+
+```
+# Create ServiceAccount
+kubectl create serviceaccount myapp-sa
+
+# Create Role with permissions
+kubectl create role myapp-role --verb=get,list --resource=pods,configmaps
+
+# Bind Role to ServiceAccount
+kubectl create rolebinding myapp-binding --role=myapp-role --serviceaccount=default:myapp-sa
+
+# Use in Pod/Deployment
+kubectl run myapp --image=myapp:v1 --serviceaccount=myapp-sa
+```
+
+### Pattern 2: Accessing ConfigMaps and Secrets
+
+Apps often need to read configuration dynamically:
+
+```
+# Create Role for config access
+kubectl create role config-reader \
+  --verb=get,list \
+  --resource=configmaps,secrets
+
+# Bind to ServiceAccount
+kubectl create rolebinding app-config-reader \
+  --role=config-reader \
+  --serviceaccount=default:myapp-sa
+```
+
+### Pattern 3: Disabling ServiceAccount Token (Security Best Practice)
+
+Most apps don't need API access. Disable the token to reduce attack surface:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-app
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - name: app
+    image: nginx
+```
+
+Or disable at ServiceAccount level:
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: no-api-access
+automountServiceAccountToken: false
+```
+
+### Pattern 4: Cross-Namespace Access
+
+Apps sometimes need to access resources in other namespaces:
+
+```
+# Create Role in target namespace
+kubectl create role reader --verb=get,list --resource=pods -n other-namespace
+
+# Bind to ServiceAccount from different namespace
+kubectl create rolebinding cross-ns-reader \
+  --role=reader \
+  --serviceaccount=default:myapp-sa \
+  -n other-namespace
+```
+
+### Key ServiceAccount Commands for CKAD
+
+```
+# Create ServiceAccount
+kubectl create serviceaccount SA_NAME
+
+# List ServiceAccounts
+kubectl get serviceaccounts
+kubectl get sa  # shorthand
+
+# Describe ServiceAccount (see secrets, tokens)
+kubectl describe sa SA_NAME
+
+# Check what a ServiceAccount can do
+kubectl auth can-i VERB RESOURCE --as system:serviceaccount:NAMESPACE:SA_NAME
+
+# Set ServiceAccount on existing deployment
+kubectl set serviceaccount deployment DEPLOY_NAME SA_NAME
+
+# Patch deployment to use ServiceAccount
+kubectl patch deployment DEPLOY_NAME -p '{"spec":{"template":{"spec":{"serviceAccountName":"SA_NAME"}}}}'
+```
+
+## RBAC Troubleshooting
+
+Troubleshooting RBAC issues is a common CKAD task. Here's how to diagnose and fix permission problems:
+
+### Symptom 1: 403 Forbidden Errors
+
+**Problem**: Pod logs show "403 Forbidden" when accessing API.
+
+**Diagnosis**:
+```
+# Check if ServiceAccount exists
+kubectl get sa myapp-sa
+
+# Check what the ServiceAccount can do
+kubectl auth can-i get pods --as system:serviceaccount:default:myapp-sa
+
+# List all roles and rolebindings
+kubectl get roles,rolebindings
+```
+
+**Solution**: Create missing Role or RoleBinding:
+```
+kubectl create role pod-reader --verb=get,list --resource=pods
+kubectl create rolebinding myapp-pod-reader --role=pod-reader --serviceaccount=default:myapp-sa
+```
+
+### Symptom 2: Pod Using Wrong ServiceAccount
+
+**Problem**: Pod doesn't have expected permissions.
+
+**Diagnosis**:
+```
+# Check which ServiceAccount the Pod is using
+kubectl get pod POD_NAME -o jsonpath='{.spec.serviceAccountName}'
+
+# Or describe the pod
+kubectl describe pod POD_NAME | grep "Service Account"
+```
+
+**Solution**: Update the Deployment to use correct ServiceAccount:
+```
+kubectl set serviceaccount deployment myapp myapp-sa
+
+# Verify change
+kubectl get deployment myapp -o jsonpath='{.spec.template.spec.serviceAccountName}'
+```
+
+### Symptom 3: Permissions Work in One Namespace but Not Another
+
+**Problem**: App can access resources in `default` but not in `production`.
+
+**Diagnosis**:
+```
+# Check permissions in both namespaces
+kubectl auth can-i get pods -n default --as system:serviceaccount:default:myapp-sa
+kubectl auth can-i get pods -n production --as system:serviceaccount:default:myapp-sa
+```
+
+**Solution Option 1**: Create Role and RoleBinding in target namespace:
+```
+kubectl create role pod-reader --verb=get,list --resource=pods -n production
+kubectl create rolebinding myapp-reader --role=pod-reader --serviceaccount=default:myapp-sa -n production
+```
+
+**Solution Option 2**: Use ClusterRole and ClusterRoleBinding for cluster-wide access:
+```
+kubectl create clusterrole pod-reader --verb=get,list --resource=pods
+kubectl create clusterrolebinding myapp-reader --clusterrole=pod-reader --serviceaccount=default:myapp-sa
+```
+
+### Symptom 4: ServiceAccount Token Not Mounted
+
+**Problem**: App can't find token at `/var/run/secrets/kubernetes.io/serviceaccount/token`.
+
+**Diagnosis**:
+```
+# Check if token mounting is disabled
+kubectl get sa myapp-sa -o jsonpath='{.automountServiceAccountToken}'
+kubectl get pod POD_NAME -o jsonpath='{.spec.automountServiceAccountToken}'
+```
+
+**Solution**: Enable token mounting (if needed):
+```yaml
+# In ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp-sa
+automountServiceAccountToken: true  # Add this line
+```
+
+Or in Pod spec:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  serviceAccountName: myapp-sa
+  automountServiceAccountToken: true  # Add this line
+```
+
+### Symptom 5: Wrong API Group in Role
+
+**Problem**: Permissions granted but still getting 403.
+
+**Diagnosis**: Check if API group matches resource type:
+```
+# List API resources and their groups
+kubectl api-resources | grep RESOURCE_NAME
+```
+
+**Common API Groups**:
+- Core resources (Pod, Service, ConfigMap, Secret): `apiGroups: [""]`
+- Deployments, StatefulSets, DaemonSets: `apiGroups: ["apps"]`
+- Jobs, CronJobs: `apiGroups: ["batch"]`
+- Ingress: `apiGroups: ["networking.k8s.io"]`
+
+**Solution**: Fix the Role with correct API group:
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployment-manager
+rules:
+- apiGroups: ["apps"]  # NOT [""] for Deployments!
+  resources: ["deployments"]
+  verbs: ["get", "list", "update"]
+```
+
+### Troubleshooting Checklist
+
+When debugging RBAC issues, check these in order:
+
+1. ✅ **ServiceAccount exists**: `kubectl get sa SA_NAME`
+2. ✅ **Pod uses correct ServiceAccount**: `kubectl describe pod POD_NAME`
+3. ✅ **Role exists with correct permissions**: `kubectl get role ROLE_NAME -o yaml`
+4. ✅ **RoleBinding connects Role to ServiceAccount**: `kubectl get rolebinding BINDING_NAME -o yaml`
+5. ✅ **Correct namespace**: Roles/RoleBindings must be in same namespace as resources
+6. ✅ **Correct API group**: Match resource type (apps, batch, networking.k8s.io, etc.)
+7. ✅ **Correct verbs**: get, list, watch, create, update, patch, delete
+8. ✅ **Use `kubectl auth can-i`**: Test permissions before deploying
+
+### Quick Reference: auth can-i
+
+```
+# Check current user permissions
+kubectl auth can-i create deployments
+
+# Check ServiceAccount permissions
+kubectl auth can-i get pods --as system:serviceaccount:NAMESPACE:SA_NAME
+
+# Check in specific namespace
+kubectl auth can-i delete pods -n production --as system:serviceaccount:default:myapp-sa
+
+# List all permissions (requires admin)
+kubectl auth can-i --list --as system:serviceaccount:default:myapp-sa
+```
 
 ## Lab
 
