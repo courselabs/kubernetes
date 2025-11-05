@@ -9,8 +9,6 @@ There are two parts to [RBAC](https://kubernetes.io/docs/reference/access-authn-
 
 Roles and RoleBindings apply to objects in a specific namespace; there are also ClusterRole and ClusterRoleBindings which have a similar API and secure access to objects across all namespaces.
 
-> **For CKAD Exam Preparation**: This lab covers the basics of RBAC with ServiceAccounts. For advanced topics including complex RBAC rules, built-in ClusterRoles, aggregation, troubleshooting, and production security patterns, see [CKAD.md](CKAD.md)
-
 ## API specs
 
 - [Role](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#role-v1-rbac-authorization-k8s-io)

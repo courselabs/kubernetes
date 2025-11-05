@@ -2,8 +2,6 @@
 
 It's difficult to work with Pod logs at scale - Kubectl doesn't let you search or filter log entries. The production-ready option is to run a central logging subsystem, which collects all Pod logs and stores them in a central database. EFK is the usual system for doing that in Kubernetes.
 
-> **For CKAD Exam Preparation**: This lab covers centralized logging with EFK. For kubectl logging commands, multi-container logging patterns, troubleshooting, and exam scenarios, see [CKAD.md](CKAD.md)
-
 ## Reference
 
 - [Kubernetes logging architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/#logging-at-the-node-level)
