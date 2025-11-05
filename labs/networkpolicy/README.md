@@ -1,5 +1,7 @@
 # Securing Traffic with Network Policies
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 Networking in Kubernetes is flat - Pods and Services have cluster-wide IP addresses and can communicate across different namespaces and nodes. 
 
 That makes it easy to model distributed applications, but it means you can't have segregated networks within the cluster or stop applications in Pods reaching outside of the cluster.

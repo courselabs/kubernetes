@@ -1,5 +1,7 @@
 # Isolating Workloads with Namespaces
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 One of the great features of Kubernetes is that you can run any type of application - many organizations are looking to migrate their whole application landscape onto Kubernetes. That could make operations difficult if there was no way to segregate the cluster so Kubernetes has [namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
 
 Namespaces are Kubernetes resources which are a container for other resources. You can use them to isolate workloads, and how you do the isolation is up to you. You may have a production cluster with a different namespace for each application, and a non-production cluster with namespaces for each environment (dev, test, UAT).

@@ -1,5 +1,7 @@
 # Scaling and Managing Pods with Deployments
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 You don't usually create Pods directly because that isn't flexible - you can't change a Pod to release application updates, and you can only scale them by manually deploying new Pods. Don't do that.
 
 Instead you'll use a [controller](https://kubernetes.io/docs/concepts/architecture/controller/) - a Kubernetes object which manages other objects. The controller you'll use most for Pods is the [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), which has features to support upgrades and scale.

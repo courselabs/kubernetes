@@ -1,5 +1,7 @@
 # Examining Nodes with Kubectl
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 Nodes are the machines in your cluster which actually run containers. Kubernetes stores information about nodes in its database and you can query it using the command line.
 
 [Kubectl](https://kubectl.docs.kubernetes.io/references/kubectl/) is the command line to work with a Kubernetes cluster. It has commands to deploy applications and work with objects. 

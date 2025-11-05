@@ -1,5 +1,7 @@
 # Ingress
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 There are two parts to Ingress:
 
 - the controller, which is a reverse proxy that receives all incoming traffic

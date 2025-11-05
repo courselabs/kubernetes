@@ -1,4 +1,6 @@
 
+
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
 # Running Replicas on Every Node with DaemonSets
 
 Most Pod controllers let the Kubernetes scheduler work out which node should run a Pod. DaemonSets are different - they run exactly one Pod on every node.

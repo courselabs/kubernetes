@@ -1,5 +1,7 @@
 # Networking Pods with Services
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 Every Pod has an IP address which other Pods in the cluster can reach, but that IP address only applies for the life of the Pod - replace the Pod and the new one will have a different IP address.
 
 [Services](https://kubernetes.io/docs/concepts/services-networking/service/) provide a consistent IP address linked to a DNS name, so you can send traffic to a name rather than an IP address. You'll always use Services for routing internal and external traffic into Pods.

@@ -1,5 +1,7 @@
 # Modelling Stability with StatefulSets
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 Kubernetes is a dynamic platform where objects are usually created in parallel and with random names. That's what happens with Pods when you create a Deployment, and it's a pattern which scales well.
 
 But some apps need a stable environment, where objects are created in a known order with fixed names. Think of a replicated system like a message queue or a database - there's often a primary node and multiple secondaries. The secondaries depend on the primary starting first and they need to know how to find it so they can sync data. That's where you use a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).

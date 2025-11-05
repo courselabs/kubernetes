@@ -1,5 +1,7 @@
 # Preparing for Production
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 It's straightforward to model your apps in Kubernetes and get them running, but there's more work to do before you get to production.
 
 Kubernetes can fix apps which have temporary failures, automatically scale up apps which are under load and add security controls around containers.

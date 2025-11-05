@@ -1,5 +1,7 @@
 # Docker Image Optimiziation
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 The key to optimizing Docker builds is to use the right base images, and keep your application images small with multi-stage builds. Multi-stage builds use the standard Dockerfile syntax, with multiple stages separated with `FROM` commands. They give you a repeatable build with minimal dependencies.
 
 Multi-stage builds are a great way to centralize your toolset - developers and build servers just need Docker and the source code, all the tools come packaged in Docker images, so everyone's using the same versions.

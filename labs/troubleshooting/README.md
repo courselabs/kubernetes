@@ -1,5 +1,7 @@
 # Troubleshooting Apps in Kubernetes
 
+🎯 **CKAD Core Topic** - Essential for CKAD exam preparation
+
 You'll spend a lot of your time in Kubectl troubleshooting problems.
 
 Kubernetes validates API specs for correctness when you deploy them, but it doesn't check that your app will actually work.

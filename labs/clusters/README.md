@@ -1,5 +1,7 @@
 # Kubernetes Clusters
 
+🔧 **Advanced (Beyond CKAD)** - Not required for CKAD certification
+
 A single-node cluster is fine for a local environment, but a real cluster will always be multi-node for high availability and scale. 
 
 In a production cluster the core Kubernetes components - called the control plane - run in dedicated nodes. You won't run any of your own app components on those nodes, so they're dedicated to Kubernetes. The control plane is usually replicated across three nodes. Then you have as many worker nodes as you need to run your apps, which could be tens or hundreds.

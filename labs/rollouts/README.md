@@ -1,5 +1,7 @@
 # Updates with Staged Rollouts
 
+📘 **CKAD Supplementary** - Helpful for CKAD, may appear on exam
+
 Pod controllers manage Pods for you - when you update the Pod spec the controller rolls out the change by removing old Pods and creating new ones. You'll do this all the time - every OS patch, library update and new feature will be an update. Depending on your app, config changes might need a rollout too.
 
 You can configure the controller to tweak how the rollout happens - you might choose a slow but safe update for a critical component. Deployment objects are the typical Pod controller, but all the controllers have rollout options.
