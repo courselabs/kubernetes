@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config
+  namespace: webapp-ns
+data:
+  APP_MODE: production
+  LOG_LEVEL: info
+  MAX_CONNECTIONS: "100"
