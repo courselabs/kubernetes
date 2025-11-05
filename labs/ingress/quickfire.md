@@ -6,85 +6,85 @@ Test your knowledge of Kubernetes Ingress with these 10 multiple-choice question
 
 ### 1. What is the primary purpose of an Ingress in Kubernetes?
 
-A) To create internal cluster networking
-B) To expose HTTP and HTTPS routes from outside the cluster to Services
-C) To replace Services entirely
-D) To provide load balancing between Pods
+A) To provide load balancing between Pods
+B) To replace Services entirely
+C) To create internal cluster networking
+D) To expose HTTP and HTTPS routes from outside the cluster to Services
 
 ### 2. What must be installed in a cluster for Ingress resources to work?
 
-A) LoadBalancer Service
-B) Ingress Controller
-C) API Gateway
+A) Ingress Controller
+B) API Gateway
+C) LoadBalancer Service
 D) DNS Server
 
 ### 3. Which field in an Ingress spec defines path-based routing rules?
 
-A) routes
-B) paths
-C) rules
-D) backends
+A) paths
+B) routes
+C) backends
+D) rules
 
 ### 4. How do you configure host-based routing in an Ingress?
 
-A) Using multiple Ingress resources
-B) Using the `host` field in the rules section
-C) Using annotations
-D) Using multiple Services
+A) Using the `host` field in the rules section
+B) Using multiple Services
+C) Using multiple Ingress resources
+D) Using annotations
 
 ### 5. What is the default Ingress class in Kubernetes?
 
 A) nginx
-B) traefik
+B) default
 C) There is no default; it must be specified or configured
-D) default
+D) traefik
 
 ### 6. How do you enable TLS/SSL termination in an Ingress?
 
-A) Configure TLS in the Service
+A) TLS is enabled by default
 B) Add a `tls` section with secretName in the Ingress spec
-C) Use a LoadBalancer Service
-D) TLS is enabled by default
+C) Configure TLS in the Service
+D) Use a LoadBalancer Service
 
 ### 7. What type of Secret is used for TLS certificates in Ingress?
 
-A) Opaque
+A) kubernetes.io/dockerconfigjson
 B) kubernetes.io/tls
-C) kubernetes.io/dockerconfigjson
-D) certificate
+C) certificate
+D) Opaque
 
 ### 8. Which path type performs exact matching of the URL path?
 
-A) Prefix
-B) Exact
+A) Match
+B) Prefix
 C) ImplementationSpecific
-D) Match
+D) Exact
 
 ### 9. How can you route traffic to different Services based on URL paths?
 
-A) Create multiple Ingress resources
-B) Use multiple `paths` entries under a rule with different backends
-C) Use multiple Services with the same selector
-D) It's not possible; use separate hosts instead
+A) Use multiple Services with the same selector
+B) It's not possible; use separate hosts instead
+C) Use multiple `paths` entries under a rule with different backends
+D) Create multiple Ingress resources
 
 ### 10. What annotation is commonly used to configure URL rewriting in Nginx Ingress?
 
 A) nginx.ingress.kubernetes.io/rewrite-target
-B) ingress.kubernetes.io/url-rewrite
+B) nginx.io/path-rewrite
 C) kubernetes.io/rewrite-path
-D) nginx.io/path-rewrite
+D) ingress.kubernetes.io/url-rewrite
 
 ---
 
 ## Answers
 
-1. **B** - Ingress exposes HTTP and HTTPS routes from outside the cluster to Services within the cluster. It provides URL-based routing, SSL termination, and name-based virtual hosting.
+1. **D** - Ingress exposes HTTP and HTTPS routes from outside the cluster to Services within the cluster. It provides URL-based routing, SSL termination, and name-based virtual hosting.
 
-2. **B** - An Ingress Controller must be installed for Ingress resources to function. Popular controllers include Nginx, Traefik, HAProxy, and cloud-provider-specific controllers.
+2. **A** - An Ingress Controller must be installed for Ingress resources to function. Popular controllers include Nginx, Traefik, HAProxy, and cloud-provider-specific controllers.
 
-3. **C** - The `rules` field defines routing rules, including hosts, paths, and backend Services. Each rule can have multiple paths pointing to different backends.
+3. **D** - The `rules` field defines routing rules, including hosts, paths, and backend Services. Each rule can have multiple paths pointing to different backends.
 
-4. **B** - Use the `host` field in the rules section to route traffic based on the HTTP Host header (e.g., app.example.com, api.example.com).
+4. **A** - Use the `host` field in the rules section to route traffic based on the HTTP Host header (e.g., app.example.com, api.example.com).
 
 5. **C** - There is no default Ingress class. You must either specify `ingressClassName` in the Ingress spec or configure a default IngressClass in the cluster.
 
@@ -92,9 +92,9 @@ D) nginx.io/path-rewrite
 
 7. **B** - TLS certificates for Ingress are stored in Secrets of type `kubernetes.io/tls`, created with `kubectl create secret tls`.
 
-8. **B** - The `Exact` pathType matches the URL path exactly. `Prefix` matches based on URL path prefix, and `ImplementationSpecific` depends on the Ingress controller.
+8. **D** - The `Exact` pathType matches the URL path exactly. `Prefix` matches based on URL path prefix, and `ImplementationSpecific` depends on the Ingress controller.
 
-9. **B** - Define multiple paths under a rule, each with a different path value and backend Service. For example, `/api` to api-service and `/web` to web-service.
+9. **C** - Define multiple paths under a rule, each with a different path value and backend Service. For example, `/api` to api-service and `/web` to web-service.
 
 10. **A** - The `nginx.ingress.kubernetes.io/rewrite-target` annotation is used to rewrite URLs before forwarding to the backend Service (e.g., `/app` → `/`).
 

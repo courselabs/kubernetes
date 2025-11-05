@@ -6,23 +6,23 @@ Test your knowledge of production-ready Kubernetes applications with these 10 mu
 
 ### 1. Which probe checks if a container is ready to accept traffic?
 
-A) Liveness probe
-B) Readiness probe
-C) Startup probe
+A) Readiness probe
+B) Startup probe
+C) Liveness probe
 D) Health probe
 
 ### 2. What happens when a liveness probe fails?
 
-A) The Pod is removed from Service endpoints
-B) The container is restarted
-C) The Pod is deleted
+A) The container is restarted
+B) The Pod is deleted
+C) The Pod is removed from Service endpoints
 D) An alert is triggered
 
 ### 3. What is the purpose of resource requests in a Pod spec?
 
 A) To limit maximum resource usage
-B) To guarantee minimum resources for scheduling decisions
-C) To monitor resource usage
+B) To monitor resource usage
+C) To guarantee minimum resources for scheduling decisions
 D) To set billing rates
 
 ### 4. What happens if a container exceeds its CPU limit?
@@ -34,65 +34,65 @@ D) Nothing, limits are only advisory
 
 ### 5. What is the purpose of a startup probe?
 
-A) To check when a container is ready for traffic
-B) To provide extra time for slow-starting containers before liveness checks
-C) To restart failed containers
+A) To provide extra time for slow-starting containers before liveness checks
+B) To restart failed containers
+C) To check when a container is ready for traffic
 D) To initialize configuration
 
 ### 6. Which metric is used by the Horizontal Pod Autoscaler (HPA) by default?
 
-A) Memory usage
-B) Network traffic
-C) CPU utilization
+A) Network traffic
+B) CPU utilization
+C) Memory usage
 D) Request count
 
 ### 7. What is a PodDisruptionBudget (PDB) used for?
 
-A) To limit resource usage
-B) To ensure a minimum number of Pods remain available during disruptions
-C) To schedule Pods on specific nodes
-D) To set cost budgets
+A) To set cost budgets
+B) To schedule Pods on specific nodes
+C) To limit resource usage
+D) To ensure a minimum number of Pods remain available during disruptions
 
 ### 8. What does setting `readinessProbe.initialDelaySeconds: 10` do?
 
-A) Delays Pod startup by 10 seconds
-B) Waits 10 seconds after container starts before first readiness check
+A) Waits 10 seconds before marking the Pod ready
+B) Delays Pod startup by 10 seconds
 C) Runs the probe every 10 seconds
-D) Waits 10 seconds before marking the Pod ready
+D) Waits 10 seconds after container starts before first readiness check
 
 ### 9. What is the recommended pattern for handling configuration in production?
 
-A) Hard-code configuration in containers
+A) Use environment variables only
 B) Use ConfigMaps and Secrets
-C) Use environment variables only
+C) Hard-code configuration in containers
 D) Store in /etc directory
 
 ### 10. What is graceful shutdown in Kubernetes?
 
-A) Immediately terminating Pods
+A) Draining nodes before shutdown
 B) Allowing Pods time to finish requests before termination using preStop hooks and terminationGracePeriodSeconds
 C) Restarting Pods slowly
-D) Draining nodes before shutdown
+D) Immediately terminating Pods
 
 ---
 
 ## Answers
 
-1. **B** - Readiness probes determine if a Pod is ready to receive traffic. Failed readiness probes remove the Pod from Service endpoints but don't restart the container.
+1. **A** - Readiness probes determine if a Pod is ready to receive traffic. Failed readiness probes remove the Pod from Service endpoints but don't restart the container.
 
-2. **B** - When a liveness probe fails, Kubernetes restarts the container (subject to the restart policy). This helps recover from deadlocks or hung states.
+2. **A** - When a liveness probe fails, Kubernetes restarts the container (subject to the restart policy). This helps recover from deadlocks or hung states.
 
-3. **B** - Resource requests guarantee minimum resources and are used by the scheduler to place Pods on nodes with sufficient capacity. They don't limit usage.
+3. **C** - Resource requests guarantee minimum resources and are used by the scheduler to place Pods on nodes with sufficient capacity. They don't limit usage.
 
 4. **B** - When a container exceeds its CPU limit, it's throttled (CPU time is restricted). Exceeding memory limits causes OOMKilled (termination).
 
-5. **B** - Startup probes provide extra time for slow-starting containers. Liveness and readiness probes don't start until the startup probe succeeds.
+5. **A** - Startup probes provide extra time for slow-starting containers. Liveness and readiness probes don't start until the startup probe succeeds.
 
-6. **C** - HPA uses CPU utilization by default. You can configure it to use memory or custom metrics from the metrics server or custom metrics APIs.
+6. **B** - HPA uses CPU utilization by default. You can configure it to use memory or custom metrics from the metrics server or custom metrics APIs.
 
-7. **B** - PodDisruptionBudgets ensure a minimum number (or percentage) of Pods remain available during voluntary disruptions like node drains or updates.
+7. **D** - PodDisruptionBudgets ensure a minimum number (or percentage) of Pods remain available during voluntary disruptions like node drains or updates.
 
-8. **B** - `initialDelaySeconds` waits the specified time after the container starts before performing the first probe. This prevents probes during startup.
+8. **D** - `initialDelaySeconds` waits the specified time after the container starts before performing the first probe. This prevents probes during startup.
 
 9. **B** - Use ConfigMaps for non-sensitive configuration and Secrets for sensitive data. This separates config from code and enables environment-specific settings.
 
