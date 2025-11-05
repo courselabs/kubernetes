@@ -3,8 +3,8 @@
 **Certified Kubernetes Application Developer (CKAD) Preparation Guide**
 
 **Exam Version**: v1.34
-**Last Updated**: 2025-11-04
-**Estimated Study Time**: 40-60 hours
+**Last Updated**: 2025-11-05
+**Estimated Study Time**: 50-65 hours (29 CKAD labs)
 
 ---
 
@@ -66,10 +66,10 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 |----------|-----|------|--------------|
 | 🎯 HIGH | `deployments/` | 90 min | Rolling updates, rollbacks, deployment strategies |
 | 🎯 HIGH | `rollouts/` | 75 min | MaxSurge, maxUnavailable, blue/green, canary deployments |
+| 🎯 HIGH | `kustomize/` | 90 min | ✅ Base/overlays, patches, environment configs, kubectl apply -k |
 | 📘 MEDIUM | `helm/` | 90 min | Helm charts, values files, releases, templating |
-| ⚠️ CRITICAL | `kustomize/` | 90 min | **MISSING - TO BE CREATED** - Base/overlays, patches |
 
-**Domain 2 Total Time**: ~5.5 hours (plus pending Kustomize lab)
+**Domain 2 Total Time**: ~5.75 hours
 
 ---
 
@@ -90,10 +90,10 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 | 🎯 HIGH | `nodes/` | 60 min | kubectl top, describe, events, cluster inspection |
 | 🎯 HIGH | `troubleshooting/` | 90 min | Debugging pods, logs, events, common issues |
 | 🎯 HIGH | `troubleshooting-2/` | 90 min | ConfigMap/Secret issues, environment variable debugging |
+| 🎯 HIGH | `api-versions/` | 60 min | ✅ kubectl api-resources, api-versions, kubectl convert, version migration |
 | 📘 MEDIUM | `pods/` | 30 min | Multi-container logging (from earlier lab) |
-| ⚠️ TODO | API Deprecations | 45 min | **MISSING - TO BE ADDED** - kubectl convert, version migration |
 
-**Domain 3 Total Time**: ~6 hours
+**Domain 3 Total Time**: ~7 hours
 
 ---
 
@@ -115,12 +115,12 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 | 🎯 HIGH | `configmaps/` | 75 min | ConfigMaps, environment variables, volume mounts, config injection |
 | 🎯 HIGH | `secrets/` | 75 min | Secrets types, creation, consumption, base64 encoding |
 | 🎯 HIGH | `namespaces/` | 75 min | ResourceQuotas, LimitRanges, namespace isolation |
+| 🎯 HIGH | `security/` | 90 min | ✅ SecurityContexts, runAsUser, capabilities, privilege escalation, fsGroup |
 | 🎯 HIGH | `productionizing/` | 45 min | Resource requests and limits (from earlier lab) |
 | 📘 MEDIUM | `rbac/` | 90 min | Roles, RoleBindings, ServiceAccounts, ClusterRoles |
 | 📘 MEDIUM | `operators/` | 60 min | Custom Resource Definitions (CRD basics only) |
-| ⚠️ CRITICAL | `security/` | 90 min | **MISSING - TO BE CREATED** - SecurityContexts, capabilities, privilege |
 
-**Domain 4 Total Time**: ~8.5 hours (plus pending Security lab)
+**Domain 4 Total Time**: ~8.5 hours
 
 ---
 
@@ -192,7 +192,7 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 **Goal**: Secure applications and configure networking
 
 1. **Day 1-2**: `rbac/` (90 min) → Authorization, service accounts
-2. **Day 2-3**: Security Lab ⚠️ (90 min) → SecurityContexts, capabilities
+2. **Day 2-3**: `security/` ✅ (90 min) → SecurityContexts, capabilities, runAsUser
 3. **Day 3-4**: `networkpolicy/` (90 min) → Network isolation
 4. **Day 4-5**: `ingress/` (90 min) → HTTP routing, TLS
 5. **Day 5-7**: `operators/` (60 min) → Custom resources (basics)
@@ -204,8 +204,8 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 ### Phase 5: Advanced Topics (Week 6) - 6 hours
 **Goal**: Cover remaining CKAD topics and practice
 
-1. **Day 1-2**: Kustomize Lab ⚠️ (90 min) → Configuration overlays
-2. **Day 2-3**: API Deprecations ⚠️ (45 min) → Version migration
+1. **Day 1-2**: `kustomize/` ✅ (90 min) → Base/overlays, configuration management
+2. **Day 2-3**: `api-versions/` ✅ (60 min) → API deprecations, kubectl convert
 3. **Day 3-4**: `troubleshooting-3/` (90 min) → Advanced scenarios
 4. **Day 4-7**: Review weak areas, practice exercises (120 min)
 
@@ -344,6 +344,9 @@ Track your progress through the required labs:
 - [ ] `namespaces/` - Resource quotas and limits
 - [ ] `jobs/` - Batch workloads
 - [ ] `docker/` - Container image building
+- [ ] `kustomize/` - ✅ Configuration management with overlays
+- [ ] `security/` - ✅ SecurityContexts and capabilities
+- [ ] `api-versions/` - ✅ API deprecations and migrations
 - [ ] `nodes/` - Cluster inspection and kubectl
 - [ ] `productionizing/` - Health checks and resource management
 
@@ -453,6 +456,22 @@ Track your progress through the required labs:
 
 ---
 
+## Repository Status
+
+**Current Coverage**: ~95% of CKAD v1.34 curriculum
+- ✅ **29 CKAD-focused labs** in `labs/` directory
+- ✅ **All 5 exam domains** covered with dedicated labs
+- ✅ **4 new CKAD.md exam guides** added (kustomize, security, api-versions, docker)
+- 📚 **5 advanced labs** in `labs-advanced/` (beyond CKAD scope)
+
+**Recent Additions (2025-11-05)**:
+- ✅ `kustomize/` - Complete lab with CKAD.md exam guide
+- ✅ `security/` - Complete lab with CKAD.md exam guide
+- ✅ `api-versions/` - Enhanced with CKAD.md exam guide
+- ✅ `docker/` - Enhanced with CKAD.md exam guide
+
+---
+
 ## Good Luck!
 
 Remember: The CKAD exam tests **practical skills**, not theoretical knowledge. The more hands-on practice you get with these labs, the better prepared you'll be. Focus on:
@@ -467,5 +486,5 @@ Remember: The CKAD exam tests **practical skills**, not theoretical knowledge. T
 
 ---
 
-*Last updated: 2025-11-04*
+*Last updated: 2025-11-05*
 *For updates and corrections, see: CKAD-LAB-ANALYSIS.md*
