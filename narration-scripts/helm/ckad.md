@@ -58,39 +58,12 @@ The exam provides you with necessary chart repositories and documentation. Your 
 Let's review the core commands you must know by heart.
 
 **Repository Management:**
-```bash
-helm repo add NAME URL          # Add repository
-helm repo update                 # Update repository indexes
-helm search repo KEYWORD         # Find charts
-helm show values CHART           # Display default values
-```
 
 **Release Management:**
-```bash
-helm install NAME CHART          # Install new release
-helm install NAME CHART --set key=value  # Install with custom value
-helm install NAME CHART -f values.yaml   # Install with values file
-helm upgrade NAME CHART          # Upgrade release
-helm upgrade NAME CHART --reuse-values   # Upgrade keeping old values
-helm rollback NAME REVISION      # Rollback to specific revision
-helm uninstall NAME              # Delete release
-```
 
 **Information:**
-```bash
-helm list                        # List releases
-helm list -A                     # List releases in all namespaces
-helm status NAME                 # Show release status
-helm history NAME                # Show revision history
-helm get values NAME             # Show values used in release
-```
 
 **Debugging:**
-```bash
-helm install NAME CHART --dry-run --debug  # Preview without installing
-helm template NAME CHART         # Render templates locally
-kubectl get all -l app.kubernetes.io/instance=NAME  # See created objects
-```
 
 Practice typing these commands until they're muscle memory.
 
@@ -105,53 +78,26 @@ The CKAD exam is time-constrained. Here are techniques to work faster with Helm.
 **Technique 1: Use --set for Single Values**
 
 Instead of creating a values file for one or two settings:
-```bash
-# Faster
-helm install myapp repo/chart --set replicas=3 --set port=8080
-
-# Slower (don't do this in exam)
-cat > values.yaml <<EOF
-replicas: 3
-port: 8080
-EOF
-helm install myapp repo/chart -f values.yaml
-```
 
 **Technique 2: Combine Multiple --set Flags**
 
 You can chain multiple --set flags in one command:
-```bash
-helm install myapp repo/chart \
-  --set service.type=NodePort \
-  --set service.nodePort=30080 \
-  --set replicaCount=2 \
-  --set image.tag=v2.0
-```
 
 **Technique 3: Use Namespace Flags**
 
 Always specify namespace in the command rather than switching contexts:
-```bash
-helm install myapp repo/chart -n production --create-namespace
-```
 
 The --create-namespace flag creates the namespace if it doesn't exist, saving you a separate kubectl command.
 
 **Technique 4: Preview Before Applying**
 
 Use --dry-run to catch errors before actually installing:
-```bash
-helm install myapp repo/chart --set replicas=3 --dry-run
-```
 
 This validates your syntax and values without modifying the cluster.
 
 **Technique 5: Quick Verification**
 
 After installing, verify quickly:
-```bash
-helm list | grep myapp && kubectl get pods -l app.kubernetes.io/instance=myapp
-```
 
 This confirms the release exists and pods are running in one line.
 
@@ -168,27 +114,6 @@ Let's walk through typical CKAD exam scenarios involving Helm.
 Task: "Install the nginx chart from the bitnami repository in the web namespace with 3 replicas on NodePort 30080."
 
 Solution approach:
-```bash
-# Add repository if not already present
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-
-# Search for chart (if unsure of exact name)
-helm search repo bitnami/nginx
-
-# Install with requirements
-helm install nginx bitnami/nginx \
-  -n web \
-  --create-namespace \
-  --set replicaCount=3 \
-  --set service.type=NodePort \
-  --set service.nodePorts.http=30080
-
-# Verify
-helm list -n web
-kubectl get pods -n web
-curl localhost:30080
-```
 
 Time to complete: 2-3 minutes
 
@@ -197,17 +122,6 @@ Time to complete: 2-3 minutes
 Task: "Upgrade the nginx release to use image tag 1.25.0 and increase replicas to 5."
 
 Solution approach:
-```bash
-# Upgrade with new values
-helm upgrade nginx bitnami/nginx \
-  -n web \
-  --reuse-values \
-  --set image.tag=1.25.0 \
-  --set replicaCount=5
-
-# Verify
-kubectl get pods -n web -l app.kubernetes.io/instance=nginx
-```
 
 Time to complete: 1 minute
 
@@ -216,28 +130,6 @@ Time to complete: 1 minute
 Task: "The prometheus release in monitoring namespace is failing. Fix it."
 
 Solution approach:
-```bash
-# Check release status
-helm list -n monitoring
-helm status prometheus -n monitoring
-
-# Check pods
-kubectl get pods -n monitoring -l app.kubernetes.io/instance=prometheus
-
-# Check logs
-kubectl logs -n monitoring -l app.kubernetes.io/instance=prometheus --tail=50
-
-# Common issues and fixes:
-# - Wrong image tag: upgrade with correct tag
-# - Port conflict: upgrade with different port
-# - Resource limits: upgrade removing limits or increasing them
-
-# Example fix for image tag issue:
-helm upgrade prometheus repo/prometheus \
-  -n monitoring \
-  --reuse-values \
-  --set image.tag=v2.45.0
-```
 
 Time to complete: 3-5 minutes depending on issue
 
@@ -246,19 +138,6 @@ Time to complete: 3-5 minutes depending on issue
 Task: "The recent upgrade to redis broke the application. Rollback to the previous working version."
 
 Solution approach:
-```bash
-# Check history
-helm history redis -n cache
-
-# Rollback to previous revision
-helm rollback redis -n cache
-
-# Or rollback to specific revision
-helm rollback redis 3 -n cache
-
-# Verify
-kubectl get pods -n cache -l app.kubernetes.io/instance=redis
-```
 
 Time to complete: 1-2 minutes
 
@@ -271,61 +150,22 @@ Time to complete: 1-2 minutes
 Quick troubleshooting workflow for Helm issues in the exam.
 
 **Step 1: Check Release Status**
-```bash
-helm list -A  # Find the release and its namespace
-helm status RELEASE -n NAMESPACE  # Check status and notes
-```
 
 **Step 2: Check Kubernetes Objects**
-```bash
-kubectl get all -n NAMESPACE -l app.kubernetes.io/instance=RELEASE
-kubectl get pods -n NAMESPACE -l app.kubernetes.io/instance=RELEASE
-```
 
 **Step 3: Check Pod Issues**
-```bash
-kubectl describe pod POD_NAME -n NAMESPACE
-kubectl logs POD_NAME -n NAMESPACE
-```
 
 **Step 4: Check Values**
-```bash
-helm get values RELEASE -n NAMESPACE  # See what values were used
-helm get manifest RELEASE -n NAMESPACE  # See actual YAML applied
-```
 
 **Common Issues and Solutions:**
 
 **Issue: Image Pull Error**
-```bash
-# Fix: Update image tag or pull policy
-helm upgrade RELEASE CHART -n NAMESPACE --reuse-values \
-  --set image.tag=correct-tag \
-  --set image.pullPolicy=IfNotPresent
-```
 
 **Issue: Port Conflict**
-```bash
-# Fix: Change port
-helm upgrade RELEASE CHART -n NAMESPACE --reuse-values \
-  --set service.nodePort=30081
-```
 
 **Issue: Insufficient Resources**
-```bash
-# Fix: Reduce resource requests
-helm upgrade RELEASE CHART -n NAMESPACE --reuse-values \
-  --set resources.requests.memory=128Mi \
-  --set resources.requests.cpu=100m
-```
 
 **Issue: Wrong Configuration**
-```bash
-# Fix: Rollback or upgrade with correct values
-helm rollback RELEASE -n NAMESPACE
-# OR
-helm upgrade RELEASE CHART -n NAMESPACE --reuse-values --set correct.value=true
-```
 
 ---
 
@@ -341,33 +181,8 @@ Sometimes the exam provides a values file or asks you to use one.
 - Values file provided in the question
 
 **Quick Values File Creation:**
-```bash
-# Create values file from command line
-cat > my-values.yaml <<EOF
-replicaCount: 3
-service:
-  type: NodePort
-  nodePort: 30080
-image:
-  tag: v2.0
-resources:
-  requests:
-    cpu: 100m
-    memory: 128Mi
-EOF
-
-# Install with values file
-helm install myapp repo/chart -f my-values.yaml -n namespace
-```
 
 **Combining Values Files and --set:**
-```bash
-# Values file for base configuration, --set for overrides
-helm install myapp repo/chart \
-  -f base-values.yaml \
-  --set environment=production \
-  -n prod
-```
 
 The --set flags override values from files, allowing you to have a base configuration file and environment-specific overrides.
 
@@ -392,27 +207,6 @@ Deploy a PostgreSQL database using Helm with these requirements:
 **Start timing now...**
 
 **Solution:**
-```bash
-# Add repo if needed
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-
-# Install
-helm install db bitnami/postgresql \
-  -n database \
-  --create-namespace \
-  --set auth.postgresPassword=mypassword \
-  --set primary.persistence.enabled=false \
-  --set replicaCount=1
-
-# Verify
-helm list -n database
-kubectl get pods -n database -l app.kubernetes.io/instance=db
-
-# Cleanup
-helm uninstall db -n database
-kubectl delete namespace database
-```
 
 How did you do? If you completed it in under 3 minutes, excellent! If not, practice until you can.
 
@@ -426,23 +220,6 @@ How did you do? If you completed it in under 3 minutes, excellent! If not, pract
 A release named "webapp" in namespace "production" was upgraded and now pods are failing. Rollback to the previous working version.
 
 **Solution workflow:**
-```bash
-# Check status
-helm list -n production
-helm status webapp -n production
-
-# Check pods
-kubectl get pods -n production -l app.kubernetes.io/instance=webapp
-
-# View history
-helm history webapp -n production
-
-# Rollback
-helm rollback webapp -n production
-
-# Verify
-kubectl get pods -n production -l app.kubernetes.io/instance=webapp -w
-```
 
 This should take about 1-2 minutes. Practice until it's automatic.
 

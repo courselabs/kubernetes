@@ -23,14 +23,6 @@
 - Debugging is often required"
 
 **Setup:**
-```bash
-alias k=kubectl
-export do="--dry-run=client -o yaml"
-
-# Quick reference
-k explain pod.spec.securityContext
-k explain pod.spec.containers.securityContext
-```
 
 ---
 
@@ -41,31 +33,10 @@ k explain pod.spec.containers.securityContext
 "The most common exam requirement: make a Pod run as non-root."
 
 **Quick YAML snippet to memorize:**
-```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-```
 
 "Two lines. That's it. Memorize this exact format."
 
 **Where to place it:**
-
-```yaml
-# Pod level (applies to all containers)
-spec:
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-
-# OR Container level (applies to one container)
-spec:
-  containers:
-  - name: app
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-```
 
 **Exam tip:** "If the question doesn't specify, use Pod level - it's safer and affects all containers."
 
@@ -74,47 +45,14 @@ spec:
 "Second most common: read-only filesystem with /tmp volume."
 
 **Memorize this pattern:**
-```yaml
-spec:
-  containers:
-  - name: app
-    image: nginx
-    securityContext:
-      readOnlyRootFilesystem: true
-    volumeMounts:
-    - name: tmp
-      mountPath: /tmp
-  volumes:
-  - name: tmp
-    emptyDir: {}
-```
 
 **Fast typing tip:**
-```bash
-# Start with imperative, then edit
-k run app --image=nginx $do > pod.yaml
-
-# Edit pod.yaml to add security context and volume
-```
 
 ### Pattern 3: Drop All Capabilities (3:30 - 4:30)
 
 "Third pattern: minimal capabilities."
 
-```yaml
-securityContext:
-  capabilities:
-    drop: ["ALL"]
-```
-
 "Or if you need to bind to port 80:"
-
-```yaml
-securityContext:
-  capabilities:
-    drop: ["ALL"]
-    add: ["NET_BIND_SERVICE"]
-```
 
 **Exam scenario:** "Configure nginx to run on port 80 as non-root user."
 
@@ -129,20 +67,6 @@ securityContext:
 
 "The gold standard - memorize this for any 'make it secure' question:"
 
-```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 3000
-  fsGroup: 2000
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop: ["ALL"]
-  seccompProfile:
-    type: RuntimeDefault
-```
-
 "Practice typing this from memory. You should be able to write it in under 60 seconds."
 
 ---
@@ -155,33 +79,9 @@ securityContext:
 
 **Fastest approach:**
 
-```bash
-# Get the deployment YAML
-k get deployment webapp -o yaml > deploy.yaml
-
-# Edit the file - add security context
-# Find spec.template.spec and add:
-#   securityContext:
-#     runAsUser: 1000
-#     runAsNonRoot: true
-
-# Apply changes
-k apply -f deploy.yaml
-
-# Or use kubectl edit (if comfortable with vi)
-k edit deployment webapp
-```
-
 **Time-saving edit technique:**
 
-In vi, search for `spec:` under template:
-```
-/template
-/spec:
-o  securityContext:
-    runAsUser: 1000
-    runAsNonRoot: true
-```
+In vi, search for  under template:
 
 "Two minutes max for this task if you're practiced."
 
@@ -191,44 +91,17 @@ o  securityContext:
 
 **Systematic debugging:**
 
-```bash
-# 1. Check Pod status
-k get pods
-
-# 2. Describe the Pod
-k describe pod failing-pod
-
-# Look for these error patterns:
-# - "container has runAsNonRoot and image will run as root"
-# - "Error: failed to create containerd task: ... executable file not found"
-# - "CreateContainerConfigError"
-```
-
 **Common issues and fixes:**
 
 **Issue 1: Image runs as root, runAsNonRoot is true**
-```
-Error: container has runAsNonRoot and image will run as root
-```
 
 Fix: Add runAsUser
-```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000  # Add this
-```
 
 **Issue 2: Read-only filesystem, app needs /tmp**
-```
-Error: Read-only file system
-```
 
 Fix: Add emptyDir volume for /tmp
 
 **Issue 3: Can't bind to port 80**
-```
-Error: permission denied
-```
 
 Fix: Add NET_BIND_SERVICE capability
 
@@ -276,15 +149,6 @@ Fix: Add NET_BIND_SERVICE capability
 - seccompProfile
 
 **Override behavior:**
-```yaml
-spec:
-  securityContext:
-    runAsUser: 1000  # Pod default
-  containers:
-  - name: app
-    securityContext:
-      runAsUser: 2000  # This overrides for this container
-```
 
 ### Capabilities Quick Reference (11:00 - 12:00)
 
@@ -299,11 +163,6 @@ spec:
 | DAC_OVERRIDE | Override file permissions |
 
 **Syntax (memorize exactly):**
-```yaml
-capabilities:
-  drop: ["ALL"]
-  add: ["NET_BIND_SERVICE"]
-```
 
 "Note: capabilities is an array, even for one item!"
 
@@ -324,18 +183,6 @@ capabilities:
 - Log directory if logging to filesystem
 
 **Quick addition:**
-```yaml
-volumeMounts:
-- name: cache
-  mountPath: /var/cache/nginx
-- name: run
-  mountPath: /var/run
-volumes:
-- name: cache
-  emptyDir: {}
-- name: run
-  emptyDir: {}
-```
 
 ### User and Group IDs (13:00 - 14:00)
 
@@ -349,13 +196,6 @@ volumes:
 | node | 1000 | node user |
 
 **How to find the user in an image:**
-```bash
-# Run container and check
-k run test --image=nginx --rm -it -- id
-
-# Or check the Dockerfile
-docker history nginx:latest
-```
 
 "In the exam, if the question doesn't specify a user ID, 1000 is safe for most cases."
 
@@ -368,44 +208,14 @@ docker history nginx:latest
 "Create reusable snippets before the exam."
 
 **Basic non-root template:**
-```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  allowPrivilegeEscalation: false
-```
 
 **Read-only template:**
-```yaml
-securityContext:
-  readOnlyRootFilesystem: true
-volumeMounts:
-- name: tmp
-  mountPath: /tmp
----
-volumes:
-- name: tmp
-  emptyDir: {}
-```
 
 **Store these in a practice document. During the exam, you can reference your notes (if allowed) or have them memorized.**
 
 ### Technique 2: kubectl explain (15:00 - 16:00)
 
 "kubectl explain is your friend in the exam:"
-
-```bash
-# Show all security context fields
-k explain pod.spec.securityContext
-k explain pod.spec.containers.securityContext
-
-# Get field details
-k explain pod.spec.securityContext.runAsUser
-k explain pod.spec.containers.securityContext.capabilities
-
-# Show structure
-k explain pod.spec.securityContext --recursive
-```
 
 "Don't waste time memorizing every field. Use explain to verify syntax during the exam."
 
@@ -414,23 +224,8 @@ k explain pod.spec.securityContext --recursive
 "You don't always need complete YAML files."
 
 **kubectl patch for quick changes:**
-```bash
-# Add security context to deployment
-k patch deployment webapp --type=json -p='[
-  {
-    "op": "add",
-    "path": "/spec/template/spec/securityContext",
-    "value": {"runAsUser": 1000, "runAsNonRoot": true}
-  }
-]'
-```
 
 **Or use kubectl set (for supported fields):**
-```bash
-# Set image and edit security after
-k set image deployment/webapp nginx=nginx:1.21
-k edit deployment webapp  # Add security context
-```
 
 "Patch is fast but error-prone. Edit is slower but more forgiving. Choose based on your comfort level."
 
@@ -449,32 +244,6 @@ k edit deployment webapp  # Add security context
 <details>
 <summary>Solution</summary>
 
-```bash
-k edit deployment webapp
-
-# Add under spec.template.spec:
-#   securityContext:
-#     runAsUser: 1000
-#     runAsNonRoot: true
-#     allowPrivilegeEscalation: false
-
-# Or use kubectl patch:
-k patch deployment webapp --type=json -p='[
-  {
-    "op": "add",
-    "path": "/spec/template/spec/securityContext",
-    "value": {
-      "runAsUser": 1000,
-      "runAsNonRoot": true,
-      "allowPrivilegeEscalation": false
-    }
-  }
-]'
-
-# Verify
-k get pods
-k exec <pod-name> -- id
-```
 </details>
 
 ### Exercise 2: Read-Only Filesystem (18:00 - 19:30)
@@ -491,40 +260,6 @@ k exec <pod-name> -- id
 <details>
 <summary>Solution</summary>
 
-```bash
-cat << EOF | k apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: secure-app
-spec:
-  securityContext:
-    runAsUser: 101
-    runAsNonRoot: true
-  containers:
-  - name: nginx
-    image: nginx:alpine
-    securityContext:
-      readOnlyRootFilesystem: true
-      allowPrivilegeEscalation: false
-    volumeMounts:
-    - name: tmp
-      mountPath: /tmp
-    - name: cache
-      mountPath: /var/cache/nginx
-  volumes:
-  - name: tmp
-    emptyDir: {}
-  - name: cache
-    emptyDir: {}
-EOF
-
-# Verify
-k get pod secure-app
-k exec secure-app -- id
-k exec secure-app -- touch /tmp/test
-k exec secure-app -- touch /root/test  # Should fail
-```
 </details>
 
 ### Exercise 3: Capabilities Management (19:30 - 21:00)
@@ -542,41 +277,6 @@ k exec secure-app -- touch /root/test  # Should fail
 <details>
 <summary>Solution</summary>
 
-```bash
-cat << EOF | k apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-server
-spec:
-  securityContext:
-    runAsUser: 101
-    runAsNonRoot: true
-  containers:
-  - name: nginx
-    image: nginx
-    securityContext:
-      readOnlyRootFilesystem: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop: ["ALL"]
-        add: ["NET_BIND_SERVICE"]
-    volumeMounts:
-    - name: cache
-      mountPath: /var/cache/nginx
-    - name: run
-      mountPath: /var/run
-  volumes:
-  - name: cache
-    emptyDir: {}
-  - name: run
-    emptyDir: {}
-EOF
-
-# Test
-k get pod web-server
-k exec web-server -- curl -s localhost
-```
 </details>
 
 ### Exercise 4: Debug Security Failure (21:00 - 22:30)
@@ -584,22 +284,6 @@ k exec web-server -- curl -s localhost
 "Timed exercise - 3 minutes:"
 
 **Setup:**
-```bash
-cat << EOF | k apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: broken-pod
-spec:
-  securityContext:
-    runAsNonRoot: true
-  containers:
-  - name: nginx
-    image: nginx
-    securityContext:
-      readOnlyRootFilesystem: true
-EOF
-```
 
 **Task:** "This Pod won't start. Debug and fix it."
 
@@ -608,47 +292,6 @@ EOF
 <details>
 <summary>Solution</summary>
 
-```bash
-# Debug
-k get pods
-k describe pod broken-pod
-
-# Issues found:
-# 1. runAsNonRoot but no runAsUser (nginx image defaults to root)
-# 2. readOnlyRootFilesystem but no volumes for nginx
-
-# Fix
-k delete pod broken-pod
-
-cat << EOF | k apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: broken-pod
-spec:
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 101  # Added
-  containers:
-  - name: nginx
-    image: nginx
-    securityContext:
-      readOnlyRootFilesystem: true
-    volumeMounts:  # Added
-    - name: cache
-      mountPath: /var/cache/nginx
-    - name: run
-      mountPath: /var/run
-  volumes:  # Added
-  - name: cache
-    emptyDir: {}
-  - name: run
-    emptyDir: {}
-EOF
-
-# Verify
-k get pod broken-pod
-```
 </details>
 
 ### Exercise 5: Complete Secure Deployment (22:30 - 23:00)
@@ -683,21 +326,6 @@ k get pod broken-pod
 
 "After making security changes, always verify:"
 
-```bash
-# 1. Pod is running
-k get pods
-
-# 2. Check user
-k exec <pod> -- id
-
-# 3. Test write operations
-k exec <pod> -- touch /tmp/test  # Should work if volume
-k exec <pod> -- touch /root/test  # Should fail if read-only
-
-# 4. Check application works
-k exec <pod> -- curl localhost  # For web apps
-```
-
 "These four checks take 30 seconds and prevent mistakes."
 
 ### Common Exam Mistakes (24:15 - 25:00)
@@ -731,21 +359,6 @@ k exec <pod> -- curl localhost  # For web apps
 - [ ] Verify Pods actually work after changes (30 seconds)
 
 ### Key Syntax to Memorize
-
-```yaml
-# Complete secure template
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  fsGroup: 2000
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop: ["ALL"]
-    add: ["NET_BIND_SERVICE"]
-  seccompProfile:
-    type: RuntimeDefault
-```
 
 "Practice writing this until you can do it perfectly in 60 seconds."
 

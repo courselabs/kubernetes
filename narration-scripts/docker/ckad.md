@@ -6,7 +6,7 @@
 
 CKAD "Application Design and Build" domain (20%) includes container image creation.
 
-Exam tasks:
+Exam tasks include:
 - Write or modify a Dockerfile
 - Build an image from Dockerfile
 - Use multi-stage builds
@@ -14,216 +14,70 @@ Exam tasks:
 - Reference images in Pod/Deployment specs
 - Troubleshoot image pull issues
 
-Essential commands:
-```bash
-docker build -t name:tag .
-docker tag source target
-docker image ls
-kubectl set image deployment/app container=image:tag
-```
+Essential commands are docker build with tag, docker tag for creating additional tags, docker image ls to list images, and kubectl set image to update deployments.
 
 ### Section 2: Quick Dockerfile Patterns (3 min)
 **[02:00-05:00]**
 
-**Basic Dockerfile**:
-```dockerfile
-FROM node:16-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 3000
-CMD ["node", "server.js"]
-```
+A basic Dockerfile starts with a FROM instruction for the base image, sets a WORKDIR, copies package files, runs npm install or similar dependency installation, copies the application code, exposes a port, and sets the CMD to run the application.
 
-**Multi-stage (Go)**:
-```dockerfile
-FROM golang:1.16 AS builder
-WORKDIR /app
-COPY go.* ./
-RUN go mod download
-COPY . .
-RUN go build -o app
+For multi-stage builds in Go, the first stage uses golang as builder, copies dependencies, downloads modules, copies source code, and builds the binary. The second stage uses a minimal alpine image, copies only the compiled binary from the builder stage, and sets the CMD to run it. This produces much smaller final images.
 
-FROM alpine:3.14
-COPY --from=builder /app/app /app
-CMD ["/app"]
-```
-
-**Multi-stage (Node)**:
-```dockerfile
-FROM node:16 AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:16-alpine
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-CMD ["node", "dist/server.js"]
-```
+For multi-stage builds in Node, the builder stage installs dependencies and builds the application. The final stage uses a smaller alpine image, copies only the built artifacts and production dependencies from the builder, then runs the application. This avoids including development dependencies and build tools in the final image.
 
 ### Section 3: Build and Tag Efficiently (3 min)
 **[05:00-08:00]**
 
-Build with tag:
-```bash
-docker build -t myapp:v1.0.0 .
-```
+Build with tag using docker build -t with your image name and version.
 
-Multiple tags:
-```bash
-docker build -t myapp:v1.0.0 -t myapp:v1.0 -t myapp:latest .
-```
+You can apply multiple tags in a single build command by adding multiple -t flags for each tag like v1.0.0, v1.0, and latest.
 
-Tag existing image:
-```bash
-docker tag myapp:v1.0.0 registry.io/team/myapp:v1.0.0
-```
+Tag an existing image using docker tag with the source and target names. This is useful for adding registry prefixes or additional version tags.
 
-Quick patterns:
-```bash
-# Build from specific directory
-docker build -t app:v1 ./path/to/context
+Quick patterns include: Build from a specific directory by providing the path. Build with a specific Dockerfile using the -f flag. Build a specific stage from a multi-stage Dockerfile using the --target flag.
 
-# Build with specific Dockerfile
-docker build -t app:v1 -f Dockerfile.prod .
-
-# Build specific stage
-docker build -t app:test --target test .
-```
-
-Time-saving: Use dry-run for Kubernetes specs:
-```bash
-kubectl create deployment app --image=myapp:v1 --dry-run=client -o yaml > app.yaml
-```
+Time-saving tip: Use dry-run with kubectl create deployment to generate YAML templates with your image already specified.
 
 ### Section 4: Using Images in Kubernetes (3 min)
 **[08:00-11:00]**
 
-Image reference in Pod:
-```yaml
-spec:
-  containers:
-  - name: app
-    image: myapp:v1.0.0
-    imagePullPolicy: IfNotPresent
-```
+In the Pod spec, containers have an image field with your image name and tag, and an imagePullPolicy.
 
-ImagePullPolicy decision:
-- `:latest` tag → Always
-- Specific version → IfNotPresent
-- Local image only → Never
+ImagePullPolicy decision tree: If using the latest tag, use Always to always pull. For specific versions, use IfNotPresent to only pull if not cached. For local images only, use Never.
 
-Update image imperatively:
-```bash
-kubectl set image deployment/app app=myapp:v2.0.0
-kubectl rollout status deployment/app
-```
+Update images imperatively using kubectl set image on the deployment, then check rollout status to verify the update.
 
-Check current image:
-```bash
-kubectl describe deployment app | grep Image
-kubectl get deployment app -o jsonpath='{.spec.template.spec.containers[0].image}'
-```
+Check the current image by describing the deployment and grepping for Image, or use jsonpath to extract the container image field directly.
 
 ### Section 5: Troubleshooting Image Issues (3 min)
 **[11:00-14:00]**
 
-**ImagePullBackOff**:
-```bash
-kubectl get pods  # See ImagePullBackOff
-kubectl describe pod <name>  # Check events
-```
+ImagePullBackOff means the image cannot be pulled. Get pods to see the status, then describe the pod to check events for the specific error.
 
-Common causes:
-1. Wrong image name/tag
-2. Image doesn't exist in registry
-3. Missing registry credentials
-4. Network/registry issues
+Common causes include: Wrong image name or tag, image doesn't exist in the registry, missing registry credentials, or network/registry issues.
 
-Fixes:
-```bash
-# Verify image name
-docker image ls | grep myapp
+Fixes include: Verify the image name using docker image ls. Check if pull secrets exist and describe them to verify configuration. Fix the image reference using kubectl set image with the correct name and tag.
 
-# Check pull secret
-kubectl get secrets
-kubectl describe secret regcred
-
-# Fix image reference
-kubectl set image deployment/app app=correct-image:tag
-```
-
-**ErrImagePull** vs **ImagePullBackOff**:
-- ErrImagePull: First attempt failed
-- ImagePullBackOff: Multiple failures, backing off
+ErrImagePull versus ImagePullBackOff: ErrImagePull means the first attempt failed. ImagePullBackOff means multiple failures have occurred and Kubernetes is backing off before retrying.
 
 ### Section 6: Exam Scenarios (3 min)
 **[14:00-17:00]**
 
-**Scenario 1**: Build and deploy
-```bash
-# Build image
-docker build -t webapp:v1 ./app
+Scenario 1: Build and deploy. Build the image with docker build and tag, create the deployment referencing that image with kubectl create, then expose it as a service.
 
-# Create deployment
-kubectl create deployment webapp --image=webapp:v1 --replicas=3
+Complete this in under 3 minutes.
 
-# Expose
-kubectl expose deployment webapp --port=80 --target-port=8080
-```
+Scenario 2: Update Dockerfile and rebuild. Edit the Dockerfile, rebuild with a new tag like v2, update the deployment with kubectl set image, then check rollout status to verify.
 
-Time: <3 minutes
-
-**Scenario 2**: Update Dockerfile and rebuild
-```bash
-# Edit Dockerfile
-vi Dockerfile
-
-# Rebuild with new tag
-docker build -t webapp:v2 .
-
-# Update deployment
-kubectl set image deployment/webapp webapp=webapp:v2
-kubectl rollout status deployment/webapp
-```
-
-**Scenario 3**: Fix ImagePullBackOff
-```bash
-kubectl describe pod <name>  # Read error
-# Fix image reference
-kubectl edit deployment webapp
-# or
-kubectl set image deployment/webapp webapp=correct:tag
-```
+Scenario 3: Fix ImagePullBackOff. Describe the pod to read the error message, then fix the image reference either by editing the deployment or using kubectl set image with the correct tag.
 
 ### Section 7: Exam Tips (2 min)
 **[17:00-19:00]**
 
-**Speed tips**:
-1. Use imperative commands to generate YAML
-2. Know common Dockerfile patterns by heart
-3. Practice typing `docker build` commands
-4. Use describe for troubleshooting quickly
+Speed tips: Use imperative commands to generate YAML. Know common Dockerfile patterns by heart. Practice typing docker build commands quickly. Use describe for troubleshooting efficiently.
 
-**Common mistakes**:
-- Typo in image name/tag
-- Wrong build context path
-- Forgetting to specify tag (defaults to latest)
-- Using `Always` pull policy with local images
-- Not checking if build succeeded
+Common mistakes include: Typos in image name or tag, wrong build context path, forgetting to specify a tag which defaults to latest, using Always pull policy with local images, and not checking if the build succeeded before proceeding.
 
-**Checklist**:
-- [ ] Can write basic Dockerfile
-- [ ] Can write multi-stage Dockerfile
-- [ ] Know docker build -t syntax
-- [ ] Can tag images multiple ways
-- [ ] Know imagePullPolicy options
-- [ ] Can update deployment image
-- [ ] Can troubleshoot ImagePullBackOff
+Checklist: Can you write a basic Dockerfile? Can you write a multi-stage Dockerfile? Do you know docker build -t syntax? Can you tag images multiple ways? Do you know imagePullPolicy options? Can you update deployment images? Can you troubleshoot ImagePullBackOff?
 
-Practice until these operations take <3 minutes each.
+Practice until these operations take less than 3 minutes each.

@@ -38,30 +38,12 @@ Let's get started.
 In the exam, speed matters. Here are the commands you'll use most:
 
 **Listing Resources**:
-```bash
-kubectl get pv                    # List PersistentVolumes (cluster-scoped)
-kubectl get pvc                   # List PersistentVolumeClaims (namespaced)
-kubectl get sc                    # List StorageClasses
-kubectl get pvc,pv                # List both together
-```
 
 **Troubleshooting**:
-```bash
-kubectl describe pvc <name>       # Most important for debugging
-kubectl describe pv <name>        # Check PV status and events
-kubectl describe pod <name>       # Check volume mounting issues
-```
 
 **Verification**:
-```bash
-kubectl exec <pod> -- df -h              # Check mounted filesystems
-kubectl exec <pod> -- ls -la /mountpath  # Verify files in volume
-```
 
 **Deletion**:
-```bash
-kubectl delete pvc <name>         # Delete PVC (may delete PV too)
-```
 
 **[2:30-3:30] Access Modes - Critical for CKAD**
 
@@ -99,58 +81,13 @@ Let's tackle this together with exam timing in mind. Start your timer now.
 
 The fastest approach is using kubectl apply with a heredoc:
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: app-storage
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
-EOF
-```
-
 Immediately check the status:
-
-```bash
-kubectl get pvc app-storage
-```
 
 You should see it either "Bound" or "Pending." If Pending, that's often okay—some provisioners wait for a Pod to claim it.
 
 **Step 2: Create the Pod** (90 seconds)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-pod
-spec:
-  containers:
-  - name: app
-    image: nginx:alpine
-    volumeMounts:
-    - name: data
-      mountPath: /data
-  volumes:
-  - name: data
-    persistentVolumeClaim:
-      claimName: app-storage
-EOF
-```
-
 **Step 3: Verify** (30 seconds)
-
-```bash
-kubectl get pod app-pod           # Should be Running
-kubectl get pvc app-storage       # Should be Bound
-kubectl exec app-pod -- df -h /data  # Verify mount
-```
 
 **[5:30-7:30] Exam Technique Analysis**
 
@@ -185,46 +122,7 @@ This tests multi-container Pods and volume sharing—a common exam pattern. Time
 
 **[8:00-10:00] Solution with Commentary**
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: shared-volume-pod
-spec:
-  volumes:
-  - name: shared-data
-    emptyDir: {}
-  containers:
-  - name: writer
-    image: busybox
-    command: ["/bin/sh", "-c"]
-    args:
-      - while true; do
-          echo "\$(date) - Log entry" >> /data/app.log;
-          sleep 5;
-        done
-    volumeMounts:
-    - name: shared-data
-      mountPath: /data
-  - name: reader
-    image: busybox
-    command: ["/bin/sh", "-c"]
-    args:
-      - tail -f /data/app.log
-    volumeMounts:
-    - name: shared-data
-      mountPath: /data
-EOF
-```
-
 **Verification**:
-
-```bash
-kubectl wait --for=condition=Ready pod/shared-volume-pod
-kubectl logs shared-volume-pod -c writer    # See write activity
-kubectl logs shared-volume-pod -c reader    # See tail output
-```
 
 **[10:00-11:30] Key Learning Points**
 
@@ -239,7 +137,7 @@ kubectl logs shared-volume-pod -c reader    # See tail output
 - Demonstrates volume sharing within a Pod
 - Common pattern: sidecar containers for logging, metrics, or proxying
 
-**Gotcha**: In the command and args syntax, remember to escape the dollar sign: `\$(date)` not `$(date)`, otherwise the date is evaluated when the YAML is created, not when the container runs.
+**Gotcha**: In the command and args syntax, remember to escape the dollar sign:  not , otherwise the date is evaluated when the YAML is created, not when the container runs.
 
 **Speed tip**: Practice writing multi-container Pod specs. They're longer but follow predictable patterns. If you have this memorized, you can type it in 2-3 minutes.
 
@@ -255,10 +153,6 @@ kubectl logs shared-volume-pod -c reader    # See tail output
 
 You find this Pod already exists:
 
-```bash
-kubectl get pod broken-pod    # ContainerCreating for a long time
-```
-
 **Time Target**: 3-4 minutes
 **Points**: 4%
 
@@ -268,48 +162,17 @@ This is a troubleshooting scenario. Timer starts now.
 
 **Step 1: Check the Pod** (30 seconds)
 
-```bash
-kubectl describe pod broken-pod
-```
-
 Look at the Events section at the bottom. You'll likely see:
-```
-Warning  FailedMount  persistentvolumeclaim "missing-pvc" not found
-```
 
 This is the most common PVC issue in the exam—the PVC doesn't exist.
 
 **Step 2: Check what PVC the Pod expects** (20 seconds)
 
-```bash
-kubectl get pod broken-pod -o yaml | grep -A 3 volumes
-```
-
 Or from the describe output, note the PVC name: "missing-pvc"
 
 **Step 3: Create the missing PVC** (90 seconds)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: missing-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
-EOF
-```
-
 **Step 4: Verify** (30 seconds)
-
-```bash
-kubectl get pvc missing-pvc     # Should be Bound
-kubectl get pod broken-pod      # Should become Running
-```
 
 If the Pod doesn't recover automatically, you might need to delete and recreate it (depends on how long it was stuck).
 
@@ -324,22 +187,6 @@ If the Pod doesn't recover automatically, you might need to delete and recreate 
 5. **Wrong namespace**: PVCs are namespaced; ensure you're in the right namespace
 
 **Troubleshooting workflow:**
-```bash
-# 1. Check Pod events
-kubectl describe pod <name>
-
-# 2. Check PVC status
-kubectl get pvc
-
-# 3. Check PVC details if it exists
-kubectl describe pvc <name>
-
-# 4. Check StorageClass
-kubectl get sc
-
-# 5. Check for namespace issues
-kubectl get pvc -A | grep <pvc-name>
-```
 
 **Time-saving tip**: The describe command is your best friend. 80% of issues are visible in the Events section. Don't waste time checking logs or exec-ing into containers when the issue is at the infrastructure level.
 
@@ -369,89 +216,13 @@ This tests multiple volume types—a realistic exam scenario. Start your timer.
 
 **Step 1: Create the ConfigMap** (45 seconds)
 
-```bash
-kubectl create configmap app-config \
-  --from-literal='config.json={"database": "/data/db", "cache": "/cache"}'
-```
-
 Alternatively:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: app-config
-data:
-  config.json: |
-    {
-      "database": "/data/db",
-      "cache": "/cache",
-      "logs": "/logs"
-    }
-EOF
-```
 
 **Step 2: Create the PVC** (45 seconds)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: db-storage
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-EOF
-```
-
 **Step 3: Create the Pod** (3 minutes)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: multi-volume-app
-spec:
-  containers:
-  - name: app
-    image: busybox
-    command: ["/bin/sh", "-c", "sleep 3600"]
-    volumeMounts:
-    - name: persistent-data
-      mountPath: /data
-    - name: cache-data
-      mountPath: /cache
-    - name: logs
-      mountPath: /logs
-    - name: config
-      mountPath: /config
-  volumes:
-  - name: persistent-data
-    persistentVolumeClaim:
-      claimName: db-storage
-  - name: cache-data
-    emptyDir: {}
-  - name: logs
-    emptyDir: {}
-  - name: config
-    configMap:
-      name: app-config
-EOF
-```
-
 **Step 4: Verify** (30 seconds)
-
-```bash
-kubectl get pod multi-volume-app
-kubectl exec multi-volume-app -- df -h
-kubectl exec multi-volume-app -- cat /config/config.json
-```
 
 **[18:00-19:00] Key Exam Techniques**
 
@@ -467,14 +238,6 @@ kubectl exec multi-volume-app -- cat /config/config.json
 - Volume definitions match the volume type (pvc, emptyDir, configMap)
 
 **Pattern to memorize:**
-```yaml
-volumeMounts:          # In container spec
-  - name: my-vol
-    mountPath: /path
-volumes:              # In Pod spec
-  - name: my-vol      # Names must match
-    <volume-type>:    # pvc, emptyDir, configMap, secret, etc.
-```
 
 ---
 
@@ -495,87 +258,13 @@ This explicitly tests your understanding of PVC lifecycle. Timer starts.
 
 **Step 1: Create PVC and Writer Pod** (2 minutes)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: persistent-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: writer-pod
-spec:
-  containers:
-  - name: writer
-    image: busybox
-    command: ["/bin/sh", "-c"]
-    args:
-      - echo "Important data: \$(date)" > /data/important.txt &&
-        cat /data/important.txt &&
-        sleep 3600
-    volumeMounts:
-    - name: data
-      mountPath: /data
-  volumes:
-  - name: data
-    persistentVolumeClaim:
-      claimName: persistent-data
-EOF
-```
-
 **Step 2: Verify data was written** (20 seconds)
-
-```bash
-kubectl wait --for=condition=Ready pod/writer-pod
-sleep 2
-kubectl logs writer-pod    # Should show the date that was written
-```
 
 **Step 3: Delete writer Pod** (10 seconds)
 
-```bash
-kubectl delete pod writer-pod
-```
-
 **Step 4: Create reader Pod** (90 seconds)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: reader-pod
-spec:
-  containers:
-  - name: reader
-    image: busybox
-    command: ["/bin/sh", "-c"]
-    args:
-      - cat /data/important.txt && sleep 3600
-    volumeMounts:
-    - name: data
-      mountPath: /data
-  volumes:
-  - name: data
-    persistentVolumeClaim:
-      claimName: persistent-data
-EOF
-```
-
 **Step 5: Verify persistence** (20 seconds)
-
-```bash
-kubectl wait --for=condition=Ready pod/reader-pod
-kubectl logs reader-pod    # Should show the SAME date from writer-pod
-```
 
 **[21:30-22:30] Understanding PVC Lifecycle**
 
@@ -609,63 +298,30 @@ If the data doesn't persist, you used the wrong volume type (probably EmptyDir i
 **1. PVC in Wrong Namespace**
 
 Mistake:
-```bash
-kubectl create namespace test-ns
-# Switch to test-ns
-kubectl apply -f pod.yaml    # Pod references PVC in default namespace
-```
 
 Solution: Always verify your namespace context:
-```bash
-kubectl config view --minify | grep namespace
-# Or set explicitly:
-kubectl config set-context --current --namespace=<target-namespace>
-```
 
 **2. Access Mode Incompatibility**
 
 Mistake: Requesting ReadWriteMany when StorageClass only supports ReadWriteOnce
 
 Solution:
-```bash
-kubectl get sc -o wide    # Check supported access modes
-# Default to ReadWriteOnce unless question specifically needs RWX
-```
 
 **3. Forgetting to Wait for PVC Binding**
 
 Mistake: Creating a Pod immediately after PVC without checking if it's bound
 
 Solution:
-```bash
-kubectl get pvc <name>    # Verify status is Bound
-# Or use wait:
-kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/<name> --timeout=60s
-```
 
 **4. Volume Name Mismatch**
 
 Mistake:
-```yaml
-volumes:
-  - name: my-data
-    persistentVolumeClaim:
-      claimName: my-pvc
-containers:
-  - volumeMounts:
-    - name: mydata      # Different name! Will fail
-      mountPath: /data
-```
 
 Solution: Names must match exactly. Copy-paste the volume name to avoid typos.
 
 **5. Case Sensitivity in Access Modes**
 
 Mistake:
-```yaml
-accessModes:
-  - readwriteonce    # Wrong case
-```
 
 Solution: Always use PascalCase: ReadWriteOnce, ReadWriteMany, ReadOnlyMany
 
@@ -675,39 +331,13 @@ Solution: Always use PascalCase: ReadWriteOnce, ReadWriteMany, ReadOnlyMany
 
 Create a template file once, reuse for multiple questions:
 
-```bash
-# Create template
-kubectl apply -f - <<EOF > /tmp/pvc-template.yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: CHANGEME
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-EOF
-
-# Use it:
-sed 's/CHANGEME/my-pvc/g' /tmp/pvc-template.yaml | kubectl apply -f -
-```
-
 **Use Dry-Run for Boilerplate**
-
-```bash
-# Generate Pod YAML, then add volumes:
-kubectl run mypod --image=nginx --dry-run=client -o yaml > pod.yaml
-# Edit pod.yaml to add volumes and volumeMounts
-kubectl apply -f pod.yaml
-```
 
 **Master Vim/Nano Basics**
 
 The exam provides vim and nano. Practice these commands:
-- Vim: `i` (insert), `ESC :wq` (save and quit), `ESC :q!` (quit without saving)
-- Nano: `Ctrl+O` (save), `Ctrl+X` (exit)
+- Vim:  (insert),  (save and quit),  (quit without saving)
+- Nano:  (save),  (exit)
 
 **Practice Typing Speed**
 
@@ -718,10 +348,6 @@ Time yourself creating a PVC+Pod from scratch:
 **Use kubectl Documentation**
 
 The exam allows access to kubernetes.io. Know how to quickly find:
-```
-kubernetes.io/docs > search "persistentvolumeclaim"
-kubernetes.io/docs > search "volumes"
-```
 
 Copy examples and modify them—don't start from scratch.
 
@@ -744,63 +370,6 @@ Let's do one comprehensive timed exercise that combines multiple concepts.
 **Start your timer now—8 minutes on the clock!**
 
 **[25:30-27:30] Solution - No Commentary, Just Speed**
-
-```bash
-# Task 1: Create PVC (60 seconds)
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: webapp-storage
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 250Mi
-EOF
-
-# Task 2-3: Create Deployment with volume (3 minutes)
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webapp
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: webapp
-  template:
-    metadata:
-      labels:
-        app: webapp
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        volumeMounts:
-        - name: storage
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: storage
-        persistentVolumeClaim:
-          claimName: webapp-storage
-EOF
-
-# Task 4: Verify (60 seconds)
-kubectl get pvc webapp-storage
-kubectl get pods -l app=webapp
-kubectl wait --for=condition=Ready pod -l app=webapp --timeout=60s
-kubectl exec deployment/webapp -- df -h /usr/share/nginx/html
-
-# Task 5: Test resilience (60 seconds)
-POD_NAME=$(kubectl get pod -l app=webapp -o jsonpath='{.items[0].metadata.name}')
-kubectl delete pod $POD_NAME
-kubectl get pods -l app=webapp
-kubectl wait --for=condition=Ready pod -l app=webapp --timeout=60s
-kubectl exec deployment/webapp -- df -h /usr/share/nginx/html
-```
 
 **[27:30-29:00] Performance Review**
 
@@ -831,12 +400,12 @@ kubectl exec deployment/webapp -- df -h /usr/share/nginx/html
 
 **Verification Strategy:**
 - Always verify resources after creation
-- Use `kubectl get` and `kubectl describe` liberally
+- Use  and  liberally
 - Check Pod logs if behavior seems wrong
 
 **Resource Cleanup:**
 - Exam environment persists between questions
-- Clean up resources when done: `kubectl delete pod,pvc <names>`
+- Clean up resources when done: 
 - Prevents confusion and resource conflicts
 
 **Read Questions Carefully:**
@@ -900,12 +469,6 @@ Today we covered comprehensive CKAD storage scenarios:
 Good luck with your CKAD exam preparation. With consistent practice of these scenarios, you'll be confident and fast when exam day comes.
 
 **Clean up your practice environment:**
-
-```bash
-kubectl delete all,cm,pvc,pv -A -l app=webapp
-kubectl delete pod writer-pod reader-pod multi-volume-app broken-pod app-pod shared-volume-pod --ignore-not-found
-kubectl delete pvc app-storage db-storage persistent-data missing-pvc webapp-storage --ignore-not-found
-```
 
 Thank you and happy studying!
 
