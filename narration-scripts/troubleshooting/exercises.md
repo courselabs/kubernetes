@@ -38,23 +38,9 @@ Let's dive in!
 
 **Deploy the broken app:**
 
-```bash
-kubectl apply -f labs/troubleshooting/specs/pi-failing
-```
 
 **Initial Check:**
 
-```bash
-# See what was created
-kubectl get all -l kubernetes.courselabs.co=troubleshooting
-
-# Try to access the app
-curl localhost:8020
-# Connection refused or timeout
-
-curl localhost:30020
-# Connection refused or timeout
-```
 
 **The Problem:** Something is wrong! Let's troubleshoot systematically.
 
@@ -64,10 +50,6 @@ curl localhost:30020
 
 **Narration:** Always start with a broad view before diving deep.
 
-```bash
-# Check all resources
-kubectl get all -l kubernetes.courselabs.co=troubleshooting
-```
 
 **What to look for:**
 - **Deployments:** Are they showing READY replicas?
@@ -77,16 +59,6 @@ kubectl get all -l kubernetes.courselabs.co=troubleshooting
 
 **Observe:**
 
-```bash
-# Check deployment status
-kubectl get deployment -l kubernetes.courselabs.co=troubleshooting
-
-# Check pod status specifically
-kubectl get pods -l kubernetes.courselabs.co=troubleshooting
-
-# Check services
-kubectl get svc -l kubernetes.courselabs.co=troubleshooting
-```
 
 **Expected Findings:**
 - You should see a deployment, pods, and services
@@ -101,10 +73,6 @@ kubectl get svc -l kubernetes.courselabs.co=troubleshooting
 
 **Narration:** Let's examine the pods in detail.
 
-```bash
-# Get detailed pod information
-kubectl get pods -l kubernetes.courselabs.co=troubleshooting -o wide
-```
 
 **Check for common issues:**
 - STATUS: ImagePullBackOff, CrashLoopBackOff, Pending, Error?
@@ -113,13 +81,6 @@ kubectl get pods -l kubernetes.courselabs.co=troubleshooting -o wide
 
 **Describe the pod:**
 
-```bash
-# Get the pod name
-POD_NAME=$(kubectl get pod -l kubernetes.courselabs.co=troubleshooting -o jsonpath='{.items[0].metadata.name}')
-
-# Describe it
-kubectl describe pod $POD_NAME
-```
 
 **What to examine in describe output:**
 
@@ -148,47 +109,16 @@ kubectl describe pod $POD_NAME
 
 If you see image pull errors:
 
-```bash
-# Check the image name in the deployment
-kubectl get deployment -l kubernetes.courselabs.co=troubleshooting -o yaml | grep image:
-
-# Common fixes:
-# - Wrong image name or tag
-# - Typo in image name
-# - Missing image pull secret
-```
 
 **Potential Issue #2: Container Crash**
 
 If pods are crashing:
 
-```bash
-# Check current logs
-kubectl logs $POD_NAME
-
-# IMPORTANT: Check previous logs if crashing
-kubectl logs $POD_NAME --previous
-
-# Look for:
-# - Startup errors
-# - Missing environment variables
-# - Configuration errors
-# - Application exceptions
-```
 
 **Potential Issue #3: Readiness/Liveness Probe Failures**
 
 If probe failures:
 
-```bash
-# Check probe configuration in describe
-kubectl describe pod $POD_NAME | grep -A 10 "Liveness\|Readiness"
-
-# Common issues:
-# - Wrong port
-# - Wrong path
-# - Too aggressive timing
-```
 
 **Guided Discovery (2 minutes):**
 
@@ -206,11 +136,6 @@ kubectl describe pod $POD_NAME | grep -A 10 "Liveness\|Readiness"
 
 **Narration:** Even if pods are running, service configuration can prevent access.
 
-```bash
-# Describe the service
-kubectl get svc -l kubernetes.courselabs.co=troubleshooting
-kubectl describe svc -l kubernetes.courselabs.co=troubleshooting
-```
 
 **Check these critical aspects:**
 
@@ -219,77 +144,33 @@ kubectl describe svc -l kubernetes.courselabs.co=troubleshooting
    - Is it LoadBalancer or ClusterIP?
 
 2. **Port Configuration:**
-   ```bash
-   # Check service ports
-   kubectl get svc <service-name> -o yaml | grep -A 5 ports:
-   ```
+
    - **port:** External port (e.g., 8020)
    - **targetPort:** Container port it forwards to
    - **nodePort:** Port on node (e.g., 30020)
 
 3. **Selector:**
-   ```bash
-   # Check service selector
-   kubectl get svc <service-name> -o jsonpath='{.spec.selector}'
-   ```
+
    - Do these labels exist on pods?
 
 4. **Endpoints:**
-   ```bash
-   # CRITICAL CHECK: Does service have endpoints?
-   kubectl get endpoints -l kubernetes.courselabs.co=troubleshooting
-   ```
+
    - If ENDPOINTS is `<none>`, service can't find pods!
    - This usually means selector mismatch
 
 **Diagnosis Process:**
 
-```bash
-# Step 1: Get service selector
-SVC_NAME=$(kubectl get svc -l kubernetes.courselabs.co=troubleshooting -o jsonpath='{.items[0].metadata.name}')
-kubectl get svc $SVC_NAME -o jsonpath='{.spec.selector}'
-echo
-
-# Step 2: Check if pods have matching labels
-kubectl get pods --show-labels -l kubernetes.courselabs.co=troubleshooting
-
-# Step 3: Check endpoints
-kubectl get endpoints $SVC_NAME
-
-# Step 4: Verify port mapping
-kubectl describe svc $SVC_NAME | grep -E "Port:|TargetPort:|NodePort:"
-kubectl describe pod $POD_NAME | grep "Port:"
-```
 
 **Common Issues:**
 
 **Issue A: Selector Mismatch**
-```yaml
-# Service expects:
-selector:
-  app: pi-web
 
-# But pod has:
-labels:
-  app: pi-webapp  # Typo!
-```
 
 **Issue B: TargetPort Mismatch**
-```yaml
-# Service forwards to:
-targetPort: 8080
 
-# But container listens on:
-containerPort: 80  # Wrong!
-```
 
 **Issue C: Named Port Mismatch**
-```yaml
-# Service uses named port:
-targetPort: web-port
 
-# But container doesn't define that name
-```
 
 **Guided Discovery:**
 
@@ -307,84 +188,31 @@ targetPort: web-port
 
 If image is wrong:
 
-```bash
-# Check current image
-kubectl get deployment <name> -o jsonpath='{.spec.template.spec.containers[0].image}'
-
-# Fix via set image
-kubectl set image deployment/<name> <container>=<correct-image>
-
-# OR edit deployment
-kubectl edit deployment <name>
-# Fix image field
-```
 
 **Fix 2: Fix Service Selector**
 
 If selector doesn't match:
 
-```bash
-# Option 1: Fix service selector
-kubectl edit service <name>
-# Change selector to match pod labels
-
-# Option 2: Fix pod labels
-kubectl edit deployment <name>
-# Change pod template labels to match service
-```
 
 **Fix 3: Fix Port Configuration**
 
 If ports don't match:
 
-```bash
-# Fix service targetPort
-kubectl edit service <name>
-# Change targetPort to match container port
-
-# OR fix container port
-kubectl edit deployment <name>
-# Change containerPort to match service targetPort
-```
 
 **Fix 4: Fix Environment Variables**
 
 If app needs env vars:
 
-```bash
-kubectl set env deployment/<name> KEY=value
-
-# OR edit deployment
-kubectl edit deployment <name>
-# Add env section
-```
 
 **Fix 5: Fix Resource Limits**
 
 If OOMKilled or resource issues:
 
-```bash
-kubectl edit deployment <name>
-# Adjust resources:
-#   requests/limits for cpu and memory
-```
 
 **Applying Fixes:**
 
 **Narration:** "After each fix, give Kubernetes time to reconcile and watch for changes."
 
-```bash
-# Watch pods for changes
-kubectl get pods -l kubernetes.courselabs.co=troubleshooting --watch
-
-# In another terminal, apply fixes
-kubectl edit ...
-
-# Wait for:
-# - Old pods to terminate
-# - New pods to be created
-# - New pods to become READY
-```
 
 ---
 
@@ -395,50 +223,22 @@ kubectl edit ...
 **Verification Checklist:**
 
 1. **Pods are healthy:**
-   ```bash
-   kubectl get pods -l kubernetes.courselabs.co=troubleshooting
-   # Should show: READY 1/1, STATUS Running, RESTARTS 0
-   ```
+
 
 2. **Deployment is healthy:**
-   ```bash
-   kubectl get deployment -l kubernetes.courselabs.co=troubleshooting
-   # Should show: READY matches DESIRED (e.g., 1/1)
-   ```
+
 
 3. **Service has endpoints:**
-   ```bash
-   kubectl get endpoints -l kubernetes.courselabs.co=troubleshooting
-   # Should show pod IP addresses
-   ```
+
 
 4. **Application responds:**
-   ```bash
-   # Test via service port-forward
-   kubectl port-forward svc/$SVC_NAME 8080:80
-   # In another terminal:
-   curl localhost:8080
 
-   # OR test via NodePort directly
-   curl localhost:30020
-
-   # Expected: Response from Pi application
-   # Should see HTML or JSON response
-   ```
 
 5. **Access via browser:**
-   ```bash
-   # If you have a browser:
-   # Navigate to: http://localhost:8020 or http://localhost:30020
-   # Should see the Pi web interface
-   ```
+
 
 6. **No restarts:**
-   ```bash
-   # Wait 30 seconds, then check
-   kubectl get pods -l kubernetes.courselabs.co=troubleshooting
-   # RESTARTS should still be 0
-   ```
+
 
 **Success Criteria Met?**
 
@@ -458,58 +258,15 @@ kubectl edit ...
 
 **Typical Issue #1: Service Selector Mismatch**
 
-```yaml
-# Problem: Service selector doesn't match pod labels
-
-# Service had:
-selector:
-  app: pi-web
-
-# Pods had:
-labels:
-  app: pi-webapp  # or different label
-
-# Solution: Make them match!
-```
 
 **Typical Issue #2: Wrong Port Numbers**
 
-```yaml
-# Problem: Port mismatch
-
-# Service targetPort:
-targetPort: 8080
-
-# Container port:
-containerPort: 80  # Different!
-
-# Solution: Align the ports
-```
 
 **Typical Issue #3: Wrong Service Type**
 
-```yaml
-# Problem: Service is ClusterIP but question wants NodePort
-
-# Solution:
-spec:
-  type: NodePort
-  ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30020
-```
 
 **Typical Issue #4: Image Name Error**
 
-```yaml
-# Problem: Typo in image name
-
-image: kiamol/ch05-pi  # Wrong
-image: kiamol/ch03-pi  # Correct
-
-# Solution: Fix the image reference
-```
 
 **Review Your Approach:**
 
@@ -533,66 +290,32 @@ image: kiamol/ch03-pi  # Correct
 ### Drill 1: Quick Assessment (30 seconds each)
 
 **Scenario A:**
-```
-kubectl get pods
-NAME                    READY   STATUS             RESTARTS
-webapp-7d4f8-abc123     0/1     ImagePullBackOff   0
-```
+
 
 **Question:** What's wrong and how do you diagnose?
 
 **Answer:**
-```bash
-kubectl describe pod webapp-7d4f8-abc123
-# Look for image name in events
-# Likely: Wrong image name/tag or auth issue
-```
+
 
 ---
 
 **Scenario B:**
-```
-kubectl get pods
-NAME                    READY   STATUS    RESTARTS
-api-7d4f8-abc123        0/1     Running   0
 
-kubectl get svc
-NAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)
-api    ClusterIP   10.96.45.123   <none>        80/TCP
-
-kubectl get endpoints api
-NAME   ENDPOINTS
-api    <none>
-```
 
 **Question:** Why can't users access the API?
 
 **Answer:**
-```bash
-# Service has no endpoints - selector mismatch!
-kubectl get svc api -o jsonpath='{.spec.selector}'
-kubectl get pod api-7d4f8-abc123 --show-labels
-# Labels don't match selector
-```
+
 
 ---
 
 **Scenario C:**
-```
-kubectl get pods
-NAME                    READY   STATUS             RESTARTS
-worker-7d4f8-abc123     0/1     CrashLoopBackOff   7
-```
+
 
 **Question:** How do you find out why it's crashing?
 
 **Answer:**
-```bash
-# Check previous logs!
-kubectl logs worker-7d4f8-abc123 --previous
-kubectl describe pod worker-7d4f8-abc123
-# Look for exit code and termination reason
-```
+
 
 ---
 
@@ -627,17 +350,6 @@ kubectl describe pod worker-7d4f8-abc123
 
 ### Essential Commands to Memorize
 
-```bash
-# Your toolbox:
-kubectl get pods -o wide
-kubectl describe pod <name>
-kubectl logs <name>
-kubectl logs <name> --previous
-kubectl get endpoints <svc-name>
-kubectl port-forward pod/<name> 8080:80
-kubectl get svc <name> -o jsonpath='{.spec.selector}'
-kubectl get pod <name> --show-labels
-```
 
 ### Verification Checklist
 
@@ -652,14 +364,6 @@ Before moving to next question:
 
 ## Cleanup (1 minute)
 
-```bash
-# Remove lab resources
-kubectl delete all -l kubernetes.courselabs.co=troubleshooting
-
-# Verify cleanup
-kubectl get all -l kubernetes.courselabs.co=troubleshooting
-# Should return: No resources found
-```
 
 ---
 

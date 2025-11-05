@@ -33,15 +33,9 @@ All three components are defined with standard Kubernetes resources - Deployment
 
 Let's deploy all the components. I'll apply the manifests from the apod directory:
 
-```
-kubectl apply -f labs/networkpolicy/specs/apod
-```
 
 We should see three Deployments and three Services being created. Let's check the status:
 
-```
-kubectl get pods,svc -l kubernetes.courselabs.co=networkpolicy
-```
 
 Wait for all Pods to reach the Running state with all containers ready. This usually takes 30 seconds to a minute depending on whether the images are already cached.
 
@@ -63,21 +57,12 @@ Now let's implement a default deny-all policy. This is a common security practic
 
 Let me show you the policy we're about to apply. Opening the default-deny.yaml file:
 
-```
-kubectl apply -f labs/networkpolicy/specs/deny-all
-```
 
 Let's examine what we just created:
 
-```
-kubectl get netpol
-```
 
 We can use `netpol` as a shorthand for networkpolicies. Let's describe it to see the details:
 
-```
-kubectl describe netpol default-deny
-```
 
 Notice the podSelector is empty - just curly braces. This means the policy applies to ALL Pods in this namespace. The policyTypes include both Ingress and Egress, but there are no rules defined for either. This effectively blocks all incoming and outgoing traffic.
 
@@ -91,9 +76,6 @@ The policy is created and stored in the cluster, but it's not being applied to t
 
 Let's verify that the policy isn't being enforced by trying to communicate between Pods:
 
-```
-kubectl exec deploy/apod-web -- wget -O- http://apod-api/image
-```
 
 This should still work if your CNI doesn't enforce policies. The web Pod can still reach the API Pod despite the deny-all policy.
 
@@ -101,15 +83,9 @@ This should still work if your CNI doesn't enforce policies. The web Pod can sti
 
 Since we need a policy-enforcing cluster, let's clean up this deployment:
 
-```
-kubectl delete -f labs/networkpolicy/specs/apod
-```
 
 If you're already using k3d, stop your existing cluster to prevent port collisions:
 
-```
-k3d cluster stop k8s
-```
 
 Now we'll set up a new cluster with Calico CNI, which does enforce NetworkPolicy. This is where the real learning happens.
 
@@ -124,24 +100,16 @@ If you don't already have k3d installed, you'll need it now. k3d is a tool that 
 Installation is straightforward with package managers:
 
 On Windows with Chocolatey:
-```
-choco install k3d
-```
+
 
 On macOS with Homebrew:
-```
-brew install k3d
-```
+
 
 On Linux:
-```
-curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-```
+
 
 Verify the installation:
-```
-k3d version
-```
+
 
 Make sure you're on k3d version 5 or later. The commands have changed significantly between versions.
 
@@ -149,23 +117,14 @@ Make sure you're on k3d version 5 or later. The commands have changed significan
 
 Now let's create a k3d cluster without the default Flannel CNI:
 
-```
-k3d cluster create labs-netpol -p "30000-30040:30000-30040@server:0" --k3s-arg '--flannel-backend=none@server:0' --k3s-arg '--disable=servicelb@server:0' --k3s-arg '--disable=traefik@server:0' --k3s-arg '--disable=metrics-server@server:0'
-```
 
 Let me explain these options: we're creating a single-node cluster named labs-netpol. The `-p` flag publishes ports 30000-30040 to localhost so we can access NodePort services. The k3s-arg flags disable Flannel and other default features we don't need.
 
 This creates the cluster but without any CNI plugin. Let's check the cluster status:
 
-```
-kubectl get nodes
-```
 
 Notice the node is in NotReady state. Without a network plugin, the cluster cannot function. Even the CoreDNS deployment won't run:
 
-```
-kubectl get deploy -n kube-system
-```
 
 CoreDNS is scaled to zero or stuck pending because it requires networking to function.
 
@@ -175,23 +134,14 @@ Now we'll install Calico, which is a popular CNI plugin that supports NetworkPol
 
 Apply the Calico manifest:
 
-```
-kubectl apply -f labs/networkpolicy/specs/k3d
-```
 
 Watch the Pods in the kube-system namespace:
 
-```
-kubectl get pods -n kube-system --watch
-```
 
 You'll see several Calico Pods starting: calico-node, calico-kube-controllers, and others. Wait for them all to be Running and Ready. This usually takes one to two minutes.
 
 Once Calico is running, check the node status again:
 
-```
-kubectl get nodes
-```
 
 The node should now be Ready. CoreDNS should also be running. Our cluster is now ready, and importantly, it will enforce NetworkPolicy rules.
 
@@ -203,29 +153,17 @@ The node should now be Ready. CoreDNS should also be running. Our cluster is now
 
 Now let's deploy the APOD application again, this time on our policy-enforcing cluster:
 
-```
-kubectl apply -f labs/networkpolicy/specs/apod
-```
 
 Wait for the Pods to become ready:
 
-```
-kubectl get pods -l kubernetes.courselabs.co=networkpolicy
-```
 
 Once they're running, verify the application works by browsing to http://localhost:30016. The application should load normally, showing the astronomy picture of the day.
 
 Now apply the default deny-all policy again:
 
-```
-kubectl apply -f labs/networkpolicy/specs/deny-all
-```
 
 Check that it was created:
 
-```
-kubectl get netpol
-```
 
 **[9:00-10:00] Observe Policy Enforcement**
 
@@ -235,23 +173,14 @@ The web Pod cannot communicate with the API or log Pods because all traffic is b
 
 Let's verify this. First, try to access the API by name from the web Pod:
 
-```
-kubectl exec deploy/apod-web -- wget -O- http://apod-api/image
-```
 
 This will fail with a "bad address" message - the web Pod cannot resolve the apod-api service name to an IP address because DNS traffic is also blocked by the egress policy.
 
 Let's confirm this isn't just a DNS issue by using the Pod IP directly:
 
-```
-kubectl get po -l app=apod-api -o wide
-```
 
 Note the IP address, then try to access it directly:
 
-```
-kubectl exec deploy/apod-web -- wget -O- -T2 http://<pod-ip-address>/image
-```
 
 Replace <pod-ip-address> with the actual IP. This will also timeout because the egress policy blocks all outgoing traffic from the web Pod, and the ingress policy blocks all incoming traffic to the API Pod.
 
@@ -267,27 +196,15 @@ The API policy allows ingress from the web Pod and egress to the DNS server and 
 
 Let's apply these policies:
 
-```
-kubectl apply -f labs/networkpolicy/specs/apod/network-policies
-```
 
 Check what was created:
 
-```
-kubectl get netpol
-```
 
 We now have four policies: the default-deny and three component-specific policies. Let's verify the web Pod can now reach the API:
 
-```
-kubectl exec deploy/apod-web -- wget -O- -T2 http://apod-api/image
-```
 
 This should now succeed, returning JSON data from the API. Let's look at the API policy in detail:
 
-```
-kubectl describe netpol apod-api
-```
 
 Notice the egress rules include both the DNS selector and specific CIDR blocks for the NASA API endpoints. This allows the API Pod to fetch data from the external service while still being restricted.
 
@@ -305,15 +222,9 @@ The policies use label selectors to control access. For example, the apod-api po
 
 Let's test this. I'll deploy a sleep Pod that has the apod-web label:
 
-```
-kubectl apply -f labs/networkpolicy/specs/apod-hack
-```
 
 Now let's use this Pod to bypass our security:
 
-```
-kubectl exec sleep -- wget -O- http://apod-api/image
-```
 
 This succeeds. The sleep Pod can access the API because it has the correct label, even though it's not the legitimate web application. This is a label-based access control vulnerability.
 
@@ -335,48 +246,24 @@ Take 5 to 10 minutes to work on this. Use the hints file if you get stuck, and c
 
 Let's walk through the solution. First, delete the existing deployment:
 
-```
-kubectl delete -f labs/networkpolicy/specs/apod
-kubectl delete netpol default-deny
-```
 
 Create the apod namespace:
 
-```
-kubectl create namespace apod
-```
 
 Now you need to update each manifest file to include `namespace: apod` in the metadata section. Alternatively, you can use `kubectl apply -f <file> -n apod` to override the namespace.
 
 For the network policies, you need to add namespaceSelector to the ingress rules. For example, in the apod-api policy:
 
-```yaml
-ingress:
-- from:
-  - namespaceSelector:
-      matchLabels:
-        kubernetes.io/metadata.name: apod
-    podSelector:
-      matchLabels:
-        app: apod-web
-```
 
 This requires both the namespace label AND the pod label to match. The namespace selector and pod selector in the same list item create an AND condition.
 
 After applying the updated manifests and policies, test that the application works:
 
-```
-kubectl get pods -n apod
-```
 
 Browse to http://localhost:30016 - it should work.
 
 Now verify that Pods from outside the namespace cannot access the API:
 
-```
-kubectl run test --image=busybox --command -- sleep 3600
-kubectl exec test -- wget -O- --timeout=2 http://apod-api.apod/image
-```
 
 This should timeout, proving that namespace-based isolation is working correctly.
 

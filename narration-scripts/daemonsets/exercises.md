@@ -46,38 +46,16 @@ Let's look at the DaemonSet spec in `labs/daemonsets/specs/nginx/daemonset.yaml`
 
 **Key sections**:
 
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: nginx
-spec:
-  selector:
-    matchLabels:
-      app: nginx
-```
 
 Notice there's **no replicas field**. The number of Pods is automatically determined by the number of nodes.
 
 **The Pod spec with HostPath**:
 
-```yaml
-volumes:
-- name: logs
-  hostPath:
-    path: /var/log/nginx
-    type: DirectoryOrCreate
-```
 
 `DirectoryOrCreate` means Kubernetes will create the directory on the node if it doesn't exist.
 
 **The volumeMount**:
 
-```yaml
-volumeMounts:
-- name: logs
-  mountPath: /var/log/nginx
-```
 
 Nginx logs written to `/var/log/nginx` in the container are actually written to the node's filesystem.
 
@@ -85,15 +63,9 @@ Nginx logs written to `/var/log/nginx` in the container are actually written to 
 
 Let's deploy everything:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/nginx
-```
 
 Immediately check the DaemonSet status:
 
-```bash
-kubectl get daemonset
-```
 
 **Observe the output**:
 - `DESIRED`: Number of nodes in your cluster
@@ -108,9 +80,6 @@ In a single-node cluster, you'll see all values as `1`. In a 3-node cluster, you
 
 Now let's check the Pods:
 
-```bash
-kubectl get pods -l app=nginx -o wide
-```
 
 Note the `NODE` column - each Pod is on a different node (if you have multiple nodes). With one node, you'll see one Pod.
 
@@ -118,24 +87,14 @@ Note the `NODE` column - each Pod is on a different node (if you have multiple n
 
 DaemonSet Pods work with Services just like any other Pods. Let's verify:
 
-```bash
-kubectl get pods -l app=nginx -o wide
-```
 
 Note the Pod IP address.
 
-```bash
-kubectl get endpoints nginx-np
-```
 
 The Service endpoint includes the DaemonSet Pod's IP address. Services don't care whether Pods come from Deployments, StatefulSets, or DaemonSets - they use labels to find Pods.
 
 **Test the application**:
 
-```bash
-curl http://localhost:30010
-# or browse to http://localhost:8010
-```
 
 You should see the Nginx welcome page. The DaemonSet is functioning like any other Pod controller from the Service's perspective.
 
@@ -160,15 +119,9 @@ Look at `labs/daemonsets/specs/nginx/update-bad/daemonset-bad-command.yaml`. It 
 
 Deploy the bad update:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/nginx/update-bad
-```
 
 Watch what happens to the Pods:
 
-```bash
-kubectl get pods -l app=nginx --watch
-```
 
 **Observe the sequence**:
 1. The existing Pod goes into `Terminating` status
@@ -182,10 +135,6 @@ Press Ctrl+C to stop watching.
 
 Try accessing the app:
 
-```bash
-curl http://localhost:30010
-# This will fail or timeout
-```
 
 **Contrast with Deployment**: With a Deployment, the old Pod would still be running because Kubernetes wouldn't delete it until the new Pod was Ready. DaemonSets can't do this because there can only be one Pod per node.
 
@@ -195,32 +144,14 @@ The proper way to do what that bad update attempted is to use an init container.
 
 Let's look at `labs/daemonsets/specs/nginx/update-good/daemonset-init-container.yaml`:
 
-```yaml
-initContainers:
-- name: write-html
-  image: busybox
-  command:
-  - sh
-  - -c
-  - echo '<h1>DaemonSet with Init Container</h1>' > /usr/share/nginx/html/index.html
-  volumeMounts:
-  - name: html
-    mountPath: /usr/share/nginx/html
-```
 
 The init container writes a custom HTML page, then exits. Then the Nginx container starts and serves that page.
 
 Deploy the fix:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/nginx/update-good
-```
 
 Watch the rollout:
 
-```bash
-kubectl get pods -l app=nginx --watch
-```
 
 **Observe the new statuses**:
 - `Init:0/1` - Init container is running
@@ -231,25 +162,16 @@ Press Ctrl+C when the Pod is Running.
 
 **Verify the init container output**:
 
-```bash
-kubectl logs -l app=nginx
-```
 
 You should see Nginx access logs.
 
 Check the HTML content:
 
-```bash
-kubectl exec daemonset/nginx -- cat /usr/share/nginx/html/index.html
-```
 
 You'll see the custom HTML written by the init container.
 
 **Test the application**:
 
-```bash
-curl http://localhost:30010
-```
 
 The application is working again with the new content.
 
@@ -274,35 +196,19 @@ Let's see this in practice with our Nginx DaemonSet.
 
 The spec at `labs/daemonsets/specs/nginx/update-subset/daemonset-node-selector.yaml` adds a nodeSelector:
 
-```yaml
-spec:
-  template:
-    spec:
-      nodeSelector:
-        kubernetes.courselabs.co.ip: public
-```
 
 This means: "Only create Pods on nodes that have the label `kubernetes.courselabs.co.ip=public`."
 
 Deploy this update:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/nginx/update-subset
-```
 
 Watch what happens:
 
-```bash
-kubectl get pods -l app=nginx --watch
-```
 
 **Observe**: The existing Pod(s) are terminated and no new Pods are created!
 
 Press Ctrl+C and check the DaemonSet status:
 
-```bash
-kubectl get daemonset nginx
-```
 
 You'll see `DESIRED: 0` because no nodes match the selector criteria. The DaemonSet controller calculated that zero Pods should exist, so it deleted the existing one.
 
@@ -312,21 +218,12 @@ Now let's label a node to match the selector.
 
 First, find your node name:
 
-```bash
-kubectl get nodes
-```
 
 Now label the node:
 
-```bash
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') kubernetes.courselabs.co.ip=public
-```
 
 This command gets the first node's name and labels it. Watch the Pods immediately:
 
-```bash
-kubectl get pods -l app=nginx --watch
-```
 
 **Observe**: A new Pod is created almost immediately! The DaemonSet controller detected that a node now matches the criteria and created a Pod for it.
 
@@ -334,9 +231,6 @@ Press Ctrl+C when the Pod is Running.
 
 **Test the application again**:
 
-```bash
-curl http://localhost:30010
-```
 
 It's working again.
 
@@ -365,83 +259,26 @@ These demonstrate advanced DaemonSet capabilities. Let's work through the soluti
 
 The solution involves changing the updateStrategy to OnDelete:
 
-```yaml
-spec:
-  updateStrategy:
-    type: OnDelete
-```
 
 **Full solution** (from `labs/daemonsets/solution.md`):
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: nginx
-  labels:
-    kubernetes.courselabs.co: daemonsets
-spec:
-  selector:
-    matchLabels:
-      app: nginx
-  updateStrategy:
-    type: OnDelete
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      nodeSelector:
-        kubernetes.courselabs.co.ip: public
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: logs
-          mountPath: /var/log/nginx
-      volumes:
-      - name: logs
-        hostPath:
-          path: /var/log/nginx
-          type: DirectoryOrCreate
-EOF
-```
 
 Apply this spec:
 
-```bash
-kubectl apply -f <your-solution-file>
-```
 
 Now make a change to test it (for example, add an environment variable):
 
-```bash
-kubectl edit daemonset nginx
-# Add an environment variable to the container spec, then save
-```
 
 Check the Pods:
 
-```bash
-kubectl get pods -l app=nginx
-```
 
 **Observe**: The Pods are still running with the old spec! The update didn't trigger a rollout.
 
 Now manually delete a Pod:
 
-```bash
-kubectl delete pod -l app=nginx
-```
 
 Watch the new Pod come up:
 
-```bash
-kubectl get pods -l app=nginx --watch
-```
 
 **Observe**: The new Pod has the updated spec with your changes.
 
@@ -453,21 +290,12 @@ kubectl get pods -l app=nginx --watch
 
 This uses the `--cascade=orphan` flag:
 
-```bash
-kubectl delete daemonset nginx --cascade=orphan
-```
 
 Now check:
 
-```bash
-kubectl get daemonset
-```
 
 No DaemonSets are listed.
 
-```bash
-kubectl get pods -l app=nginx
-```
 
 But the Pods are still there!
 
@@ -484,9 +312,6 @@ The DaemonSet object was deleted, but Kubernetes didn't cascade the deletion to 
 
 To fully clean up:
 
-```bash
-kubectl delete pods -l app=nginx
-```
 
 ---
 
@@ -502,47 +327,22 @@ The lab includes an advanced pattern: deploying a Pod that must land on the same
 
 Let's look at `labs/daemonsets/specs/sleep-with-hostPath.yaml`:
 
-```yaml
-affinity:
-  podAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector:
-        matchLabels:
-          app: nginx
-      topologyKey: kubernetes.io/hostname
-```
 
 This says: "Schedule this Pod on the same node (hostname) as a Pod with label `app=nginx`."
 
 The spec also includes the same HostPath volume as the Nginx DaemonSet:
 
-```yaml
-volumes:
-- name: nginx-logs
-  hostPath:
-    path: /var/log/nginx
-    type: Directory
-```
 
 ### 5.2 Testing Shared HostPath Access (60 seconds)
 
 First, ensure the Nginx DaemonSet is running:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/nginx
-```
 
 Deploy the sleep Pod with affinity:
 
-```bash
-kubectl apply -f labs/daemonsets/specs/sleep-with-hostPath.yaml
-```
 
 Verify they're on the same node:
 
-```bash
-kubectl get pods -l app -o wide
-```
 
 The `NODE` column should show both Pods on the same node.
 
@@ -550,15 +350,9 @@ The `NODE` column should show both Pods on the same node.
 
 From the Nginx Pod:
 
-```bash
-kubectl exec daemonset/nginx -- ls -l /var/log/nginx
-```
 
 From the sleep Pod:
 
-```bash
-kubectl exec pod/sleep -- ls -l /node-root/volumes/nginx-logs
-```
 
 Both Pods see the same files because they're accessing the same node directory via HostPath.
 
@@ -572,9 +366,6 @@ Both Pods see the same files because they're accessing the same node directory v
 
 Let's clean up all the lab resources:
 
-```bash
-kubectl delete svc,ds,po -l kubernetes.courselabs.co=daemonsets
-```
 
 This deletes:
 - Services (svc)
@@ -585,9 +376,6 @@ All resources labeled with `kubernetes.courselabs.co=daemonsets`.
 
 Verify everything is cleaned up:
 
-```bash
-kubectl get all -l kubernetes.courselabs.co=daemonsets
-```
 
 Should show no resources.
 

@@ -18,15 +18,9 @@ Let's get started!
 
 First, let's make sure our cluster is ready.
 
-```powershell
-kubectl get nodes
-```
 
 Great! I can see my node is ready. Now let's check if there are any existing Pods.
 
-```powershell
-kubectl get pods
-```
 
 As expected, there are no resources in the default namespace. We're starting with a clean slate.
 
@@ -36,16 +30,6 @@ Kubernetes uses declarative configuration with YAML files. Let's look at the sim
 
 I'll open the whoami-pod.yaml file in the labs/pods/specs directory.
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: whoami
-spec:
-  containers:
-    - name: app
-      image: sixeyed/whoami:21.04
-```
 
 This is as simple as it gets. We're specifying:
 - API version v1 for Pods
@@ -57,25 +41,16 @@ The whoami application is a simple web service that returns information about it
 
 Let's deploy this Pod using kubectl apply.
 
-```powershell
-kubectl apply -f labs/pods/specs/whoami-pod.yaml
-```
 
 The output says "pod/whoami created". Kubernetes has accepted our request and is now working to make it happen.
 
 Let's check the status.
 
-```powershell
-kubectl get pods
-```
 
 Excellent! The Pod is running. Notice the STATUS is "Running", READY shows "1/1" meaning one container out of one is ready, and RESTARTS is 0.
 
 Now, one of the powerful features of Kubernetes is that it doesn't matter where the YAML comes from. Let me show you - we can actually apply the same configuration from a URL.
 
-```powershell
-kubectl apply -f https://kubernetes.courselabs.co/labs/pods/specs/whoami-pod.yaml
-```
 
 See? It says "pod/whoami unchanged". Kubernetes compared the desired state in the YAML with the current state and determined nothing needs to change. This is declarative configuration in action.
 
@@ -83,9 +58,6 @@ See? It says "pod/whoami unchanged". Kubernetes compared the desired state in th
 
 Let's get more information about our Pod. The "get pods" command has several useful options.
 
-```powershell
-kubectl get pods -o wide
-```
 
 The wide output shows additional columns. Now we can see:
 - The IP address of the Pod - this is an internal cluster IP
@@ -94,9 +66,6 @@ The wide output shows additional columns. Now we can see:
 
 For even more detail, we use the describe command.
 
-```powershell
-kubectl describe pod whoami
-```
 
 Look at all this information! The describe output shows:
 - The full Pod specification
@@ -113,9 +82,6 @@ In production clusters, Pods might be running on any node, but you don't need di
 
 Let's view the container logs.
 
-```powershell
-kubectl logs whoami
-```
 
 The whoami application logs its startup. You can see it's listening on port 80. The logs command works with any application - Kubernetes captures stdout and stderr from your containers.
 
@@ -123,9 +89,6 @@ The whoami application logs its startup. You can see it's listening on port 80. 
 
 You can also run commands inside Pod containers using kubectl exec.
 
-```powershell
-kubectl exec whoami -- date
-```
 
 The exec command connects to the Pod container and runs whatever command you specify after the double dashes. Here, we ran the date command to print the current date and time inside the container.
 
@@ -137,28 +100,12 @@ Let's deploy another Pod to explore multi-Pod networking.
 
 I'll look at the sleep Pod specification.
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: sleep
-spec:
-  containers:
-    - name: app
-      image: kiamol/ch03-sleep
-```
 
 This is very similar - just a different name and image. The sleep container runs an application that does nothing except sleep forever. It's useful for testing because it has common Linux tools installed.
 
-```powershell
-kubectl apply -f labs/pods/specs/sleep-pod.yaml
-```
 
 Let's verify both Pods are running.
 
-```powershell
-kubectl get pods
-```
 
 Perfect! Both whoami and sleep are running.
 
@@ -166,47 +113,29 @@ Perfect! Both whoami and sleep are running.
 
 Now for something really useful - we can start an interactive shell inside a container.
 
-```powershell
-kubectl exec -it sleep -- sh
-```
 
 The -it flags mean interactive with a terminal. Now I'm inside the container!
 
 Let's explore the container environment.
 
-```container
-hostname
-```
 
 The hostname is the Pod name - "sleep". Every container thinks it's running on a computer with that name.
 
-```container
-printenv
-```
 
 The environment variables show various Kubernetes information. Notice the KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT - these are automatically injected so applications can communicate with the Kubernetes API.
 
 Now let's test network connectivity. The sleep container has nslookup installed for DNS lookups.
 
-```container
-nslookup kubernetes
-```
 
 This resolves the "kubernetes" service name to an IP address. This is the Kubernetes API server, automatically available to all Pods.
 
 Let's try pinging it.
 
-```container
-ping kubernetes -c1 -W2
-```
 
 Note: Some Kubernetes installations don't support ICMP ping for internal addresses, so you might see packet loss. That's fine - it doesn't mean networking is broken, just that ping isn't supported.
 
 Let me exit this shell session.
 
-```container
-exit
-```
 
 And we're back to our local terminal.
 
@@ -216,26 +145,16 @@ Every Pod gets its own IP address. Let's see how Pods communicate with each othe
 
 First, let's get the whoami Pod's IP address.
 
-```powershell
-kubectl get pods -o wide whoami
-```
 
 There's the IP address. I can see it's 10.1.0.13 (yours will be different).
 
 We could manually use this IP, but let's use kubectl's powerful JSONPath output to extract it programmatically.
 
-```powershell
-$ip = kubectl get pod whoami -o jsonpath='{.status.podIP}'
-echo "whoami pod IP address: $ip"
-```
 
 JSONPath lets us query specific fields from the Kubernetes API response. The .status.podIP field contains the Pod's IP address.
 
 Now let's make an HTTP request from the sleep Pod to the whoami Pod.
 
-```powershell
-kubectl exec sleep -- curl -s $ip
-```
 
 Excellent! We got a response from the whoami application. The output shows:
 - The container hostname (which is the Pod name)
@@ -253,36 +172,17 @@ The lab asks us to create a Pod with a badly-configured container that keeps cra
 
 I'll create a new file called sleep-lab.yaml with a container that's configured to exit immediately.
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: sleep-lab
-spec:
-  containers:
-    - name: app
-      image: courselabs/bad-sleep
-```
 
 This image is intentionally broken - the container will exit almost immediately.
 
-```powershell
-kubectl apply -f labs/pods/solution/sleep-lab.yaml
-```
 
 Now let's watch what happens. I'll use the watch functionality to see the Pod status update in real-time.
 
-```powershell
-kubectl get pods sleep-lab --watch
-```
 
 Watch the RESTARTS column. The Pod keeps restarting the container! After about 30 seconds, you'll see it restart once. Wait a bit longer, and it restarts again.
 
 Let's stop watching (Ctrl+C) and get detailed information.
 
-```powershell
-kubectl describe pod sleep-lab
-```
 
 Look at the State section under Containers. You can see:
 - The container is in a "waiting" or "crashed" state
@@ -298,15 +198,9 @@ This is the first layer of high availability. If your application crashes, Kuber
 
 Before we finish, let's clean up the Pods we created.
 
-```powershell
-kubectl delete pod sleep whoami sleep-lab
-```
 
 We can delete multiple Pods in one command by listing their names. Kubernetes will gracefully terminate each Pod.
 
-```powershell
-kubectl get pods
-```
 
 And they're gone. Our namespace is clean again.
 

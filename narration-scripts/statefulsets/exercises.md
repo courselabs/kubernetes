@@ -48,19 +48,7 @@ The pattern simulates a primary-secondary architecture where:
 Let's look at the key files:
 
 **First, the headless Service** (`labs/statefulsets/specs/simple/services.yaml`):
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: simple-statefulset
-spec:
-  clusterIP: None  # This makes it headless
-  selector:
-    app: simple-statefulset
-  ports:
-  - port: 8010
-    targetPort: 80
-```
+
 
 Note the `clusterIP: None` - this is mandatory for StatefulSets.
 
@@ -78,15 +66,9 @@ Note the `clusterIP: None` - this is mandatory for StatefulSets.
 
 Now let's deploy everything:
 
-```bash
-kubectl apply -f labs/statefulsets/specs/simple
-```
 
 Immediately watch the Pod creation:
 
-```bash
-kubectl get po -l app=simple-statefulset --watch
-```
 
 **What to observe**:
 - Pod-0 appears first and goes through Init stages
@@ -101,16 +83,12 @@ This sequential creation is the key behavior of StatefulSets. Press Ctrl+C once 
 Let's verify the init container logic worked correctly. Check the logs from the `wait-service` init container:
 
 **For Pod-0 (the primary)**:
-```bash
-kubectl logs simple-statefulset-0 -c wait-service
-```
+
 
 You should see output indicating Pod-0 recognizes itself as the primary because its hostname ends in `-0`.
 
 **For Pod-1 (a secondary)**:
-```bash
-kubectl logs simple-statefulset-1 -c wait-service
-```
+
 
 This log should show Pod-1 waiting for the DNS entry of `simple-statefulset-0.simple-statefulset` to exist before proceeding. Once the primary was ready, the secondary continued its initialization.
 
@@ -124,17 +102,11 @@ This log should show Pod-1 waiting for the DNS entry of `simple-statefulset-0.si
 
 StatefulSets register all their Pod IPs with the associated Service. Let's verify:
 
-```bash
-kubectl get endpoints simple-statefulset
-```
 
 You should see three IP addresses listed - one for each Pod. The headless Service knows about all Pods, even though it doesn't provide load-balancing at the network level.
 
 Compare this with the Pod IPs:
 
-```bash
-kubectl get pods -l app=simple-statefulset -o wide
-```
 
 The IPs should match the endpoint addresses.
 
@@ -142,17 +114,11 @@ The IPs should match the endpoint addresses.
 
 Now let's explore the unique DNS capabilities of StatefulSets. First, deploy a sleep Pod for testing:
 
-```bash
-kubectl apply -f labs/statefulsets/specs/sleep-pod.yaml
-```
 
 **Test 1: Service-wide DNS**
 
 Perform a DNS lookup for the Service name:
 
-```bash
-kubectl exec sleep -- nslookup simple-statefulset
-```
 
 This returns all three Pod IP addresses. The Service name resolves to all Pods.
 
@@ -160,9 +126,6 @@ This returns all three Pod IP addresses. The Service name resolves to all Pods.
 
 Now lookup a specific Pod using the full DNS name:
 
-```bash
-kubectl exec sleep -- nslookup simple-statefulset-2.simple-statefulset.default.svc.cluster.local
-```
 
 This returns only the IP address for Pod-2.
 
@@ -177,14 +140,10 @@ This returns only the IP address for Pod-2.
 This lab includes LoadBalancer and NodePort Services for external access. Let's test the application:
 
 **Access via LoadBalancer** (if your cluster supports it):
-```bash
-curl http://localhost:8010
-```
+
 
 **Or via NodePort**:
-```bash
-curl http://localhost:30010
-```
+
 
 Refresh multiple times (or use Ctrl+Refresh in a browser) and observe responses from different Pods. The external Services provide traditional load-balancing behavior.
 
@@ -192,15 +151,9 @@ Refresh multiple times (or use Ctrl+Refresh in a browser) and observe responses 
 
 StatefulSets add the Pod name as a label. We can pin the external Service to a specific Pod:
 
-```bash
-kubectl apply -f labs/statefulsets/specs/simple/update
-```
 
 This update modifies the Service selector to target only Pod-1. Now test again:
 
-```bash
-curl http://localhost:8010
-```
 
 All responses now come from the same Pod. This demonstrates how you can selectively route traffic to specific StatefulSet replicas (useful for read-only secondaries in database clusters).
 
@@ -221,16 +174,6 @@ The complexity of setting up PostgreSQL replication is handled by a custom Docke
 
 This is where StatefulSets shine. Let's examine the volumeClaimTemplates section in `labs/statefulsets/specs/products-db/statefulset-with-pvc.yaml`:
 
-```yaml
-volumeClaimTemplates:
-- metadata:
-    name: data
-  spec:
-    accessModes: [ "ReadWriteOnce" ]
-    resources:
-      requests:
-        storage: 1Gi
-```
 
 **How This Works**:
 - When Pod-0 is created, Kubernetes automatically creates a PVC named `data-products-db-0`
@@ -244,15 +187,9 @@ volumeClaimTemplates:
 
 Let's deploy the complete database stack:
 
-```bash
-kubectl apply -f labs/statefulsets/specs/products-db
-```
 
 Immediately watch the PVC creation:
 
-```bash
-kubectl get pvc -l app=products-db --watch
-```
 
 **Observe the sequence**:
 1. `data-products-db-0` PVC is created and becomes Bound
@@ -268,9 +205,6 @@ Let's confirm the primary and replica roles were configured correctly.
 
 **Check the primary (Pod-0)**:
 
-```bash
-kubectl logs products-db-0
-```
 
 Look for log messages indicating:
 - PostgreSQL initializing as a primary
@@ -279,9 +213,6 @@ Look for log messages indicating:
 
 **Check the replica (Pod-1)**:
 
-```bash
-kubectl logs products-db-1
-```
 
 Look for log messages indicating:
 - Pod starting in replica mode
@@ -291,9 +222,6 @@ Look for log messages indicating:
 
 **Verify both are running**:
 
-```bash
-kubectl logs -l app=products-db --tail 3
-```
 
 Both Pods should show they're ready to accept connections.
 
@@ -322,16 +250,9 @@ Let's first deploy and test the current Deployment.
 
 Deploy the proxy as it currently exists:
 
-```bash
-kubectl apply -f labs/statefulsets/specs/simple-proxy
-```
 
 Test that it works:
 
-```bash
-curl http://localhost:8040
-# or browse to http://localhost:30040
-```
 
 You should see the proxied content from the StatefulSet web application. The Deployment uses an emptyDir volume at `/var/cache/nginx` for caching.
 
@@ -343,21 +264,6 @@ Here's how to approach this conversion:
 
 **Step 1: Create a headless Service** (required for StatefulSets):
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: simple-proxy
-  labels:
-    kubernetes.courselabs.co: statefulsets
-spec:
-  clusterIP: None
-  selector:
-    app: simple-proxy
-  ports:
-  - port: 80
-    targetPort: 80
-```
 
 **Step 2: Convert Deployment to StatefulSet**:
 
@@ -369,35 +275,9 @@ Key changes needed:
 
 **Step 3: Define volumeClaimTemplates**:
 
-```yaml
-volumeClaimTemplates:
-- metadata:
-    name: cache
-  spec:
-    accessModes: [ "ReadWriteOnce" ]
-    resources:
-      requests:
-        storage: 100Mi
-```
 
 **Step 4: Deploy and verify**:
 
-```bash
-# Remove the old Deployment
-kubectl delete -f labs/statefulsets/specs/simple-proxy
-
-# Apply the new StatefulSet
-kubectl apply -f <your-solution-file>
-
-# Watch Pods (should start in parallel)
-kubectl get pods -l app=simple-proxy --watch
-
-# Verify PVCs were created
-kubectl get pvc -l app=simple-proxy
-
-# Test the proxy still works
-curl http://localhost:8040
-```
 
 **Key Points**:
 - With `podManagementPolicy: Parallel`, all Pods start simultaneously
@@ -455,26 +335,16 @@ In production StatefulSet deployments, you'd also consider:
 
 Let's clean up the lab resources:
 
-```bash
-kubectl delete svc,cm,secret,statefulset,deployment,pod -l kubernetes.courselabs.co=statefulsets
-```
 
 **Important Observation**:
 
 Now check the PVCs:
 
-```bash
-kubectl get pvc
-```
 
 The PVCs are still there! This is StatefulSet's safety mechanism - PVCs are not automatically deleted when you delete a StatefulSet or scale it down.
 
 **To completely clean up**:
 
-```bash
-kubectl delete pvc -l app=products-db
-kubectl delete pvc -l app=simple-proxy
-```
 
 **Why This Design?**: It prevents accidental data loss. In production, you'd need explicit policies for PVC cleanup when StatefulSets are removed.
 

@@ -4,104 +4,82 @@
 ### Section 1: Creating Multi-Node Cluster (3 min)
 **[00:00-03:00]**
 
-Let's create a 3-node cluster with k3d:
+Let's create a 3-node cluster with k3d.
 
-```bash
-k3d cluster create lab-clusters --servers 1 --agents 2 -p "30700-30799:30700-30799"
-kubectl get nodes
-kubectl get nodes -o wide
-kubectl get nodes --show-labels
-```
+We have one control plane (server) and two workers (agents). Let's check the node details to see capacity, allocatable resources, and conditions.
 
-We have one control plane (server) and two workers (agents). Check node details:
+The node information shows us the resources available, the current conditions like Ready status, and various details about the node's configuration.
 
-```bash
-kubectl describe node k3d-lab-clusters-agent-0
-```
-
-See capacity, allocatable resources, and conditions.
+---
 
 ### Section 2: Taints and Tolerations (4 min)
 **[03:00-07:00]**
 
-Deploy whoami app across all nodes:
+Let's deploy the whoami app across all nodes to see the default behavior.
 
-```bash
-kubectl apply -f labs/clusters/specs/whoami
-kubectl get pods -l app=whoami -o wide
-```
+Pods are distributed across all nodes. Now let's taint a node with NoSchedule. This prevents new Pods from being scheduled there.
 
-Pods distributed across all nodes. Now taint a node:
+Let's restart the deployment to force rescheduling.
 
-```bash
-kubectl taint nodes k3d-lab-clusters-agent-1 disk=hdd:NoSchedule
-kubectl rollout restart deploy whoami
-kubectl get pods -l app=whoami -o wide
-```
+No new Pods schedule on agent-1 due to the taint. Now let's taint the control plane with NoExecute, which is more aggressive.
 
-No new Pods on agent-1 due to taint. Taint the control plane with NoExecute:
+Pods on the server get evicted immediately with NoExecute. This is different from NoSchedule, which only prevents new scheduling.
 
-```bash
-kubectl taint nodes k3d-lab-clusters-server-0 workload=system:NoExecute
-kubectl get pods -l app=whoami -o wide
-```
+Now let's update the deployment with a toleration that allows Pods to schedule on the tainted node.
 
-Pods on server get evicted immediately. Update deployment with toleration:
+Now Pods can schedule on agent-1 because they tolerate the taint. This demonstrates how tolerations give specific Pods permission to run on tainted nodes.
 
-```bash
-kubectl apply -f labs/clusters/specs/whoami/update
-kubectl get pods -l app=whoami -o wide
-```
-
-Now Pods can schedule on agent-1.
+---
 
 ### Section 3: Node Labels and Scheduling (3 min)
 **[07:00-10:00]**
 
-Add topology labels:
+Let's add topology labels to simulate a real cloud environment with regions and zones.
 
-```bash
-kubectl label node --all topology.kubernetes.io/region=lab
-kubectl label node k3d-lab-clusters-server-0 topology.kubernetes.io/zone=lab-a
-kubectl label node k3d-lab-clusters-agent-0 topology.kubernetes.io/zone=lab-a
-kubectl label node k3d-lab-clusters-agent-1 topology.kubernetes.io/zone=lab-b
-```
+These topology labels are used for zone-aware scheduling and can influence Pod placement decisions.
 
-Deploy DaemonSet with node selector:
+Now let's deploy a DaemonSet with a node selector.
 
-```bash
-kubectl apply -f labs/clusters/specs/ingress-controller
-kubectl get pods -n ingress-nginx -o wide
-```
+The DaemonSet respects both taints and node selectors, so it only runs on nodes that match its criteria.
 
-DaemonSet respects taints and node selectors.
+---
 
 ### Section 4: Node Maintenance (3 min)
 **[10:00-13:00]**
 
-Cordon a node:
+Let's practice node maintenance operations. First, we'll cordon a node, which marks it as unschedulable.
 
-```bash
-kubectl cordon k3d-lab-clusters-agent-1
-kubectl get nodes
-```
+The status now shows SchedulingDisabled. New Pods won't be scheduled here, but existing Pods continue running.
 
-Status shows SchedulingDisabled. Drain the node:
+Now let's drain the node, which evicts all Pods.
 
-```bash
-kubectl drain k3d-lab-clusters-agent-1 --ignore-daemonsets --delete-emptydir-data
-kubectl get pods -l app=whoami -o wide
-```
+Pods are evicted and rescheduled to other nodes. Draining is essential before performing maintenance on a node.
 
-Pods evicted and rescheduled. Uncordon:
+Now let's uncordon the node to make it available again.
 
-```bash
-kubectl uncordon k3d-lab-clusters-agent-1
-kubectl get nodes
-```
+The node is available again for scheduling. Note that Pods don't automatically move back - they stay where they were rescheduled.
 
-Node available again. Cleanup:
+Time for cleanup.
 
-```bash
-k3d cluster delete lab-clusters
-```
+---
+
+## Recording Notes
+
+**Timing:**
+- Section 1: 3 minutes
+- Section 2: 4 minutes
+- Section 3: 3 minutes
+- Section 4: 3 minutes
+- Total: 13 minutes
+
+**Key Points:**
+- Emphasize the difference between NoSchedule and NoExecute taints
+- Show how tolerations work with taints
+- Demonstrate the cordon/drain/uncordon workflow for maintenance
+- Highlight that DaemonSets respect taints and selectors
+
+**Visual Focus:**
+- Show Pod distribution across nodes clearly
+- Highlight taint effects on Pod scheduling
+- Display node status changes during cordon/drain operations
+- Keep node names visible for clarity

@@ -28,29 +28,11 @@ Let's begin!
 
 **Deploy Ingress Controller:**
 
-```bash
-# Check if ingress controller exists
-kubectl get pods -A | grep ingress
-
-# If not, deploy it
-kubectl apply -f labs/ingress/specs/ingress-controller
-
-# Verify ingress controller running
-kubectl get pods -n ingress-nginx
-```
 
 ### Step 2: Attempt Helm Installation (2 minutes)
 
 **Try to install the broken chart:**
 
-```bash
-# Install the Helm chart
-helm upgrade --install broken-app labs/troubleshooting-3/specs/app-chart/ \
-  --create-namespace \
-  --namespace troubleshooting-3
-
-# What happens?
-```
 
 **Expected:** Installation fails with errors. Note the error messages.
 
@@ -61,44 +43,14 @@ helm upgrade --install broken-app labs/troubleshooting-3/specs/app-chart/ \
 
 **Investigate the failure:**
 
-```bash
-# Check Helm release status
-helm list -n troubleshooting-3
-
-# View release history
-helm history broken-app -n troubleshooting-3
-
-# Get detailed error info
-helm status broken-app -n troubleshooting-3
-```
 
 ### Step 3: Diagnosis - Helm Chart Issues (4 minutes)
 
 **Validate templates without installing:**
 
-```bash
-# Dry-run to test templates
-helm install broken-app labs/troubleshooting-3/specs/app-chart/ \
-  --dry-run --debug \
-  --namespace troubleshooting-3
-
-# Or render templates to see output
-helm template broken-app labs/troubleshooting-3/specs/app-chart/ \
-  --namespace troubleshooting-3
-```
 
 **Check chart structure:**
 
-```bash
-# List chart files
-ls -la labs/troubleshooting-3/specs/app-chart/
-
-# Check values file
-cat labs/troubleshooting-3/specs/app-chart/values.yaml
-
-# Check templates
-ls labs/troubleshooting-3/specs/app-chart/templates/
-```
 
 **Common issues to look for:**
 - Missing closing braces in templates `{{ }}`
@@ -108,31 +60,11 @@ ls labs/troubleshooting-3/specs/app-chart/templates/
 
 **Fix Helm template errors:**
 
-```bash
-# Edit problematic templates
-vi labs/troubleshooting-3/specs/app-chart/templates/<template-name>.yaml
-
-# Common fixes:
-# - Fix Go template syntax
-# - Add missing values to values.yaml
-# - Correct indentation
-# - Fix resource references
-```
 
 ### Step 4: Diagnosis - Ingress Issues (3 minutes)
 
 **Once Helm installs, check Ingress:**
 
-```bash
-# Check ingress resource
-kubectl get ingress -n troubleshooting-3
-
-# Describe ingress
-kubectl describe ingress -n troubleshooting-3
-
-# Check ingress backend services exist
-kubectl get svc -n troubleshooting-3
-```
 
 **Common Ingress issues:**
 - Service name mismatch
@@ -142,31 +74,11 @@ kubectl get svc -n troubleshooting-3
 
 **Test Ingress routing:**
 
-```bash
-# Test with curl (include Host header)
-curl -H "Host: whoami.local" http://localhost:8000
-
-# Or add to /etc/hosts
-echo "127.0.0.1 whoami.local" | sudo tee -a /etc/hosts
-
-# Then access directly
-curl http://whoami.local:8000
-```
 
 ### Step 5: Diagnosis - StatefulSet Issues (3 minutes)
 
 **Check StatefulSet status:**
 
-```bash
-# Check StatefulSet
-kubectl get statefulset -n troubleshooting-3
-
-# Check pods
-kubectl get pods -n troubleshooting-3
-
-# Check PVCs
-kubectl get pvc -n troubleshooting-3
-```
 
 **Common StatefulSet issues:**
 - PVCs not binding (no PV available)
@@ -176,23 +88,6 @@ kubectl get pvc -n troubleshooting-3
 
 **Fix PVC issues:**
 
-```bash
-# If PVCs pending, create PVs
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: postgres-pv-0
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  hostPath:
-    path: /tmp/postgres-data-0
-  persistentVolumeReclaimPolicy: Retain
-EOF
-```
 
 ### Step 6: Fix All Issues (4 minutes)
 
@@ -207,59 +102,16 @@ EOF
 
 **Upgrade Helm release with fixes:**
 
-```bash
-# After fixing chart files
-helm upgrade broken-app labs/troubleshooting-3/specs/app-chart/ \
-  --namespace troubleshooting-3
-
-# Monitor deployment
-kubectl get pods -n troubleshooting-3 --watch
-```
 
 ### Step 7: Verification (3 minutes)
 
 **Comprehensive checks:**
 
-```bash
-# 1. Helm release successful
-helm status broken-app -n troubleshooting-3
-
-# 2. All pods running
-kubectl get pods -n troubleshooting-3
-# All should be Running and Ready
-
-# 3. StatefulSet healthy
-kubectl get statefulset -n troubleshooting-3
-
-# 4. PVCs bound
-kubectl get pvc -n troubleshooting-3
-# All should be Bound
-
-# 5. Services have endpoints
-kubectl get endpoints -n troubleshooting-3
-
-# 6. Ingress configured
-kubectl get ingress -n troubleshooting-3
-
-# 7. Application responds
-curl http://whoami.local:8000
-# Should return: whoami response
-```
 
 ---
 
 ## Cleanup (1 minute)
 
-```bash
-# Uninstall Helm release
-helm uninstall broken-app -n troubleshooting-3
-
-# Delete PVCs (not deleted automatically)
-kubectl delete pvc --all -n troubleshooting-3
-
-# Delete namespace
-kubectl delete namespace troubleshooting-3
-```
 
 ---
 
