@@ -18,14 +18,6 @@
 "Remember: In the exam, you have about 2 hours for 15-20 questions. That's roughly 6-8 minutes per task. Every second counts."
 
 **Setup:**
-```bash
-# Ensure you're in the right namespace
-kubectl config set-context --current --namespace default
-
-# Set up helpful aliases (exam allows this)
-alias k=kubectl
-export do="--dry-run=client -o yaml"
-```
 
 ---
 
@@ -35,24 +27,9 @@ export do="--dry-run=client -o yaml"
 
 "The fastest way to create a Job is imperatively:"
 
-```bash
-# Basic Job creation
-kubectl create job hello --image=busybox -- echo "Hello World"
-
-kubectl get jobs
-kubectl logs job/hello
-```
-
 "Created in one command! This is much faster than writing YAML from scratch."
 
 **Exam pattern:** "Question asks: 'Create a Job named date-job that runs the date command using busybox image.'"
-
-```bash
-# Solution (takes ~15 seconds)
-kubectl create job date-job --image=busybox -- date
-kubectl wait --for=condition=complete job/date-job --timeout=60s
-kubectl logs job/date-job
-```
 
 "Three commands: create, wait for completion, verify logs. Practice this flow."
 
@@ -60,36 +37,7 @@ kubectl logs job/date-job
 
 "For more complex Jobs, generate YAML as a starting point:"
 
-```bash
-# Generate but don't create
-kubectl create job test-job --image=nginx --dry-run=client -o yaml
-
-# Save to file for editing
-kubectl create job complex-job --image=nginx \
-  --dry-run=client -o yaml > job.yaml
-```
-
 "Now edit the file to add completions, parallelism, or other fields:"
-
-```bash
-# Quick edit example
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: parallel-job
-spec:
-  completions: 5
-  parallelism: 2
-  template:
-    spec:
-      containers:
-      - name: worker
-        image: busybox
-        command: ["sh", "-c", "echo Processing; sleep 5"]
-      restartPolicy: Never
-EOF
-```
 
 "This hybrid approach - generate, then modify - is often fastest for complex requirements."
 
@@ -97,26 +45,9 @@ EOF
 
 "If you forget the restart policy, your Job will be rejected:"
 
-```bash
-# This FAILS
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: broken-job
-spec:
-  template:
-    spec:
-      containers:
-      - name: app
-        image: nginx
-      # Missing restartPolicy!
-EOF
-```
-
 "Error: 'restartPolicy should be OnFailure or Never'"
 
-**Exam tip:** "When hand-writing Job YAML, ALWAYS add `restartPolicy: Never` immediately after the containers section. Make it muscle memory."
+**Exam tip:** "When hand-writing Job YAML, ALWAYS add  immediately after the containers section. Make it muscle memory."
 
 ---
 
@@ -125,25 +56,6 @@ EOF
 ### Exam Scenario: Batch Processing (5:00 - 6:30)
 
 "Common question: 'Create a Job that processes 10 items with 3 workers running in parallel.'"
-
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: process-items
-spec:
-  completions: 10
-  parallelism: 3
-  template:
-    spec:
-      containers:
-      - name: processor
-        image: busybox
-        command: ["sh", "-c", "echo Processing item; sleep 5"]
-      restartPolicy: Never
-EOF
-```
 
 "Key fields:
 - completions: 10 - total successful Pods needed
@@ -154,45 +66,13 @@ EOF
 
 "In the exam, you might need to verify completion:"
 
-```bash
-# Watch Job status
-kubectl get job process-items --watch
-
-# Check completion status
-kubectl get job process-items -o jsonpath='{.status.succeeded}'
-
-# View all Pods created
-kubectl get pods -l job-name=process-items
-
-# Count completions
-kubectl get pods -l job-name=process-items --field-selector=status.phase=Succeeded | wc -l
-```
-
 ### Understanding BackoffLimit (7:30 - 8:00)
 
 "The backoffLimit controls retry attempts:"
 
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: retry-job
-spec:
-  backoffLimit: 3
-  template:
-    spec:
-      containers:
-      - name: app
-        image: busybox
-        command: ["sh", "-c", "exit 1"]
-      restartPolicy: Never
-EOF
-```
-
 "This Job will fail 4 times total (initial + 3 retries), then stop."
 
-**Exam tip:** "If a Job isn't completing and you see multiple failed Pods, check if backoffLimit was reached with `kubectl describe job`."
+**Exam tip:** "If a Job isn't completing and you see multiple failed Pods, check if backoffLimit was reached with ."
 
 ---
 
@@ -202,59 +82,11 @@ EOF
 
 "Create CronJobs just as quickly:"
 
-```bash
-# Every minute
-kubectl create cronjob hello --image=busybox \
-  --schedule="*/1 * * * *" \
-  -- echo "Hello from CronJob"
-
-# Daily at 2am
-kubectl create cronjob backup --image=backup-image \
-  --schedule="0 2 * * *" \
-  -- /backup.sh
-
-# Generate YAML for complex scenarios
-kubectl create cronjob test --image=nginx \
-  --schedule="0 */6 * * *" \
-  --dry-run=client -o yaml > cronjob.yaml
-```
-
 ### Cron Expression Quick Reference (9:30 - 11:00)
 
 "You MUST be able to read and write cron expressions quickly:"
 
-```
-Format: minute hour day-of-month month day-of-week
-        [0-59] [0-23] [1-31] [1-12] [0-6]
-```
-
 **Practice these common patterns:**
-
-```bash
-# Every 5 minutes
-*/5 * * * *
-
-# Every hour (on the hour)
-0 * * * *
-
-# Every 6 hours
-0 */6 * * *
-
-# Daily at 9am
-0 9 * * *
-
-# Every Monday at 9am
-0 9 * * 1
-
-# First of every month at midnight
-0 0 1 * *
-
-# Every weekday at 2am
-0 2 * * 1-5
-
-# Business hours, every 15 minutes
-*/15 9-17 * * *
-```
 
 **Exam drill:** "Practice writing these without looking. You should be able to write 'daily at midnight' as '0 0 * * *' in under 5 seconds."
 
@@ -262,42 +94,13 @@ Format: minute hour day-of-month month day-of-week
 
 "Common exam task: 'Create a CronJob that runs weekly, then test it immediately.'"
 
-```bash
-# Create weekly CronJob
-kubectl create cronjob weekly-report --image=busybox \
-  --schedule="0 0 * * 0" \
-  -- echo "Weekly report"
-
-# Test it immediately without waiting
-kubectl create job report-test --from=cronjob/weekly-report
-
-# Verify
-kubectl logs job/report-test
-```
-
 "The --from flag is your secret weapon. It copies the CronJob's jobTemplate and runs it immediately."
 
 ### Suspending CronJobs (12:00 - 13:00)
 
 "Another common exam task: Suspend a CronJob for maintenance."
 
-```bash
-# Suspend
-kubectl patch cronjob hello -p '{"spec":{"suspend":true}}'
-
-# Verify
-kubectl get cronjob hello
-# SUSPEND column shows True
-
-# Resume
-kubectl patch cronjob hello -p '{"spec":{"suspend":false}}'
-```
-
 **Alternative (slower but valid):**
-```bash
-kubectl edit cronjob hello
-# Change spec.suspend: true
-```
 
 **Exam strategy:** "The patch command is faster. Memorize the syntax. But if you blank on it, kubectl edit always works."
 
@@ -309,82 +112,29 @@ kubectl edit cronjob hello
 
 "When a Job fails in the exam, follow this checklist:"
 
-```bash
-# 1. Check Job status
-kubectl get job failing-job
-# Look at COMPLETIONS: 0/1 means not complete
-
-# 2. Check Job details
-kubectl describe job failing-job
-# Look for: Pods Statuses, Events, Conditions
-
-# 3. Find the Pods
-kubectl get pods -l job-name=failing-job
-
-# 4. Check Pod status
-kubectl describe pod <pod-name>
-# Look for: State, Last State, Events
-
-# 5. Check logs
-kubectl logs -l job-name=failing-job
-kubectl logs <pod-name> --previous  # If container restarted
-```
-
 ### Common Failure Patterns (14:00 - 15:30)
 
 "Learn to recognize these quickly:"
 
 **1. ImagePullBackOff**
-```bash
-kubectl get pods
-# STATUS: ImagePullBackOff or ErrImagePull
 
-kubectl describe pod <name>
-# Events: Failed to pull image "wrong-name:tag"
-```
 "Fix: Correct the image name in the Job, delete old Job, recreate."
 
 **2. CrashLoopBackOff**
-```bash
-kubectl get pods
-# STATUS: CrashLoopBackOff, RESTARTS: increasing
 
-kubectl logs <pod-name>
-# Check application errors
-```
 "Fix: Debug the container command or application code."
 
 **3. Error / ContainerCannotRun**
-```bash
-kubectl describe pod <name>
-# Events: executable file not found
-```
+
 "Fix: Correct the command path or arguments."
 
 **4. BackoffLimit Exceeded**
-```bash
-kubectl describe job <name>
-# Message: Job has reached the specified backoff limit
-```
+
 "Fix: Increase backoffLimit or fix the underlying issue."
 
 ### Exam Practice: Debug and Fix (15:30 - 16:00)
 
 "Let's simulate an exam scenario:"
-
-```bash
-# Create a broken Job
-kubectl create job broken --image=nginx -- /bin/wrong-command
-
-# Debug it (30 seconds max)
-kubectl get pods -l job-name=broken
-kubectl describe pod <pod-name> | grep -A 5 Events
-
-# Fix it
-kubectl delete job broken
-kubectl create job fixed --image=nginx -- /bin/sh -c "echo Success"
-kubectl logs job/fixed
-```
 
 "Total time: Under 1 minute. Practice until this flow is automatic."
 
@@ -396,45 +146,9 @@ kubectl logs job/fixed
 
 "Jobs automatically create the 'job-name' label. Use it:"
 
-```bash
-# Get all Pods from a Job
-kubectl get pods -l job-name=my-job
-
-# Delete all Job Pods (Job will recreate if not complete)
-kubectl delete pods -l job-name=my-job
-
-# View logs from all Pods in a Job
-kubectl logs -l job-name=my-job --all-containers=true
-
-# Get all Pods created by any Job
-kubectl get pods -l job-name
-```
-
 ### CronJob History Management (17:00 - 18:00)
 
 "Control how many old Jobs are kept:"
-
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: cleanup
-spec:
-  schedule: "0 3 * * *"
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 2
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: cleanup
-            image: busybox
-            command: ["echo", "Cleanup done"]
-          restartPolicy: Never
-EOF
-```
 
 "Set these limits to:
 - Reduce clutter in namespace
@@ -444,27 +158,6 @@ EOF
 ### Concurrency Policies (18:00 - 19:00)
 
 "Choose the right policy for your scenario:"
-
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: long-task
-spec:
-  schedule: "*/5 * * * *"
-  concurrencyPolicy: Forbid  # Allow | Forbid | Replace
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: task
-            image: busybox
-            command: ["sh", "-c", "echo Start; sleep 600; echo Done"]
-          restartPolicy: Never
-EOF
-```
 
 **Exam decision tree:**
 - Database backup? → Forbid (never overlap)
@@ -486,28 +179,6 @@ EOF
 <details>
 <summary>Solution (reveal after attempt)</summary>
 
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: data-processor
-spec:
-  completions: 5
-  parallelism: 2
-  template:
-    spec:
-      containers:
-      - name: processor
-        image: busybox
-        command: ["sh", "-c", "echo Processing && sleep 3"]
-      restartPolicy: Never
-EOF
-
-# Verify
-kubectl get job data-processor --watch
-kubectl get pods -l job-name=data-processor
-```
 </details>
 
 ### Exercise 2: CronJob with Schedule (20:00 - 21:00)
@@ -521,30 +192,6 @@ kubectl get pods -l job-name=data-processor
 <details>
 <summary>Solution</summary>
 
-```bash
-cat << EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: hourly-backup
-spec:
-  schedule: "15 * * * *"
-  concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 3
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: backup
-            image: backup:latest
-            command: ["/backup.sh"]
-          restartPolicy: Never
-EOF
-
-# Test it
-kubectl create job backup-test --from=cronjob/hourly-backup
-```
 </details>
 
 ### Exercise 3: Debug and Fix (21:00 - 22:30)
@@ -553,29 +200,11 @@ kubectl create job backup-test --from=cronjob/hourly-backup
 
 **Task:** "A Job named 'failing-processor' exists but hasn't completed. Debug it, identify the issue, fix it, and verify success."
 
-```bash
-# Setup
-kubectl create job failing-processor --image=busybox -- slep 5
-```
-
 **Timer starts now...**
 
 <details>
 <summary>Solution</summary>
 
-```bash
-# Debug
-kubectl get job failing-processor
-kubectl get pods -l job-name=failing-processor
-kubectl describe pod <pod-name>
-# Events show: "executable file not found in $PATH: slep"
-
-# Fix: Typo in command (slep → sleep)
-kubectl delete job failing-processor
-kubectl create job failing-processor --image=busybox -- sleep 5
-kubectl wait --for=condition=complete job/failing-processor
-kubectl get job failing-processor
-```
 </details>
 
 ### Exercise 4: Suspend and Trigger (22:30 - 24:00)
@@ -584,29 +213,11 @@ kubectl get job failing-processor
 
 **Task:** "A CronJob named 'daily-report' runs daily at midnight. Suspend it for maintenance, then manually trigger one execution to test it."
 
-```bash
-# Setup
-kubectl create cronjob daily-report --image=busybox \
-  --schedule="0 0 * * *" -- echo "Daily report"
-```
-
 **Timer starts now...**
 
 <details>
 <summary>Solution</summary>
 
-```bash
-# Suspend
-kubectl patch cronjob daily-report -p '{"spec":{"suspend":true}}'
-kubectl get cronjob daily-report
-
-# Manual trigger
-kubectl create job report-manual --from=cronjob/daily-report
-kubectl logs job/report-manual
-
-# Resume (if needed)
-kubectl patch cronjob daily-report -p '{"spec":{"suspend":false}}'
-```
 </details>
 
 ---
@@ -625,31 +236,13 @@ kubectl patch cronjob daily-report -p '{"spec":{"suspend":false}}'
 ### Pre-Exam Checklist
 
 **Commands to memorize:**
-```bash
-# Job creation
-kubectl create job NAME --image=IMAGE -- COMMAND
-
-# CronJob creation
-kubectl create cronjob NAME --image=IMAGE --schedule="SCHEDULE" -- COMMAND
-
-# Manual trigger
-kubectl create job NAME --from=cronjob/CRONJOB
-
-# Suspend/Resume
-kubectl patch cronjob NAME -p '{"spec":{"suspend":true}}'
-
-# Debugging
-kubectl get pods -l job-name=NAME
-kubectl logs -l job-name=NAME
-kubectl describe job NAME
-```
 
 **Cron patterns to memorize:**
-- Every 5 min: `*/5 * * * *`
-- Hourly: `0 * * * *`
-- Daily 2am: `0 2 * * *`
-- Weekly: `0 0 * * 0`
-- Monthly: `0 0 1 * *`
+- Every 5 min: 
+- Hourly: 
+- Daily 2am: 
+- Weekly: 
+- Monthly: 
 
 **Common mistakes to avoid:**
 1. Forgetting restartPolicy (must be Never or OnFailure)
@@ -661,12 +254,6 @@ kubectl describe job NAME
 ---
 
 ## Cleanup (25:00)
-
-```bash
-# Clean up practice resources
-kubectl delete job --all
-kubectl delete cronjob --all
-```
 
 ---
 

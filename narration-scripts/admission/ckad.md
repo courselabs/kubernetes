@@ -6,285 +6,106 @@
 
 While admission control is advanced, you'll encounter it in CKAD scenarios - mainly troubleshooting when policies block your deployments.
 
-Key exam skills:
-- Recognizing admission controller errors
-- Debugging Pods stuck due to admission policies
-- Understanding Pod Security Standards
-- Working with ResourceQuota and LimitRange
-- Reading Gatekeeper constraints
+Key exam skills include recognizing admission controller errors, debugging Pods stuck due to admission policies, understanding Pod Security Standards, working with ResourceQuota and LimitRange, and reading Gatekeeper constraints.
 
-You won't write webhooks, but you must troubleshoot when they block you. Essential commands:
-
-```bash
-kubectl describe rs -l app=myapp  # Admission errors appear here
-kubectl get events --sort-by=.metadata.creationTimestamp
-kubectl describe resourcequota -n namespace
-kubectl describe limitrange -n namespace
-kubectl get namespace namespace --show-labels  # Check Pod Security
-```
+You won't write webhooks, but you must troubleshoot when they block you. Essential commands include kubectl describe on ReplicaSets, checking events sorted by creation time, describing resource quotas and limit ranges, and checking namespace labels for Pod Security settings.
 
 ---
 
 ### Section 2: Pod Security Standards (4 min)
 **[02:00-06:00]**
 
-PSS is enforced at namespace level via labels. Three levels:
+Pod Security Standards are enforced at namespace level via labels. There are three levels:
 
-**Privileged** - No restrictions
-**Baseline** - Prevents known privilege escalations
-**Restricted** - Hardened security requirements
+Privileged means no restrictions. Baseline prevents known privilege escalations. And Restricted enforces hardened security requirements.
 
-Apply enforcement:
+Let me show you how to apply enforcement. We'll label a namespace to enforce baseline security.
 
-```bash
-kubectl label namespace app pod-security.kubernetes.io/enforce=baseline
-```
+Baseline prevents several dangerous configurations: hostNetwork, hostPID, hostIPC are not allowed. Privileged containers are blocked. HostPath volumes cannot be used. And you can't add capabilities except for the safe ones.
 
-Baseline prevents:
-- hostNetwork, hostPID, hostIPC
-- privileged containers
-- hostPath volumes
-- Adding capabilities (except safe ones)
+Restricted mode additionally requires running as non-root, dropping ALL capabilities, setting a seccomp profile, and preventing privilege escalation.
 
-Restricted additionally requires:
-- runAsNonRoot: true
-- Drop ALL capabilities
-- seccompProfile set
-- No privilege escalation
+Here's a common error you'll see - it says the Pod violates PodSecurity baseline because a container has privileged set to true.
 
-Common error:
+The fix is simple - remove the privileged setting or set it to false in the container's security context.
 
-```
-violates PodSecurity "baseline:latest": privileged
-(container "nginx" must not set securityContext.privileged=true)
-```
-
-Fix:
-
-```yaml
-spec:
-  containers:
-  - name: nginx
-    image: nginx
-    securityContext:
-      privileged: false  # or remove the line
-```
-
-For restricted mode:
-
-```yaml
-spec:
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-  containers:
-  - name: app
-    image: app
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop: [ALL]
-```
+For restricted mode, you'll need a more comprehensive security context configuration. At the Pod level, set runAsNonRoot to true, specify a user ID, and configure a seccomp profile with type RuntimeDefault. In each container, set allowPrivilegeEscalation to false and drop ALL capabilities.
 
 ---
 
 ### Section 3: ResourceQuota Troubleshooting (3 min)
 **[06:00-09:00]**
 
-ResourceQuota enforces namespace limits. Common error:
+ResourceQuota enforces namespace limits. Here's a common error - it says exceeded quota for compute-quota. The requested memory is 2Gi, but the namespace is already using 8Gi of a 10Gi limit.
 
-```
-exceeded quota: compute-quota, requested: limits.memory=2Gi,
-used: limits.memory=8Gi, limited: limits.memory=10Gi
-```
+To debug this, describe the resource quota in the namespace.
 
-Debug:
+The output shows the used and hard limits for each resource. In this case, memory limits are at 8Gi of 10Gi, and there are 8 pods of a maximum 10.
 
-```bash
-kubectl describe resourcequota -n namespace
-```
+You have three solutions: reduce resources in your Pod spec, delete other Pods to free up quota, or increase the quota if you have permission.
 
-Output shows:
+Let me show you option one - edit the deployment and reduce the memory limit from 2Gi to 1Gi.
 
-```
-Resource        Used  Hard
---------        ----  ----
-limits.memory   8Gi   10Gi
-pods            8     10
-```
+For option two, you could scale down another deployment to zero replicas.
 
-Solutions:
-1. Reduce resources in your Pod spec
-2. Delete other Pods
-3. Increase quota (if you have permission)
-
-```bash
-# Option 1: Reduce requests
-kubectl edit deployment myapp
-# Change limits.memory from 2Gi to 1Gi
-
-# Option 2: Scale down others
-kubectl scale deployment other-app --replicas=0
-
-# Check quota again
-kubectl describe resourcequota -n namespace
-```
+Then check the quota again to verify you now have headroom.
 
 ---
 
 ### Section 4: LimitRange Defaults (2 min)
 **[09:00-11:00]**
 
-LimitRange sets defaults and constraints. Error example:
+LimitRange sets defaults and constraints. Here's an error example - maximum memory usage per Container is 1Gi, but the requested limit is 2Gi.
 
-```
-maximum memory usage per Container is 1Gi, but limit is 2Gi
-```
+Check the LimitRange in the namespace to see what constraints are set.
 
-Check LimitRange:
+The output shows default values, default requests, maximum, and minimum for both memory and CPU.
 
-```bash
-kubectl describe limitrange -n namespace
-```
-
-Shows:
-
-```
-Container:
-  default:      memory: 512Mi, cpu: 500m
-  defaultRequest: memory: 256Mi, cpu: 100m
-  max:          memory: 1Gi, cpu: 1
-  min:          memory: 128Mi, cpu: 50m
-```
-
-If your container doesn't specify resources, LimitRange applies defaults automatically. If you exceed max, requests are rejected.
+If your container doesn't specify resources, LimitRange applies these defaults automatically. If you exceed the maximum, your requests are rejected.
 
 ---
 
 ### Section 5: Webhook and Gatekeeper Debugging (4 min)
 **[11:00-15:00]**
 
-Webhook error format:
+When validation webhooks block your requests, you'll see an error like this - admission webhook validate.app.io denied the request with a message saying you must provide labels like "app" and "version".
 
-```
-Error from server: admission webhook "validate.app.io"
-denied the request: you must provide labels: {"app", "version"}
-```
+Here are the debug steps. First, check which constraints exist in the cluster. You can get all constraints across namespaces, or get specific types like requiredlabels.
 
-Debug steps:
+Second, describe the constraint to see its requirements. Look for the Match section showing which resources it applies to, Parameters showing what's required, and any current Violations.
 
-```bash
-# 1. Check which constraints exist
-kubectl get constraints --all-namespaces
-kubectl get requiredlabels
+Third, fix your YAML by adding the required labels in the metadata section.
 
-# 2. Describe to see requirements
-kubectl describe requiredlabels my-policy
-
-# Look for:
-# - Match: Which resources
-# - Parameters: What's required
-# - Violations: Current violations
-
-# 3. Fix your YAML
-metadata:
-  labels:
-    app: myapp
-    version: "1.0"
-```
-
-For deployment failures, always check ReplicaSet:
-
-```bash
-kubectl get deploy myapp  # Shows 0/3 ready
-kubectl describe deploy myapp  # May not show error
-kubectl describe rs -l app=myapp  # Error is HERE
-```
+For deployment failures, always check the ReplicaSet. The deployment might show 0 of 3 ready, but describing the deployment may not show the error. The error appears when you describe the ReplicaSet for that app.
 
 ---
 
 ### Section 6: Common Scenarios and Quick Fixes (5 min)
 **[15:00-20:00]**
 
-**Scenario 1: Deployment not creating Pods**
+Let me walk through some common scenarios.
 
-```bash
-kubectl get deploy myapp  # 0/3 ready
-kubectl describe rs -l app=myapp
-# See: "admission webhook denied the request"
-```
+Scenario 1: Deployment not creating Pods. When you get the deployment, it shows 0 of 3 ready. Describing the ReplicaSet reveals an admission webhook denied the request. The fix is to read the error message carefully and add the required fields it specifies.
 
-Fix: Read error message, add required fields.
+Scenario 2: Pod Security violation. The error says violates PodSecurity baseline for using hostNetwork. The fix is to remove hostNetwork from your spec, or change the namespace policy if appropriate.
 
-**Scenario 2: Pod Security violation**
+Scenario 3: ResourceQuota exceeded. Describing the resource quota shows pods at 10 of 10 - you're at the limit. The fix is to delete a Pod or scale down a deployment to free up quota.
 
-```
-violates PodSecurity "baseline": hostNetwork
-```
-
-Fix: Remove hostNetwork or change namespace policy.
-
-**Scenario 3: ResourceQuota exceeded**
-
-```bash
-kubectl describe resourcequota -n namespace
-# Shows: pods 10/10 (at limit)
-```
-
-Fix: Delete a Pod or scale down a deployment.
-
-**Scenario 4: Missing required labels**
-
-```
-you must provide labels: {"app"}
-```
-
-Fix:
-
-```yaml
-metadata:
-  labels:
-    app: myapp
-```
+Scenario 4: Missing required labels. The error says you must provide the "app" label. The fix is adding it to your metadata labels section.
 
 ---
 
 ### Section 7: Exam Strategy (2 min)
 **[20:00-22:00]**
 
-**Checklist for admission issues:**
+Here's a checklist for admission issues during the exam:
 
-1. Deployment exists but no Pods? → Check ReplicaSet
-2. Error mentions webhook? → Read message, fix specified field
-3. Error mentions quota? → Check kubectl describe resourcequota
-4. Error mentions PodSecurity? → Check namespace labels, adjust securityContext
-5. Still stuck? → Check LimitRange, check events
+If your deployment exists but no Pods appear, check the ReplicaSet. If the error mentions a webhook, read the message and fix the specified field. If it mentions quota, check kubectl describe resourcequota. If it mentions PodSecurity, check namespace labels and adjust your securityContext. If you're still stuck, check LimitRange and events.
 
-**Time-saving commands:**
+Time-saving commands include checking ReplicaSets with tail to see just the recent events, getting namespace labels with show-labels, describing resource quotas, and listing all constraints across namespaces.
 
-```bash
-# Quick admission check
-kubectl describe rs -l app=myapp | tail -20
+Common mistakes to avoid: checking the Deployment instead of the ReplicaSet for admission errors, not reading the full error message, forgetting about namespace-scoped policies, and not verifying quota after making changes.
 
-# Check namespace policies
-kubectl get ns namespace --show-labels
-
-# Check quota status
-kubectl describe resourcequota -n namespace
-
-# Check all constraints
-kubectl get constraints -A
-```
-
-**Common mistakes to avoid:**
-
-1. Checking Deployment instead of ReplicaSet for admission errors
-2. Not reading the full error message
-3. Forgetting namespace-scoped policies
-4. Not verifying quota after changes
-
-Practice identifying admission errors in under 2 minutes. Move on quickly if stuck - don't let admission questions consume >5 minutes.
+Practice identifying admission errors in under 2 minutes. Move on quickly if stuck - don't let admission questions consume more than 5 minutes.
 
 Good luck with CKAD!

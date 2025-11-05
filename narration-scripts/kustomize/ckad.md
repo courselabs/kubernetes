@@ -64,51 +64,12 @@ You must be fast and accurate. Practice is essential.
 Let's memorize the core kustomization.yaml structure.
 
 **Minimal kustomization.yaml:**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - deployment.yaml
-  - service.yaml
-```
 
 This is the absolute minimum - just listing resources.
 
 **Common overlay kustomization.yaml:**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-bases:
-  - ../../base
-
-namePrefix: prod-
-namespace: production
-
-commonLabels:
-  environment: production
-
-replicas:
-  - name: myapp
-    count: 5
-
-images:
-  - name: myapp
-    newTag: v2.0.0
-```
 
 **With patches:**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-bases:
-  - ../../base
-
-patchesStrategicMerge:
-  - replica-patch.yaml
-  - resources-patch.yaml
-```
 
 Memorize these structures. You should be able to write them from memory in under 30 seconds.
 
@@ -124,55 +85,15 @@ Speed is critical in the CKAD exam. Here are techniques to work faster.
 
 Don't create files one by one. Use kubectl to generate base YAML:
 
-```bash
-# Create base directory
-mkdir -p base
-
-# Generate deployment YAML
-kubectl create deployment myapp --image=nginx --dry-run=client -o yaml > base/deployment.yaml
-
-# Generate service YAML
-kubectl create service clusterip myapp --tcp=80:80 --dry-run=client -o yaml > base/service.yaml
-
-# Create kustomization
-cat > base/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - deployment.yaml
-  - service.yaml
-EOF
-```
-
 This creates a complete base in seconds.
 
 **Technique 2: Quick Overlay Creation**
 
 Use heredoc to create overlays quickly:
 
-```bash
-mkdir -p overlays/prod
-
-cat > overlays/prod/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: prod-
-namespace: production
-replicas:
-  - name: myapp
-    count: 5
-EOF
-```
-
 **Technique 3: Validate Immediately**
 
 Always validate before applying:
-
-```bash
-kubectl kustomize overlays/prod/
-```
 
 If there's an error, you'll see it immediately without applying to the cluster.
 
@@ -189,27 +110,6 @@ Patches are slower to write. Use built-in features when possible.
 **Technique 5: Quick Strategic Merge Patch**
 
 When you do need a patch:
-
-```bash
-cat > overlays/prod/resources-patch.yaml <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: myapp
-spec:
-  template:
-    spec:
-      containers:
-      - name: myapp
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-EOF
-```
 
 Only include the fields you're changing, not the entire resource.
 
@@ -228,24 +128,6 @@ Task: "Create a base kustomization for the YAML files in the /app directory."
 Given files: deployment.yaml, service.yaml, configmap.yaml
 
 Solution:
-```bash
-cd /app
-
-cat > kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - deployment.yaml
-  - service.yaml
-  - configmap.yaml
-EOF
-
-# Validate
-kubectl kustomize .
-
-# Apply
-kubectl apply -k .
-```
 
 Time: 1 minute
 
@@ -254,33 +136,6 @@ Time: 1 minute
 Task: "Create a production overlay that deploys the app with 5 replicas, prod- prefix, in production namespace, using image tag v2.0."
 
 Solution:
-```bash
-mkdir -p overlays/prod
-
-cat > overlays/prod/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: prod-
-namespace: production
-replicas:
-  - name: myapp
-    count: 5
-images:
-  - name: nginx
-    newTag: v2.0
-EOF
-
-# Create namespace
-kubectl create namespace production
-
-# Validate
-kubectl kustomize overlays/prod
-
-# Apply
-kubectl apply -k overlays/prod
-```
 
 Time: 2-3 minutes
 
@@ -289,36 +144,6 @@ Time: 2-3 minutes
 Task: "Modify the production overlay to add resource limits: 512Mi memory, 500m CPU."
 
 Solution:
-```bash
-cat > overlays/prod/resources-patch.yaml <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: myapp
-spec:
-  template:
-    spec:
-      containers:
-      - name: myapp
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-EOF
-
-# Update kustomization to include patch
-cat >> overlays/prod/kustomization.yaml <<EOF
-patchesStrategicMerge:
-  - resources-patch.yaml
-EOF
-
-# Validate and apply
-kubectl kustomize overlays/prod
-kubectl apply -k overlays/prod
-```
 
 Time: 2-3 minutes
 
@@ -327,55 +152,6 @@ Time: 2-3 minutes
 Task: "Create dev, staging, and prod overlays with 1, 3, and 5 replicas respectively."
 
 Solution:
-```bash
-# Dev overlay
-mkdir -p overlays/dev
-cat > overlays/dev/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: dev-
-namespace: dev
-replicas:
-  - name: myapp
-    count: 1
-EOF
-
-# Staging overlay
-mkdir -p overlays/staging
-cat > overlays/staging/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: staging-
-namespace: staging
-replicas:
-  - name: myapp
-    count: 3
-EOF
-
-# Production overlay
-mkdir -p overlays/prod
-cat > overlays/prod/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: prod-
-namespace: production
-replicas:
-  - name: myapp
-    count: 5
-EOF
-
-# Create namespaces and deploy
-kubectl create namespace dev staging production
-kubectl apply -k overlays/dev
-kubectl apply -k overlays/staging
-kubectl apply -k overlays/prod
-```
 
 Time: 4-5 minutes
 
@@ -392,74 +168,28 @@ Quick troubleshooting workflow for exam scenarios.
 Problem: kustomization.yaml references non-existent file
 
 Solution:
-```bash
-# Check what files exist
-ls -la
-
-# Verify resources list matches actual files
-cat kustomization.yaml
-
-# Fix the kustomization.yaml to reference correct files
-```
 
 **Error: "failed to find an object with apps_v1_Deployment|myapp"**
 
 Problem: Patch references wrong resource name
 
 Solution:
-```bash
-# Check actual resource name in base
-grep "name:" base/deployment.yaml
-
-# Update patch to use correct name
-# The name in the patch must match the name in the base
-```
 
 **Error: "accumulating resources: accumulation err"**
 
 Problem: Invalid base path in overlay
 
 Solution:
-```bash
-# Check relative path to base
-# From overlays/prod/, base is ../../base
-# From overlays/dev/region/, base is ../../../base
-
-# Fix the bases path in kustomization.yaml
-```
 
 **Error: "invalid image"**
 
 Problem: Incorrect image syntax in kustomization
 
 Solution:
-```bash
-# Correct syntax:
-images:
-  - name: nginx          # Original image name
-    newTag: v2.0         # New tag
-  # OR
-  - name: nginx
-    newName: mynginx     # New image name
-    newTag: v2.0
-
-# Common mistake:
-images:
-  - name: nginx:latest   # Don't include tag in name
-    newTag: v2.0
-```
 
 **Debugging Technique:**
 
-Always use `kubectl kustomize` to see what will be applied:
-
-```bash
-kubectl kustomize overlays/prod/
-
-# If error, fix and retry
-# Once valid, apply
-kubectl apply -k overlays/prod/
-```
+Always use  to see what will be applied:
 
 ---
 
@@ -479,66 +209,6 @@ Create a complete kustomize setup:
 **Start timing...**
 
 **Solution:**
-```bash
-# Create base
-mkdir -p base
-kubectl create deployment nginx --image=nginx --replicas=2 --dry-run=client -o yaml > base/deployment.yaml
-kubectl create service clusterip nginx --tcp=80:80 --dry-run=client -o yaml > base/service.yaml
-
-cat > base/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - deployment.yaml
-  - service.yaml
-EOF
-
-# Create dev overlay
-mkdir -p overlays/dev
-cat > overlays/dev/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: dev-
-namespace: dev
-replicas:
-  - name: nginx
-    count: 1
-EOF
-
-# Create prod overlay
-mkdir -p overlays/prod
-cat > overlays/prod/kustomization.yaml <<EOF
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../../base
-namePrefix: prod-
-namespace: production
-replicas:
-  - name: nginx
-    count: 3
-images:
-  - name: nginx
-    newTag: "1.25"
-EOF
-
-# Deploy
-kubectl create namespace dev production
-kubectl apply -k overlays/dev
-kubectl apply -k overlays/prod
-
-# Verify
-kubectl get pods -n dev
-kubectl get pods -n production
-
-# Cleanup
-kubectl delete -k overlays/dev
-kubectl delete -k overlays/prod
-kubectl delete namespace dev production
-rm -rf base overlays
-```
 
 How did you do? Target time is 3 minutes. Practice until you can complete it comfortably.
 
@@ -552,20 +222,6 @@ How did you do? Target time is 3 minutes. Practice until you can complete it com
 A kustomization is failing with errors. Fix it.
 
 **Broken kustomization:**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-  - ../base
-namePrefix: prod-
-namespace: production
-replicas:
-  - name: webapp
-    count: 5
-images:
-  - name: myapp:latest
-    newTag: v2.0
-```
 
 **Problems:**
 1. Base path might be wrong (depends on directory structure)
@@ -573,34 +229,6 @@ images:
 3. Need to verify replica name matches deployment
 
 **Solution process:**
-```bash
-# Validate
-kubectl kustomize .
-
-# Error: invalid image
-# Fix images section:
-images:
-  - name: myapp
-    newTag: v2.0
-
-# Validate again
-kubectl kustomize .
-
-# Error: failed to find object
-# Fix replicas - check actual deployment name:
-grep "name:" ../base/deployment.yaml
-
-# Update replicas to match
-replicas:
-  - name: myapp  # Must match actual deployment name
-    count: 5
-
-# Validate final
-kubectl kustomize .
-
-# Apply
-kubectl apply -k .
-```
 
 ---
 
@@ -633,11 +261,6 @@ kubectl apply -k .
 - Troubleshoot issue: 2-3 minutes
 
 **Key Command:**
-```bash
-kubectl kustomize <dir>  # Preview and validate
-kubectl apply -k <dir>   # Apply
-kubectl delete -k <dir>  # Delete
-```
 
 ---
 

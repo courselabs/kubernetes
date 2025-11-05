@@ -39,69 +39,16 @@ Let's start with essential commands and quick reference material.
 Here are the commands you must know by heart for DaemonSet questions:
 
 **Create and View**:
-```bash
-# Apply from YAML (most common approach)
-kubectl apply -f daemonset.yaml
-
-# Get DaemonSets (use shorthand)
-kubectl get ds
-
-# Describe for troubleshooting
-kubectl describe ds <name>
-
-# View DaemonSet YAML
-kubectl get ds <name> -o yaml
-```
 
 **Update and Rollout Management**:
-```bash
-# Edit DaemonSet
-kubectl edit ds <name>
-
-# Check rollout status
-kubectl rollout status ds/<name>
-
-# View rollout history
-kubectl rollout history ds/<name>
-
-# Rollback if needed
-kubectl rollout undo ds/<name>
-```
 
 **Pod Management**:
-```bash
-# Get Pods from DaemonSet
-kubectl get pods -l app=<label> -o wide
-
-# Watch Pods during updates
-kubectl get pods -l app=<label> --watch
-
-# Delete specific Pod (for OnDelete strategy)
-kubectl delete pod <pod-name>
-```
 
 **Node Operations**:
-```bash
-# Label node to target DaemonSet
-kubectl label node <node-name> <key>=<value>
-
-# Remove label from node
-kubectl label node <node-name> <key>-
-
-# View node labels
-kubectl get nodes --show-labels
-```
 
 **Deletion**:
-```bash
-# Delete DaemonSet (cascading)
-kubectl delete ds <name>
 
-# Delete DaemonSet but keep Pods
-kubectl delete ds <name> --cascade=orphan
-```
-
-**Memory Aid**: Use `ds` not `daemonset` - saves 8 characters every time.
+**Memory Aid**: Use  not  - saves 8 characters every time.
 
 ### 1.2 DaemonSet vs Deployment - Quick Comparison (60 seconds)
 
@@ -131,7 +78,7 @@ Know this cold for the exam:
 
 **Exam Question Format**:
 
-"Create a DaemonSet named `monitor` that runs busybox:latest with the command `sleep 3600`. The DaemonSet should have the label `app=monitor`. Verify that one Pod is running on each node."
+"Create a DaemonSet named  that runs busybox:latest with the command . The DaemonSet should have the label . Verify that one Pod is running on each node."
 
 **Constraints**:
 - Namespace: default
@@ -142,50 +89,18 @@ Know this cold for the exam:
 
 **Step 1: Create the DaemonSet** (2 minutes target)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: monitor
-  labels:
-    app: monitor
-spec:
-  selector:
-    matchLabels:
-      app: monitor
-  template:
-    metadata:
-      labels:
-        app: monitor
-    spec:
-      containers:
-      - name: busybox
-        image: busybox:latest
-        command: ['sleep', '3600']
-EOF
-```
-
 **Critical Points**:
-- No `replicas` field - common mistake to include one
-- `selector.matchLabels` must match `template.metadata.labels`
-- `command` is an array of strings
+- No  field - common mistake to include one
+-  must match 
+-  is an array of strings
 
 **Time-Saving Tip**: In the exam, don't overthink the YAML structure. DaemonSets are simpler than StatefulSets - just Pod spec, selector, and template.
 
 **Step 2: Verify DaemonSet Created** (30 seconds target)
 
-```bash
-kubectl get ds monitor
-```
-
-Check that `DESIRED` matches your cluster's node count.
+Check that  matches your cluster's node count.
 
 **Step 3: Verify Pods Running** (30 seconds target)
-
-```bash
-kubectl get pods -l app=monitor -o wide
-```
 
 Verify:
 - One Pod per node (check the NODE column)
@@ -195,11 +110,11 @@ Verify:
 
 ### 2.3 Common Mistakes (30 seconds)
 
-❌ **Mistake 1**: Adding a `replicas` field - DaemonSets don't have one
+❌ **Mistake 1**: Adding a  field - DaemonSets don't have one
 
 ❌ **Mistake 2**: Label mismatch between selector and template
 
-❌ **Mistake 3**: Wrong API version (use `apps/v1`)
+❌ **Mistake 3**: Wrong API version (use )
 
 ❌ **Mistake 4**: Not verifying Pods are actually running
 
@@ -215,7 +130,7 @@ Verify:
 
 **Exam Question Format**:
 
-"Create a DaemonSet named `log-collector` that runs busybox with the command `tail -f /host-logs/syslog`. Mount the host's `/var/log` directory as a read-only volume at `/host-logs` in the container."
+"Create a DaemonSet named  that runs busybox with the command . Mount the host's  directory as a read-only volume at  in the container."
 
 **Key Challenge**: Correct HostPath volume configuration.
 
@@ -223,57 +138,19 @@ Verify:
 
 **Step 1: Create DaemonSet with HostPath** (2-3 minutes target)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: log-collector
-spec:
-  selector:
-    matchLabels:
-      app: log-collector
-  template:
-    metadata:
-      labels:
-        app: log-collector
-    spec:
-      containers:
-      - name: collector
-        image: busybox
-        command: ['tail', '-f', '/host-logs/syslog']
-        volumeMounts:
-        - name: varlog
-          mountPath: /host-logs
-          readOnly: true
-      volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log
-          type: Directory
-EOF
-```
-
 **Critical Points**:
-- `volumeMounts.name` must match `volumes.name` (both `varlog`)
-- `readOnly: true` is specified at the volumeMount level
-- `hostPath.type: Directory` validates that `/var/log` exists as a directory
-- `mountPath` can be different from `hostPath.path`
+-  must match  (both )
+-  is specified at the volumeMount level
+-  validates that  exists as a directory
+-  can be different from 
 
 **Common HostPath Types**:
-- `Directory` - must exist (most common for exam)
-- `DirectoryOrCreate` - create if doesn't exist
-- `File` - must exist as a file
-- `Socket` - for Unix sockets (e.g., Docker socket)
+-  - must exist (most common for exam)
+-  - create if doesn't exist
+-  - must exist as a file
+-  - for Unix sockets (e.g., Docker socket)
 
 **Step 2: Verify Pods Started** (60 seconds target)
-
-```bash
-kubectl get pods -l app=log-collector
-
-# Check that the command is running
-kubectl logs -l app=log-collector --tail 10
-```
 
 You should see log output from the host's syslog.
 
@@ -283,16 +160,12 @@ You should see log output from the host's syslog.
 
 If Pods are not Running:
 
-```bash
-kubectl describe pod -l app=log-collector
-```
-
 **Common issues**:
-- Path doesn't exist on node (wrong `type` specified)
+- Path doesn't exist on node (wrong  specified)
 - Permission denied (may need securityContext)
 - Wrong volumeMount name reference
 
-**Quick Fix**: If path validation fails, use `type: DirectoryOrCreate` instead of `Directory`.
+**Quick Fix**: If path validation fails, use  instead of .
 
 ---
 
@@ -304,7 +177,7 @@ kubectl describe pod -l app=log-collector
 
 **Exam Question Format**:
 
-"Create a DaemonSet named `gpu-monitor` that runs on nodes labeled `gpu=nvidia`. Use the nginx:alpine image. Then label one node with `gpu=nvidia` and verify the Pod is created on that node."
+"Create a DaemonSet named  that runs on nodes labeled . Use the nginx:alpine image. Then label one node with  and verify the Pod is created on that node."
 
 **Skills Tested**: Node selection, dynamic behavior, verification.
 
@@ -312,63 +185,17 @@ kubectl describe pod -l app=log-collector
 
 **Step 1: Create DaemonSet with nodeSelector** (90 seconds target)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: gpu-monitor
-spec:
-  selector:
-    matchLabels:
-      app: gpu-monitor
-  template:
-    metadata:
-      labels:
-        app: gpu-monitor
-    spec:
-      nodeSelector:
-        gpu: nvidia
-      containers:
-      - name: nginx
-        image: nginx:alpine
-EOF
-```
-
-**Critical Point**: `nodeSelector` is part of the Pod spec (`template.spec.nodeSelector`), not the DaemonSet spec.
+**Critical Point**:  is part of the Pod spec (), not the DaemonSet spec.
 
 **Step 2: Verify DaemonSet but No Pods** (30 seconds target)
 
-```bash
-kubectl get ds gpu-monitor
-```
-
-You should see `DESIRED: 0` because no nodes match the selector.
-
-```bash
-kubectl get pods -l app=gpu-monitor
-```
+You should see  because no nodes match the selector.
 
 No Pods exist yet.
 
 **Step 3: Label a Node** (60 seconds target)
 
-```bash
-# Get node name
-kubectl get nodes
-
-# Label the first node
-kubectl label node <node-name> gpu=nvidia
-
-# Or use this one-liner
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') gpu=nvidia
-```
-
 **Step 4: Verify Pod Created** (30 seconds target)
-
-```bash
-kubectl get pods -l app=gpu-monitor -o wide
-```
 
 You should see one Pod created on the labeled node.
 
@@ -382,10 +209,10 @@ You should see one Pod created on the labeled node.
 - Relabel node → Pod moves
 
 **Use Cases**:
-- GPU nodes: `gpu=nvidia`
-- Production nodes: `env=production`
-- SSD nodes: `disktype=ssd`
-- Zone-specific: `zone=us-west-2a`
+- GPU nodes: 
+- Production nodes: 
+- SSD nodes: 
+- Zone-specific: 
 
 **Exam Tip**: If a question mentions specific node types or subsets, use nodeSelector.
 
@@ -399,7 +226,7 @@ You should see one Pod created on the labeled node.
 
 **Exam Question Format**:
 
-"Configure the DaemonSet `monitor` to use manual update control. When you update the image, Pods should only be updated when you manually delete them."
+"Configure the DaemonSet  to use manual update control. When you update the image, Pods should only be updated when you manually delete them."
 
 **Key Concept**: OnDelete update strategy.
 
@@ -407,49 +234,13 @@ You should see one Pod created on the labeled node.
 
 **Step 1: Update DaemonSet with OnDelete Strategy** (60 seconds target)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: monitor
-spec:
-  updateStrategy:
-    type: OnDelete
-  selector:
-    matchLabels:
-      app: monitor
-  template:
-    metadata:
-      labels:
-        app: monitor
-    spec:
-      containers:
-      - name: busybox
-        image: busybox:1.35  # Updated version
-        command: ['sleep', '3600']
-EOF
-```
-
-**Critical Field**: `updateStrategy.type: OnDelete`
+**Critical Field**: 
 
 **Step 2: Verify Pods NOT Updated** (30 seconds target)
-
-```bash
-kubectl get pods -l app=monitor
-```
 
 Pods are still running with the old spec. The update didn't trigger a rollout.
 
 **Step 3: Manually Trigger Update** (30 seconds target)
-
-```bash
-# Delete one Pod
-kubectl delete pod <pod-name>
-
-# Watch it recreate with new spec
-kubectl get pods -l app=monitor --watch
-```
 
 The new Pod will have the updated image.
 
@@ -458,19 +249,11 @@ The new Pod will have the updated image.
 ### 5.3 RollingUpdate vs OnDelete (30 seconds)
 
 **RollingUpdate** (default):
-```yaml
-updateStrategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 1
-```
+
 Automatic updates when spec changes.
 
 **OnDelete**:
-```yaml
-updateStrategy:
-  type: OnDelete
-```
+
 Manual updates only when Pods are deleted.
 
 **Exam Decision**:
@@ -487,63 +270,19 @@ Manual updates only when Pods are deleted.
 
 **Exam Question Format**:
 
-"Create a DaemonSet named `web` that runs nginx:alpine. Before nginx starts, an init container should create a custom index.html file in a shared volume."
+"Create a DaemonSet named  that runs nginx:alpine. Before nginx starts, an init container should create a custom index.html file in a shared volume."
 
 **Key Concept**: Init containers with shared volumes.
 
 ### 6.2 Solution Walkthrough (90 seconds)
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: web
-spec:
-  selector:
-    matchLabels:
-      app: web
-  template:
-    metadata:
-      labels:
-        app: web
-    spec:
-      initContainers:
-      - name: setup
-        image: busybox
-        command:
-        - sh
-        - -c
-        - echo '<h1>Initialized by DaemonSet</h1>' > /html/index.html
-        volumeMounts:
-        - name: html
-          mountPath: /html
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: html
-        emptyDir: {}
-EOF
-```
-
 **Critical Points**:
-- Init container and main container share the volume `html`
-- Init container writes to `/html/index.html`
-- Main container reads from `/usr/share/nginx/html`
-- Volume uses `emptyDir` for temporary storage
+- Init container and main container share the volume 
+- Init container writes to 
+- Main container reads from 
+- Volume uses  for temporary storage
 
 **Verification** (30 seconds):
-
-```bash
-kubectl get pods -l app=web --watch
-# Wait for Init:0/1 → PodInitializing → Running
-
-kubectl exec daemonset/web -- cat /usr/share/nginx/html/index.html
-```
 
 Should show the custom HTML.
 
@@ -552,28 +291,10 @@ Should show the custom HTML.
 **Common exam patterns**:
 
 **Pattern 1: Wait for dependency**:
-```yaml
-initContainers:
-- name: wait
-  image: busybox
-  command: ['sh', '-c', 'until nslookup myservice; do sleep 2; done']
-```
 
 **Pattern 2: Download config**:
-```yaml
-initContainers:
-- name: fetch
-  image: busybox
-  command: ['wget', '-O', '/config/app.conf', 'http://config-server/']
-```
 
 **Pattern 3: Set permissions**:
-```yaml
-initContainers:
-- name: perms
-  image: busybox
-  command: ['sh', '-c', 'chmod 777 /data']
-```
 
 ---
 
@@ -582,20 +303,8 @@ initContainers:
 ### 7.1 Issue 1: Pods Not Scheduling (60 seconds)
 
 **Symptoms**:
-```bash
-kubectl get ds monitor
-# DESIRED: 0 even though you have nodes
-```
 
 **Diagnosis**:
-
-```bash
-# Check nodeSelector
-kubectl get ds monitor -o jsonpath='{.spec.template.spec.nodeSelector}'
-
-# Check node labels
-kubectl get nodes --show-labels
-```
 
 **Common causes**:
 - nodeSelector doesn't match any nodes
@@ -604,24 +313,11 @@ kubectl get nodes --show-labels
 
 **Quick Fix**:
 
-```bash
-# Remove nodeSelector if not needed
-kubectl patch ds monitor --type json -p='[{"op": "remove", "path": "/spec/template/spec/nodeSelector"}]'
-
-# Or label nodes to match
-kubectl label node <node> <key>=<value>
-```
-
 ### 7.2 Issue 2: Update Not Happening (60 seconds)
 
 **Symptoms**: You updated the DaemonSet but Pods still have old spec.
 
 **Diagnosis**:
-
-```bash
-# Check update strategy
-kubectl get ds monitor -o jsonpath='{.spec.updateStrategy.type}'
-```
 
 **If it says "OnDelete"**:
 - This is expected behavior
@@ -629,44 +325,22 @@ kubectl get ds monitor -o jsonpath='{.spec.updateStrategy.type}'
 
 **Fix**:
 
-```bash
-# Either delete Pods manually
-kubectl delete pod -l app=monitor
-
-# Or change to RollingUpdate
-kubectl patch ds monitor -p '{"spec":{"updateStrategy":{"type":"RollingUpdate"}}}'
-```
-
 ### 7.3 Issue 3: HostPath Volume Failures (60 seconds)
 
 **Symptoms**: Pods in CrashLoopBackOff or Error state.
 
 **Diagnosis**:
 
-```bash
-kubectl describe pod <pod-name>
-# Look for mount errors or path validation failures
-```
-
 **Common causes**:
 - Path doesn't exist on node
-- Wrong `hostPath.type` specified
+- Wrong  specified
 - Permission denied
 
 **Fixes**:
 
 **If path doesn't exist**:
-```yaml
-hostPath:
-  path: /var/log
-  type: DirectoryOrCreate  # Change from Directory
-```
 
 **If permission issues**:
-```yaml
-securityContext:
-  privileged: true  # Only if absolutely necessary
-```
 
 ---
 
@@ -680,31 +354,15 @@ securityContext:
 - Target: 3-5 minutes per DaemonSet question
 
 **2. Use Heredocs for Speed**:
-```bash
-kubectl apply -f - <<EOF
-<yaml>
-EOF
-```
 
 **3. Verification Shortcuts**:
-```bash
-# Quick verification
-kubectl get ds <name> && kubectl get pods -l app=<name>
-
-# One command to check everything
-kubectl get ds,pods -l app=<name>
-```
 
 **4. Don't Watch Unnecessarily**:
-- Use `--watch` to see first Pod start
+- Use  to see first Pod start
 - Press Ctrl+C immediately when status is clear
 - Move to next task
 
 **5. Label Nodes Efficiently**:
-```bash
-# Get first node and label in one command
-kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') key=value
-```
 
 ### 8.2 Common Exam Pitfalls (90 seconds)
 
@@ -715,7 +373,7 @@ kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') 
 ✅ **Solution**: DaemonSets delete old Pods before creating new ones
 
 **Pitfall 3: Wrong HostPath Type**
-✅ **Solution**: Use `Directory` for existing paths, `DirectoryOrCreate` for new paths
+✅ **Solution**: Use  for existing paths,  for new paths
 
 **Pitfall 4: Init Container Not Sharing Volume**
 ✅ **Solution**: Ensure both init and main containers reference the same volume name
@@ -727,7 +385,7 @@ kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') 
 ✅ **Solution**: When using nodeSelector, remember to actually label nodes
 
 **Pitfall 7: Wrong Selector Syntax**
-✅ **Solution**: It's `nodeSelector:` (Pod spec) not `nodeName:` or `node-selector:`
+✅ **Solution**: It's  (Pod spec) not  or 
 
 ---
 
@@ -736,48 +394,16 @@ kubectl label node $(kubectl get nodes -o jsonpath='{.items[0].metadata.name}') 
 ### 9.1 Must-Know Commands
 
 **Creation and Viewing**:
-```bash
-kubectl apply -f daemonset.yaml
-kubectl get ds
-kubectl describe ds <name>
-kubectl get ds <name> -o yaml
-```
 
 **Pod Operations**:
-```bash
-kubectl get pods -l app=<name> -o wide
-kubectl logs -l app=<name>
-kubectl delete pod <pod-name>
-```
 
 **Updates and Rollouts**:
-```bash
-kubectl edit ds <name>
-kubectl rollout status ds/<name>
-kubectl rollout undo ds/<name>
-kubectl set image ds/<name> <container>=<new-image>
-```
 
 **Node Operations**:
-```bash
-kubectl label node <name> key=value
-kubectl label node <name> key-  # Remove label
-kubectl get nodes --show-labels
-```
 
 **Troubleshooting**:
-```bash
-kubectl describe ds <name>
-kubectl describe pod <pod-name>
-kubectl get events --sort-by='.lastTimestamp'
-kubectl logs <pod-name>
-```
 
 **Deletion**:
-```bash
-kubectl delete ds <name>
-kubectl delete ds <name> --cascade=orphan
-```
 
 ---
 
@@ -789,12 +415,12 @@ kubectl delete ds <name> --cascade=orphan
 
 **Exam Question**:
 
-"Create a DaemonSet named `fluentd` with these requirements:
+"Create a DaemonSet named  with these requirements:
 - Image: fluent/fluentd:latest
 - Label: app=fluentd
-- Mount host's `/var/log` as read-only at `/var/log` in the container
+- Mount host's  as read-only at  in the container
 - Use OnDelete update strategy
-- Should only run on nodes labeled `logging=enabled`
+- Should only run on nodes labeled 
 - Verify the DaemonSet is created but no Pods exist (nodes not labeled yet)"
 
 **Start your timer now.**
@@ -802,46 +428,6 @@ kubectl delete ds <name> --cascade=orphan
 ### 10.2 Solution (2-3 minutes)
 
 After attempting it yourself:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: fluentd
-spec:
-  updateStrategy:
-    type: OnDelete
-  selector:
-    matchLabels:
-      app: fluentd
-  template:
-    metadata:
-      labels:
-        app: fluentd
-    spec:
-      nodeSelector:
-        logging: enabled
-      containers:
-      - name: fluentd
-        image: fluent/fluentd:latest
-        volumeMounts:
-        - name: varlog
-          mountPath: /var/log
-          readOnly: true
-      volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log
-          type: Directory
-EOF
-
-# Verify DaemonSet created
-kubectl get ds fluentd
-
-# Verify no Pods (DESIRED should be 0)
-kubectl get pods -l app=fluentd
-```
 
 **Time Target**: 4-5 minutes total.
 
@@ -875,13 +461,13 @@ kubectl get pods -l app=fluentd
 - OnDelete: Manual, update by deleting Pods
 
 **3. Node Selection**:
-- `nodeSelector` for simple label matching
+-  for simple label matching
 - Tolerations for tainted nodes
 - Labels are dynamic - add label, get Pod
 
 **4. HostPath Volumes**:
-- Specify `type` for validation
-- Use `readOnly: true` when possible
+- Specify  for validation
+- Use  when possible
 - Common types: Directory, DirectoryOrCreate, File, Socket
 
 **5. Init Containers**:
@@ -906,7 +492,7 @@ kubectl get pods -l app=fluentd
 **Exam Day Strategy**:
 - DaemonSet questions should be quick wins
 - Don't overcomplicate - the YAML is straightforward
-- Verify with `kubectl get ds` and `kubectl get pods`
+- Verify with  and 
 - If nodeSelector is involved, verify the label logic
 - Move on quickly - don't burn time on simple questions
 
@@ -936,33 +522,3 @@ Good luck on your CKAD exam!
 **Total Duration**: 15-20 minutes
 
 ---
-
-## Presentation Notes
-
-**Delivery Tips**:
-- Keep pace brisk - DaemonSets are simpler than StatefulSets
-- Emphasize speed and efficiency
-- Show real-time command execution
-- Demonstrate error recovery
-
-**Interactive Elements**:
-- Have participants attempt the practice exercise
-- Time them and discuss results
-- Share common mistakes
-
-**Materials Needed**:
-- Working Kubernetes cluster
-- Lab files ready
-- Timer for practice exercise
-- Notes on common pitfalls
-
-**Audience Engagement**:
-- Ask: "What happens if you add a replicas field?" (Answer: Error or ignored)
-- Ask: "When do you use OnDelete vs RollingUpdate?"
-- Poll: "Who can create a DaemonSet in under 4 minutes?"
-
-**Emphasis Points**:
-- NO replicas field (repeat this often)
-- Different update behavior than Deployments
-- HostPath security considerations
-- Dynamic behavior with node labels
