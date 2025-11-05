@@ -10,6 +10,66 @@ StatefulSets are Pod controllers which can create multiple replicas in a stable 
 
 > **CKAD Exam Prep**: See [CKAD.md](CKAD.md) for CKAD-specific scenarios, practice exercises, and exam tips for StatefulSets.
 
+## When to Use StatefulSets vs Deployments
+
+### StatefulSet Decision Matrix
+
+| Use StatefulSet When... | Use Deployment When... |
+|------------------------|----------------------|
+| ✅ Need stable, predictable Pod names (app-0, app-1, app-2) | ✅ Pod names can be random |
+| ✅ Need ordered, sequential deployment/scaling | ✅ All pods can start in parallel |
+| ✅ Need ordered, sequential termination | ✅ Pod shutdown order doesn't matter |
+| ✅ Need stable network identities (DNS per pod) | ✅ Service load balancing is sufficient |
+| ✅ Need persistent storage per pod | ✅ Stateless or shared storage |
+| ✅ Primary-secondary architecture | ✅ All replicas are equal |
+
+### Common StatefulSet Use Cases (CKAD Examples)
+
+```
+✅ Databases (MySQL, PostgreSQL) - primary-replica with data persistence
+✅ Distributed databases (Cassandra, MongoDB) - each node has unique identity
+✅ Message queues (RabbitMQ, Kafka) - ordered startup, persistent state
+✅ Zookeeper/etcd clusters - stable network identity required
+✅ Elasticsearch clusters - stable node names for cluster formation
+```
+
+### Common Deployment Use Cases (CKAD Examples)
+
+```
+✅ Web applications (nginx, apache) - stateless, any pod can serve requests
+✅ API services (REST, gRPC) - no persistent state required
+✅ Microservices (any stateless app) - all replicas identical
+✅ Frontend applications (React, Angular) - static content serving
+✅ Background workers (job processors) - no coordination needed
+```
+
+### Key StatefulSet Features for CKAD
+
+**Ordered Operations:**
+- Pods created sequentially: 0, then 1, then 2...
+- Pods deleted in reverse order: 2, then 1, then 0...
+- Pod N won't start until Pod N-1 is Running and Ready
+
+**Stable Network Identity:**
+- Each pod gets DNS: `<statefulset-name>-<ordinal>.<service-name>.<namespace>.svc.cluster.local`
+- Example: `mysql-0.mysql.default.svc.cluster.local`
+- Requires a headless Service (clusterIP: None)
+
+**Persistent Storage:**
+- Each pod can have its own PersistentVolumeClaim
+- Storage persists even if pod is deleted/rescheduled
+
+### CKAD Exam Tip
+
+**Most exam scenarios use Deployments**. Use StatefulSets only when you see keywords:
+- "Database" or "stateful application"
+- "Ordered deployment"
+- "Stable network identity"
+- "Each pod needs its own storage"
+- "Primary-secondary" or "leader-follower" architecture
+
+If the app is stateless or pods are interchangeable, use a Deployment!
+
 ## API specs
 
 - [StatefulSet (apps/v1)](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/)

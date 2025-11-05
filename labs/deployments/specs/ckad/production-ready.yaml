@@ -1,0 +1,226 @@
+# Production-Ready Deployment Template
+#
+# This example demonstrates all CKAD best practices for production deployments:
+# - Multiple replicas for high availability
+# - All three probe types (startup, readiness, liveness)
+# - Resource requests and limits
+# - Proper rolling update strategy
+# - Security context
+# - Meaningful labels and annotations
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production-demo
+  labels:
+    kubernetes.courselabs.co: deployments-ckad
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+  namespace: production-demo
+  labels:
+    app: webapp
+    environment: production
+    kubernetes.courselabs.co: deployments-ckad
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30021
+      name: http
+  selector:
+    app: webapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: production-demo
+  labels:
+    app: webapp
+    environment: production
+    version: v1.0.0
+    kubernetes.courselabs.co: deployments-ckad
+  annotations:
+    kubernetes.io/change-cause: "Initial production deployment v1.0.0"
+    description: "Production-ready web application with all CKAD best practices"
+spec:
+  # High availability: run 3 replicas
+  replicas: 3
+
+  # Selector must match pod template labels
+  selector:
+    matchLabels:
+      app: webapp
+      environment: production
+
+  # Rolling update strategy for zero-downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Create 1 extra pod before terminating old ones
+      maxSurge: 1
+      # Never allow fewer than 2 pods during rollout (out of 3)
+      maxUnavailable: 1
+
+  # Deployment will wait up to 10 minutes for rollout
+  progressDeadlineSeconds: 600
+
+  # Keep last 5 ReplicaSets for easy rollback
+  revisionHistoryLimit: 5
+
+  template:
+    metadata:
+      labels:
+        app: webapp
+        environment: production
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Security: run as non-root user
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+
+      # Optional: node affinity, tolerations, etc. would go here
+
+      containers:
+      - name: webapp
+        image: sixeyed/whoami:latest
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+
+        # Resource management: CRITICAL for production
+        resources:
+          requests:
+            # Minimum guaranteed resources
+            cpu: 100m        # 0.1 CPU core
+            memory: 128Mi    # 128 megabytes
+          limits:
+            # Maximum allowed resources
+            cpu: 500m        # 0.5 CPU core
+            memory: 256Mi    # 256 megabytes
+
+        # STARTUP PROBE: For slow-starting applications
+        # Gives app time to start before liveness checks begin
+        # Useful for apps with long initialization (15+ seconds)
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 0      # Start checking immediately
+          periodSeconds: 5            # Check every 5 seconds
+          timeoutSeconds: 3           # Wait 3 seconds for response
+          successThreshold: 1         # 1 success = started
+          failureThreshold: 12        # Fail after 60s (12 × 5s)
+
+        # READINESS PROBE: Is the app ready to serve traffic?
+        # If this fails, pod is removed from service endpoints
+        # Use for: dependency checks, warm-up periods
+        readinessProbe:
+          httpGet:
+            path: /              # Health check endpoint
+            port: 8080
+            scheme: HTTP
+            # httpHeaders:        # Optional: add custom headers
+            # - name: X-Health-Check
+            #   value: readiness
+          initialDelaySeconds: 5      # Wait 5s after startup probe succeeds
+          periodSeconds: 10           # Check every 10 seconds
+          timeoutSeconds: 3           # Wait 3 seconds for response
+          successThreshold: 1         # 1 success = ready
+          failureThreshold: 3         # 3 failures = not ready
+
+        # LIVENESS PROBE: Is the app still running?
+        # If this fails, pod is restarted
+        # Use for: detecting deadlocks, hung processes
+        livenessProbe:
+          httpGet:
+            path: /              # Health check endpoint
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15     # Wait 15s after container starts
+          periodSeconds: 20           # Check every 20 seconds
+          timeoutSeconds: 5           # Wait 5 seconds for response
+          successThreshold: 1         # 1 success = healthy
+          failureThreshold: 3         # 3 failures = restart pod
+
+        # Environment variables
+        env:
+        - name: APP_VERSION
+          value: "1.0.0"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        # For secrets and configmaps:
+        # - name: API_KEY
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: app-secrets
+        #       key: api-key
+
+        # Container-level security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false  # Set to true if app doesn't need write access
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+
+      # Termination grace period: time to shutdown gracefully
+      terminationGracePeriodSeconds: 30
+
+      # Restart policy (default is Always for Deployments)
+      restartPolicy: Always
+
+---
+# Example ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config
+  namespace: production-demo
+  labels:
+    app: webapp
+    kubernetes.courselabs.co: deployments-ckad
+data:
+  app.properties: |
+    server.port=8080
+    server.shutdown=graceful
+    management.endpoint.health.probes.enabled=true
+  nginx.conf: |
+    # Example config file
+    worker_processes auto;
+    events {
+      worker_connections 1024;
+    }
+
+---
+# Example Secret (base64 encoded values)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: webapp-secrets
+  namespace: production-demo
+  labels:
+    app: webapp
+    kubernetes.courselabs.co: deployments-ckad
+type: Opaque
+data:
+  # Example: echo -n 'my-secret-key' | base64
+  api-key: bXktc2VjcmV0LWtleQ==
+  database-password: cGFzc3dvcmQxMjM=

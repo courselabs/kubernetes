@@ -206,10 +206,12 @@ The Certified Kubernetes Application Developer (CKAD) exam is a **performance-ba
 
 1. **Day 1-2**: `kustomize/` ✅ (90 min) → Base/overlays, configuration management
 2. **Day 2-3**: `api-versions/` ✅ (60 min) → API deprecations, kubectl convert
-3. **Day 3-4**: `troubleshooting-3/` (90 min) → Advanced scenarios
+3. **Day 3-4**: `troubleshooting-3/` (90 min) → **Advanced/Optional** - Complex debugging scenarios beyond core CKAD
 4. **Day 4-7**: Review weak areas, practice exercises (120 min)
 
 **Checkpoint**: Review all five domains, identify gaps
+
+**Note**: `clusters/` and `troubleshooting-3/` labs cover advanced topics useful for real-world scenarios but beyond the core CKAD curriculum. Prioritize core labs first.
 
 ---
 
@@ -364,7 +366,7 @@ Track your progress through the required labs:
 - [ ] `daemonsets/` - Node-level workloads
 - [ ] `statefulsets/` - Stateful applications
 - [ ] `operators/` - Custom resources (CRD basics)
-- [ ] `troubleshooting-3/` - Advanced debugging
+- [ ] `troubleshooting-3/` - **Advanced/Optional** (beyond core CKAD)
 - [ ] `affinity/` - Pod scheduling (advanced)
 
 ---
