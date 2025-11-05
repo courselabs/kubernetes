@@ -9,6 +9,48 @@ They're for workloads where you want high-availabilty across multiple nodes, but
 
 Deployments are better suited to most apps and DaemonSets are less common, but you will see them used and they're not complex to work with.
 
+## When to Use DaemonSets vs Deployments
+
+### DaemonSet Decision Matrix
+
+| Use DaemonSet When... | Use Deployment When... |
+|----------------------|----------------------|
+| ✅ Need exactly one pod per node | ✅ Need specific number of replicas (2, 3, 10, etc.) |
+| ✅ Workload is node-specific (logging, monitoring) | ✅ Workload is application logic |
+| ✅ Need to access node resources (disk, network) | ✅ Need to scale based on demand |
+| ✅ Every node needs the service | ✅ High availability without node coupling |
+| ✅ Pod count = node count | ✅ Pod count independent of nodes |
+
+### Common DaemonSet Use Cases (CKAD Examples)
+
+```
+✅ Log collectors (fluentd, filebeat) - collect logs from every node
+✅ Monitoring agents (node-exporter) - metrics from every node
+✅ Network proxies (kube-proxy) - networking on every node
+✅ Storage daemons (ceph, glusterd) - distributed storage
+✅ Security agents (falco) - security monitoring per node
+```
+
+### Common Deployment Use Cases (CKAD Examples)
+
+```
+✅ Web applications (nginx, apache) - serve user traffic
+✅ API services (REST, gRPC) - handle requests
+✅ Background workers (job processors) - process queues
+✅ Databases (mysql, postgres) - data storage
+✅ Microservices (any stateless app) - business logic
+```
+
+### CKAD Exam Tip
+
+**Most exam scenarios use Deployments**. Use DaemonSets only when explicitly told:
+- "Run on every node"
+- "Exactly one pod per node"
+- "Node-level monitoring/logging"
+- "Access node filesystem directly"
+
+If the question doesn't specify these requirements, use a Deployment!
+
 ## API specs
 
 - [DaemonSet (apps/v1)](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps)
