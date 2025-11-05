@@ -10,92 +10,70 @@ This document tracks all work needed to fully align the repository with the offi
 
 ## Executive Summary
 
-The repository has **excellent foundational coverage** with 31+ labs, but requires critical updates to match the 2025 CKAD curriculum:
+The repository has **excellent foundational coverage** with 29 CKAD-focused labs plus 5 advanced labs, covering ~95% of the 2025 CKAD curriculum:
 
-### Critical Gaps (Exam Topics Missing)
-- ❌ **Kustomize** - Required topic with NO lab coverage
-- ⚠️ **SecurityContexts** - Partial coverage, needs dedicated lab
-- ⚠️ **API Deprecations** - Missing from curriculum
-- ⚠️ **Container Image Building** - Lab exists but not emphasized for CKAD
+### Recent Progress (✅ COMPLETED)
+- ✅ **Kustomize lab** - EXISTS (labs/kustomize/) - created in commit 420dd99
+- ✅ **Security/SecurityContexts lab** - EXISTS (labs/security/) - created in commit 1646122
+- ✅ **Non-CKAD labs organized** - 5 labs moved to labs-advanced/
+
+### Remaining Gaps (Minor)
+- ⚠️ **CKAD.md files** - Missing from kustomize and security labs
+- ⚠️ **API Deprecations** - Needs coverage (can add to existing labs)
+- ⚠️ **Container Image Building** - docker/ lab needs CKAD emphasis
+- 🧹 **Cleanup needed** - Remove duplicate placeholder dirs from labs/
 
 ### Repository Status
-- ✅ **16 CKAD-ready labs** - Production quality, curriculum-aligned
-- 🟡 **8 labs need enhancement** - Good content, needs CKAD focus
-- 🔴 **2 critical new labs required** - Kustomize, SecurityContexts
-- 📚 **5 non-CKAD labs** - Already moved to labs-advanced/
+- ✅ **29 CKAD labs** - Comprehensive curriculum coverage
+- ✅ **5 advanced labs** - Properly organized in labs-advanced/
+- 🟡 **Minor enhancements needed** - CKAD.md files, emphasis updates
+- 🧹 **Housekeeping** - Remove placeholder directories
 
 ---
 
-## Priority 1: Critical Gaps (REQUIRED for CKAD Coverage)
+## Priority 1: Minor Enhancements (Complete CKAD Coverage)
 
-### 🔥 CRITICAL: Create Kustomize Lab
+### 🟢 ENHANCE: Add CKAD.md to kustomize/ Lab
 
-**Location**: `labs/kustomize/`
-**Status**: ❌ **LAB MISSING - EXAM TOPIC REQUIRED**
+**Location**: `labs/kustomize/CKAD.md`
+**Status**: ✅ Lab exists, ⚠️ missing CKAD.md file
 **CKAD Domain**: Application Deployment (20%)
-**Estimated Effort**: 6-8 hours
+**Estimated Effort**: 1-2 hours
 
 **Required Content**:
-- [ ] Create `labs/kustomize/README.md` with tutorial
-- [ ] Create `labs/kustomize/CKAD.md` for exam-focused content
-- [ ] Create `labs/kustomize/hints.md`
-- [ ] Create `labs/kustomize/solution.md`
-- [ ] Create base/overlay structure examples
-- [ ] Create kustomization.yaml templates
-- [ ] Dev/staging/prod overlay examples
-- [ ] ConfigMap/Secret generation examples
-- [ ] Patch examples (strategic merge, JSON)
-- [ ] Multi-base composition examples
-- [ ] Integration with `kubectl apply -k`
+- [ ] Create `labs/kustomize/CKAD.md` for CKAD exam focus
+- [ ] CKAD exam relevance explanation
+- [ ] Key kustomize concepts for exam
+- [ ] Common exam scenarios (dev/staging/prod overlays)
+- [ ] Quick reference for kubectl apply -k
 - [ ] Comparison with Helm (when to use which)
-- [ ] Practice exercises with solutions
-- [ ] Troubleshooting common kustomize errors
-- [ ] Lab challenge: Build multi-environment setup
-- [ ] Quickfire questions
-- [ ] Narration script in `narration-scripts/kustomize/`
+- [ ] Timed practice exercises
+- [ ] Exam tips and gotchas
 
-**Acceptance Criteria**:
-- Works on Docker Desktop, k3d, and kind
-- Clear explanation of bases vs overlays
-- Practical CKAD exam scenarios
-- 60-90 minute completion time
-- Clean labels: `kubernetes.courselabs.co=kustomize`
+**Current Status**: Lab is complete with README.md, hints.md, solution.md, specs/, narration scripts
+**Acceptance Criteria**: CKAD.md provides exam-focused supplement to main README.md
 
 ---
 
-### 🔥 CRITICAL: Create Security/SecurityContexts Lab
+### 🟢 ENHANCE: Add CKAD.md to security/ Lab
 
-**Location**: `labs/security/` or enhance existing
-**Status**: ⚠️ **PARTIAL COVERAGE - NEEDS DEDICATED LAB**
+**Location**: `labs/security/CKAD.md`
+**Status**: ✅ Lab exists, ⚠️ missing CKAD.md file
 **CKAD Domain**: Application Environment, Configuration & Security (25%)
-**Estimated Effort**: 6-8 hours
+**Estimated Effort**: 1-2 hours
 
 **Required Content**:
-- [ ] Create dedicated `labs/security/README.md` OR enhance `labs/security/`
-- [ ] Create `labs/security/CKAD.md` for exam focus
-- [ ] SecurityContext at Pod level
-- [ ] SecurityContext at container level
-- [ ] runAsUser and runAsGroup examples
-- [ ] fsGroup for volume permissions
-- [ ] Capabilities (add/drop) examples
-- [ ] privileged containers (and when NOT to use)
-- [ ] allowPrivilegeEscalation settings
-- [ ] readOnlyRootFilesystem examples
-- [ ] SELinux options (awareness level)
-- [ ] Security best practices for CKAD
-- [ ] Common security hardening patterns
-- [ ] Troubleshooting permission errors
-- [ ] Practice exercises: Secure an insecure deployment
-- [ ] Lab challenge: Production-ready security config
-- [ ] Quickfire questions
-- [ ] Narration script in `narration-scripts/security/`
+- [ ] Create `labs/security/CKAD.md` for CKAD exam focus
+- [ ] CKAD exam relevance (25% of exam!)
+- [ ] Most commonly tested SecurityContext fields
+- [ ] Quick reference for runAsUser, runAsNonRoot, capabilities
+- [ ] Common exam patterns (securing an insecure deployment)
+- [ ] Timed practice exercises
+- [ ] Exam tips and gotchas
+- [ ] Integration with productionizing lab
 
-**Acceptance Criteria**:
-- Covers all CKAD security requirements
-- Practical examples with visible security impact
-- Troubleshooting scenarios included
-- 75-90 minute completion time
-- Integration with existing productionizing lab
+**Current Status**: Lab is complete with README.md, hints.md, solution.md, specs/
+**Acceptance Criteria**: CKAD.md provides exam-focused supplement to main README.md
 
 ---
 
@@ -151,6 +129,38 @@ The repository has **excellent foundational coverage** with 31+ labs, but requir
 - Practical build scenarios
 - Integration with deployment workflows
 - Exam-style exercises
+
+---
+
+### 🧹 CLEANUP: Remove Placeholder Directories from labs/
+
+**Location**: `labs/{argo,buildkit,jenkins,logging,monitoring}/`
+**Status**: ⚠️ Duplicate directories with only quickfire.md
+**Estimated Effort**: 30 minutes
+
+**Issue**: These 5 directories exist in both `labs/` and `labs-advanced/`:
+- labs/argo/ - only contains quickfire.md
+- labs/buildkit/ - only contains quickfire.md
+- labs/jenkins/ - only contains quickfire.md
+- labs/logging/ - only contains quickfire.md
+- labs/monitoring/ - only contains quickfire.md
+
+The full content exists in `labs-advanced/` where they belong (non-CKAD topics).
+
+**Required Actions**:
+- [ ] Move quickfire.md files from labs/ to labs-advanced/ equivalents
+- [ ] Remove empty labs/argo/ directory
+- [ ] Remove empty labs/buildkit/ directory
+- [ ] Remove empty labs/jenkins/ directory
+- [ ] Remove empty labs/logging/ directory
+- [ ] Remove empty labs/monitoring/ directory
+- [ ] Verify labs/ now contains only 29 CKAD-relevant directories
+- [ ] Update counts in documentation
+
+**Acceptance Criteria**:
+- Only CKAD-relevant labs remain in labs/ directory
+- Quickfire questions preserved in labs-advanced/
+- No broken references
 
 ---
 
@@ -416,14 +426,14 @@ The repository has **excellent foundational coverage** with 31+ labs, but requir
 **Estimated Effort**: 4-6 hours
 
 **Updates Needed**:
-- [ ] Verify all labs have `quickfire.md`
-- [ ] Ensure randomization of correct answers (already done in PR #7)
-- [ ] Create quickfire questions for new labs (kustomize, security)
-- [ ] Standardize format across all labs
-- [ ] Add difficulty ratings (Easy/Medium/Hard)
-- [ ] Map questions to CKAD domains
+- [x] Verify all labs have `quickfire.md` ✅ Done in PR #7 (includes kustomize, security)
+- [x] Ensure randomization of correct answers ✅ Done in PR #7
+- [ ] Verify quickfire.md exists in labs-advanced/ labs
+- [ ] Standardize format across all labs (if needed)
+- [ ] Add difficulty ratings (Easy/Medium/Hard) - optional
+- [ ] Map questions to CKAD domains - optional
 
-**Priority**: LOW (supplementary learning tool)
+**Priority**: LOW (mostly complete, optional enhancements)
 
 ---
 
@@ -434,13 +444,13 @@ The repository has **excellent foundational coverage** with 31+ labs, but requir
 **Estimated Effort**: 3-4 hours
 
 **Updates Needed**:
-- [ ] Create narration script for kustomize/ (new lab)
-- [ ] Create narration script for security/ (new lab)
+- [x] Create narration script for kustomize/ ✅ Exists in narration-scripts/kustomize/
+- [ ] Verify narration script exists for security/ (check narration-scripts/security/)
 - [ ] Review existing scripts for CKAD alignment
 - [ ] Update docker/ narration for CKAD emphasis
-- [ ] Ensure all scripts reference CKAD relevance
+- [ ] Ensure all scripts reference CKAD relevance where appropriate
 
-**Priority**: LOW (supplementary content)
+**Priority**: LOW (mostly complete, optional enhancements)
 
 ---
 
@@ -450,60 +460,62 @@ The repository has **excellent foundational coverage** with 31+ labs, but requir
 
 | Category | Count | Status |
 |----------|-------|--------|
-| CKAD Core Labs (🎯) | 16 | ✅ Production Ready |
-| CKAD Supplementary Labs (📘) | 8 | 🟡 Needs Enhancement |
-| Advanced/Optional Labs (🔧) | 6 | ✅ Available |
-| **New Labs Required** | **2** | ❌ **Kustomize, Security** |
-| Labs in labs-advanced/ | 5 | ✅ Properly Organized |
+| CKAD Core Labs (🎯) | 18 | ✅ Production Ready (includes kustomize, security) |
+| CKAD Supplementary Labs (📘) | 11 | ✅ Production Ready |
+| Advanced/Optional Labs (🔧) | 5 | ✅ Available in labs-advanced/ |
+| **Missing CKAD.md** | **2** | ⚠️ **kustomize, security** |
+| Placeholder dirs to clean | 5 | 🧹 Need removal from labs/ |
 
 ### CKAD Domain Coverage
 
 | Domain | Weight | Coverage | Status | Missing/Needs Work |
 |--------|--------|----------|--------|-------------------|
-| Application Design & Build | 20% | 85% | 🟡 | Container images emphasis |
-| Application Deployment | 20% | 60% | 🔴 | **Kustomize lab REQUIRED** |
-| Observability & Maintenance | 15% | 85% | 🟡 | API deprecations section |
-| Environment, Config & Security | 25% | 70% | 🔴 | **SecurityContexts lab REQUIRED** |
+| Application Design & Build | 20% | 95% | ✅ | Minor: docker/ CKAD emphasis |
+| Application Deployment | 20% | 95% | ✅ | Minor: kustomize/ CKAD.md |
+| Observability & Maintenance | 15% | 90% | ✅ | Minor: API deprecations |
+| Environment, Config & Security | 25% | 95% | ✅ | Minor: security/ CKAD.md |
 | Services & Networking | 20% | 100% | ✅ | Complete |
-| **OVERALL** | **100%** | **~80%** | 🟡 | **2 critical gaps** |
+| **OVERALL** | **100%** | **~95%** | ✅ | **Minor enhancements only** |
 
 ### Effort Estimates
 
 | Priority | Tasks | Estimated Hours | Status |
 |----------|-------|----------------|--------|
-| **Priority 1: Critical Gaps** | 4 tasks | 18-24 hours | ❌ Not started |
-| **Priority 2: Enhancements** | 8 tasks | 16-22 hours | 🟡 Partial |
-| **Priority 3: Organization** | 4 tasks | 6-9 hours | 🟡 Partial |
+| **Priority 1: Minor Enhancements** | 5 tasks | 8-12 hours | 🟡 In progress |
+| **Priority 2: Lab Reviews** | 8 tasks | 12-18 hours | 🟡 Partial |
+| **Priority 3: Organization** | 5 tasks | 6-9 hours | 🟡 Partial |
 | **Priority 4: Nice-to-Have** | 3 tasks | 13-18 hours | ⚠️ Optional |
-| **TOTAL** | **19 tasks** | **53-73 hours** | 🟡 **In Progress** |
+| **TOTAL** | **21 tasks** | **39-57 hours** | ✅ **Mostly Complete** |
 
 ---
 
 ## Recommended Work Order
 
-### Week 1-2: Critical New Labs (Must-Have)
-1. ✅ **Create Kustomize lab** (6-8 hours) - BLOCKING EXAM COVERAGE
-2. ✅ **Create Security/SecurityContexts lab** (6-8 hours) - BLOCKING EXAM COVERAGE
-3. ✅ **Add API Deprecations content** (3-4 hours) - Required curriculum topic
-4. ✅ **Enhance docker/ lab** (3-4 hours) - Elevate to CKAD focus
+### Week 1: Quick Wins (Must-Have)
+1. 🟢 **Add CKAD.md to kustomize/ lab** (1-2 hours) - Complete coverage
+2. 🟢 **Add CKAD.md to security/ lab** (1-2 hours) - Complete coverage
+3. 🟢 **Add API Deprecations content** (2-3 hours) - Required curriculum topic
+4. 🟢 **Enhance docker/ lab CKAD emphasis** (2-3 hours) - Elevate to CKAD focus
+5. 🧹 **Clean up placeholder directories** (1 hour) - Housekeeping
 
-**Total Week 1-2**: 18-24 hours
+**Total Week 1**: 8-11 hours
 
-### Week 3: High-Priority Enhancements
-5. 🟡 **Complete deployments/ CKAD-TODO items** (3-4 hours)
-6. 🟡 **Complete rbac/ CKAD-TODO items** (2-3 hours)
-7. 🟡 **Enhance rollouts/ lab** (2-3 hours)
-8. 🟡 **Review and update study guides** (2-3 hours)
+### Week 2: Lab Enhancements
+6. 🟡 **Complete deployments/ CKAD-TODO items** (3-4 hours)
+7. 🟡 **Complete rbac/ CKAD-TODO items** (2-3 hours)
+8. 🟡 **Enhance rollouts/ lab** (2-3 hours)
+9. 🟡 **Review and update study guides** (2-3 hours)
 
-**Total Week 3**: 9-13 hours
+**Total Week 2**: 9-13 hours
 
-### Week 4: Organization & Polish
-9. 📁 **Update study guide** (2-3 hours)
-10. 📁 **Add CKAD badges to READMEs** (2-3 hours)
-11. 📁 **Update main README** (1-2 hours)
-12. 📁 **Review all labs for consistency** (2-3 hours)
+### Week 3: Organization & Polish
+10. 📁 **Update CKAD-STUDY-GUIDE.md** (2-3 hours) - Reflect kustomize/security existence
+11. 📁 **Update CKAD-LAB-ANALYSIS.md** (1-2 hours) - Current coverage stats
+12. 📁 **Add CKAD badges to READMEs** (2-3 hours)
+13. 📁 **Update main README** (1-2 hours)
+14. 📁 **Review all labs for consistency** (2-3 hours)
 
-**Total Week 4**: 7-11 hours
+**Total Week 3**: 8-13 hours
 
 ### Week 5+: Optional Enhancements (If Time Permits)
 13. 🎯 **Create practice scenarios** (6-8 hours)
@@ -518,16 +530,20 @@ The repository has **excellent foundational coverage** with 31+ labs, but requir
 
 The repository will be **100% CKAD v1.34 aligned** when:
 
-- [x] All 5 CKAD domains have 90%+ coverage
-- [ ] Kustomize lab exists and is complete
-- [ ] SecurityContexts lab exists and is complete
-- [ ] API deprecations topic covered
-- [ ] Container image building emphasized for CKAD
-- [ ] All lab CKAD.md files accurate and current
-- [ ] CKAD-STUDY-GUIDE.md updated with all labs
-- [ ] Clear CKAD badges on all lab READMEs
-- [ ] Main README has CKAD certification track section
-- [ ] Estimated study time: 45-60 hours (currently 56h + new labs)
+- [x] All 5 CKAD domains have 90%+ coverage ✅ Currently at ~95%
+- [x] Kustomize lab exists and is complete ✅ Created in commit 420dd99
+- [x] SecurityContexts lab exists and is complete ✅ Created in commit 1646122
+- [ ] Kustomize CKAD.md file created ⚠️ In progress
+- [ ] Security CKAD.md file created ⚠️ In progress
+- [ ] API deprecations topic covered ⚠️ Pending
+- [ ] Container image building emphasized for CKAD ⚠️ Pending
+- [ ] All lab CKAD.md files accurate and current ⚠️ Most exist, 2 missing
+- [ ] CKAD-STUDY-GUIDE.md updated with kustomize/security labs ⚠️ Out of date
+- [ ] CKAD-LAB-ANALYSIS.md updated with current coverage ⚠️ Out of date
+- [ ] Clear CKAD badges on all lab READMEs ⚠️ Pending
+- [ ] Main README has CKAD certification track section ⚠️ Pending
+- [ ] Placeholder directories cleaned from labs/ ⚠️ Pending
+- [ ] Estimated study time: 50-65 hours (29 labs × ~2 hours avg)
 
 ---
 
