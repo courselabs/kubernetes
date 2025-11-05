@@ -2,9 +2,11 @@
 
 Kubernetes creates the container filesystem and it can mount multiple sources. We've seen ConfigMaps and Secrets which are typically read-only mounts, now we'll use writeable [volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
 
-Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems. 
+Storage in Kubernetes is pluggable so it supports different types - from local disks on the nodes to shared network filesystems.
 
 Those details are kept away from the application model using an abstraction - the [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction), which an app uses to request storage.
+
+> **CKAD Exam Prep**: See [CKAD.md](CKAD.md) for CKAD-specific scenarios, practice exercises, and exam tips for persistent volumes.
 
 ## API specs
 

@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base configuration
+resources:
+  - ../../base
+
+# Production environment customizations
+namespace: production
+namePrefix: prod-
+
+# Add production-specific labels
+commonLabels:
+  environment: production
+  tier: production
+
+# Apply patches for production
+patchesStrategicMerge:
+  - replica-patch.yaml
+  - resources-patch.yaml
+
+# Use a specific stable image tag
+images:
+  - name: containous/whoami
+    newTag: v1.5.0

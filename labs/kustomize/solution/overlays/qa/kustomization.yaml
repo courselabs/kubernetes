@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base configuration
+resources:
+  - ../../../specs/base
+
+# QA environment customizations
+namespace: qa
+namePrefix: qa-
+
+# Add QA-specific labels
+commonLabels:
+  environment: qa
+  tier: testing
+
+# Override the number of replicas
+replicas:
+  - name: whoami
+    count: 4
+
+# Use a specific image tag for QA
+images:
+  - name: containous/whoami
+    newTag: v1-alpine

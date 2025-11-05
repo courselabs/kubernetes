@@ -6,6 +6,8 @@ Instead you'll use a [controller](https://kubernetes.io/docs/concepts/architectu
 
 Deployments use a template to create Pods, and a label selector to identify the Pods they own.
 
+> **For CKAD Exam Preparation**: This lab covers the basics. For advanced Deployment topics including health checks, resource management, deployment strategies, and production patterns, see [CKAD.md](CKAD.md)
+
 ## API specs
 
 - [Deployment](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/)

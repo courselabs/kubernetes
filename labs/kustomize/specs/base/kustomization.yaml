@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Resources to include in this kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  kubernetes.courselabs.co: kustomize
+  managed-by: kustomize

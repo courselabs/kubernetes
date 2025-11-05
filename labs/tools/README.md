@@ -4,6 +4,8 @@ Kubectl is great but sometimes you need something else to help you navigate your
 
 These exercises will walk you through some of the more popular tools.
 
+> **CKAD Exam Prep**: See [CKAD.md](CKAD.md) for essential kubectl productivity tips, debugging workflows, and time-saving techniques for the CKAD exam.
+
 ## Reference
 
 - [Dashboard - web UI](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)

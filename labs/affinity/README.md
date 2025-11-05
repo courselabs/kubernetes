@@ -4,6 +4,8 @@ Affinity is a feature where you can request Pods to be scheduled in relation to 
 
 You add affinity rules to your Pod specification. They can be _required_ rules, which means they act as a constraint and if they can't be met then the Pod stays in the pending state. Or they can be _preferred_ rules, which means Kubernetes will try to meet them, but if it can't it will schedule the Pods anyway.
 
+> **For CKAD Exam Preparation**: This lab covers affinity with multi-node clusters. For quick affinity patterns, operators, troubleshooting, and exam scenarios, see [CKAD.md](CKAD.md)
+
 ## Reference
 
 - [Affinity and anti-affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) - applying to nodes and Pods

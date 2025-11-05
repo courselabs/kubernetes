@@ -1,0 +1,23 @@
+# Legacy app deployment - uses current API but demonstrates the exercise structure
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-web
+  labels:
+    kubernetes.courselabs.co: api-versions
+    app: legacy-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: legacy-web
+  template:
+    metadata:
+      labels:
+        app: legacy-web
+    spec:
+      containers:
+        - name: web
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
