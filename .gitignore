@@ -4,3 +4,4 @@ tls.crt
 tls.key
 0
 debug.log
+node_modules/

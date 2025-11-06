@@ -219,7 +219,7 @@ Logging agent
 Database proxy
 </div>
 <div v-click="4" class="text-center">
-<carbon-transform class="text-4xl text-purple-400 mb-2" />
+<carbon-arrows-horizontal class="text-4xl text-purple-400 mb-2" />
 <strong>Adapter</strong><br/>
 Format converter
 </div>
