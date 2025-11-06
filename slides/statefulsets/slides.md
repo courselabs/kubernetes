@@ -2,56 +2,89 @@
 layout: cover
 ---
 
-# Kubernetes StatefulSets
+# StatefulSets
 
 <div class="abs-br m-6 flex gap-2">
-  <carbon-data-base class="text-6xl text-blue-400" />
+  <carbon-ordinal class="text-6xl text-blue-400" />
 </div>
 
 <div v-click class="mt-8 text-xl opacity-80">
-Stable identities for stateful applications
+Stable identities, ordered deployment, and persistent storage
 </div>
 
 ---
 layout: center
 ---
 
-# The Problem: Stateful Applications
+# What StatefulSets Solve
 
 <div v-click="1">
 
 ```mermaid
 graph TB
-    subgraph Deployment["Deployment (Stateless)"]
-        P1[nginx-7d8b4c9-x7k2m]
-        P2[nginx-7d8b4c9-p4f3n]
-        P3[nginx-7d8b4c9-m9k1r]
-    end
-    style P1 fill:#4ade80
-    style P2 fill:#4ade80
-    style P3 fill:#4ade80
+    D[Deployment] --> R1[Random names<br/>nginx-7d8b4c9-x7k2m]
+    D --> R2[Parallel creation]
+    D --> R3[Shared storage]
+    SS[StatefulSet] --> S1[Predictable names<br/>nginx-0, nginx-1]
+    SS --> S2[Sequential creation]
+    SS --> S3[Per-Pod storage]
+    style D fill:#fbbf24
+    style SS fill:#4ade80
 ```
 
 </div>
 
-<div v-click="2" class="mt-6">
+<div class="grid grid-cols-2 gap-6 mt-8 text-sm">
+<div v-click="2">
+<carbon-deployment-pattern class="text-4xl text-yellow-400 mb-2" />
+<strong>Deployment</strong><br/>
+Dynamic, stateless applications
+</div>
+<div v-click="3">
+<carbon-ordinal class="text-4xl text-green-400 mb-2" />
+<strong>StatefulSet</strong><br/>
+Stable, stateful applications
+</div>
+</div>
+
+<div v-click="4" class="mt-8 text-center">
+<carbon-checkmark class="inline-block text-2xl text-blue-400" /> Use when you need stability and predictability
+</div>
+
+---
+layout: center
+---
+
+# The Problem
+
+<div v-click="1">
 
 ```mermaid
-graph TB
-    subgraph Required["Database Needs"]
-        D[PostgreSQL Primary<br/>Must start first]
-        D --> R1[Replica 1<br/>Needs to find Primary]
-        D --> R2[Replica 2<br/>Needs to find Primary]
-    end
-    style D fill:#60a5fa
-    style R1 fill:#fbbf24
-    style R2 fill:#fbbf24
+graph LR
+    Primary[Database Primary<br/>pod-7x8a9] --> Secondary1[Secondary 1<br/>pod-m3k4n]
+    Primary --> Secondary2[Secondary 2<br/>pod-p9q2r]
+    style Primary fill:#ef4444
+    style Secondary1 fill:#ef4444
+    style Secondary2 fill:#ef4444
 ```
 
 </div>
 
-<div v-click="3" class="mt-6 text-center text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> Random names and parallel start won't work!
+<div v-click="2" class="mt-8 text-center text-red-400 text-xl">
+<carbon-close class="inline-block text-3xl" /> Random names make it impossible to configure replication!
+</div>
+
+<div v-click="3" class="mt-6">
+
+**Replicated database needs:**
+- Primary starts first (ordered deployment)
+- Secondaries know how to find primary (stable naming)
+- Each replica has its own data (persistent storage per Pod)
+
+</div>
+
+<div v-click="4" class="mt-6 text-center text-green-400">
+<carbon-checkmark class="inline-block text-2xl" /> StatefulSets provide stable names, ordered deployment, persistent storage
 </div>
 
 ---
@@ -60,55 +93,21 @@ layout: center
 
 # StatefulSets vs Deployments
 
-<div v-click="1">
+<div class="text-xs">
 
-```mermaid
-graph TB
-    subgraph Deployment
-        D1[web-7d8b-x7k2]
-        D2[web-7d8b-p4f3]
-        D3[web-7d8b-m9k1]
-    end
-    subgraph StatefulSet
-        S1[postgres-0]
-        S2[postgres-1]
-        S3[postgres-2]
-    end
-    style D1 fill:#fbbf24
-    style D2 fill:#fbbf24
-    style D3 fill:#fbbf24
-    style S1 fill:#4ade80
-    style S2 fill:#4ade80
-    style S3 fill:#4ade80
-```
+| Aspect | Deployment | StatefulSet |
+|--------|------------|-------------|
+| <span v-click="1">**Pod Naming**</span> | <span v-click="1">nginx-7d8b4c9-x7k2m (random)</span> | <span v-click="1">nginx-0, nginx-1, nginx-2 (ordinal)</span> |
+| <span v-click="2">**Creation Order**</span> | <span v-click="2">Parallel (all at once)</span> | <span v-click="2">Sequential (0→1→2)</span> |
+| <span v-click="3">**Deletion Order**</span> | <span v-click="3">Parallel</span> | <span v-click="3">Reverse sequential (2→1→0)</span> |
+| <span v-click="4">**Network Identity**</span> | <span v-click="4">Load-balanced via Service</span> | <span v-click="4">Individual DNS per Pod</span> |
+| <span v-click="5">**Storage**</span> | <span v-click="5">Shared PVCs or emptyDir</span> | <span v-click="5">Dedicated PVC per Pod</span> |
+| <span v-click="6">**Use Cases**</span> | <span v-click="6">Web servers, APIs</span> | <span v-click="6">Databases, message queues</span> |
 
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-xs">
-<div v-click="2">
-<carbon-cube class="inline-block text-2xl text-yellow-400" /> <strong>Deployment:</strong> Random names
-</div>
-<div v-click="3">
-<carbon-order-details class="inline-block text-2xl text-green-400" /> <strong>StatefulSet:</strong> Predictable ordinals
-</div>
-<div v-click="4">
-<carbon-flash class="inline-block text-2xl text-yellow-400" /> <strong>Deployment:</strong> Parallel creation
-</div>
-<div v-click="5">
-<carbon-datastore class="inline-block text-2xl text-green-400" /> <strong>StatefulSet:</strong> Sequential creation
-</div>
-<div v-click="6">
-<carbon-network-3 class="inline-block text-2xl text-yellow-400" /> <strong>Deployment:</strong> Load-balanced access
-</div>
-<div v-click="7">
-<carbon-dns-services class="inline-block text-2xl text-green-400" /> <strong>StatefulSet:</strong> Individual DNS names
-</div>
-<div v-click="8">
-<carbon-data-volume class="inline-block text-2xl text-yellow-400" /> <strong>Deployment:</strong> Shared volumes
-</div>
-<div v-click="9">
-<carbon-data-volume-alt class="inline-block text-2xl text-green-400" /> <strong>StatefulSet:</strong> Dedicated PVC per Pod
-</div>
+<div v-click="7" class="mt-8 text-center text-lg">
+<carbon-idea class="inline-block text-2xl text-yellow-400" /> StatefulSets = Deployments + Stability
 </div>
 
 ---
@@ -121,10 +120,10 @@ layout: center
 
 ```mermaid
 graph TB
-    P0[Pod: db-0] --> D0[DNS:<br/>db-0.database.default.svc.cluster.local]
-    P1[Pod: db-1] --> D1[DNS:<br/>db-1.database.default.svc.cluster.local]
-    P2[Pod: db-2] --> D2[DNS:<br/>db-2.database.default.svc.cluster.local]
-    HS[Headless Service:<br/>database] -.-> P0 & P1 & P2
+    HS[Headless Service<br/>clusterIP: None<br/>name: database] --> DNS[DNS System]
+    DNS --> P0[db-0.database.default.svc.cluster.local]
+    DNS --> P1[db-1.database.default.svc.cluster.local]
+    DNS --> P2[db-2.database.default.svc.cluster.local]
     style HS fill:#60a5fa
     style P0 fill:#4ade80
     style P1 fill:#4ade80
@@ -133,28 +132,86 @@ graph TB
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8 text-sm">
-<div v-click="2">
+<div v-click="2" class="mt-8">
+
+**DNS Name Format:** `<pod-name>.<service-name>.<namespace>.svc.cluster.local`
+
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
+<div v-click="3">
 <carbon-dns-services class="text-4xl text-blue-400 mb-2" />
 <strong>Individual DNS</strong><br/>
-Each Pod gets unique name
+Each Pod has its own DNS name
 </div>
-<div v-click="3">
-<carbon-restart class="text-4xl text-green-400 mb-2" />
+<div v-click="4">
+<carbon-renew class="text-4xl text-green-400 mb-2" />
 <strong>Persistent Identity</strong><br/>
-Name survives restarts
+Name survives Pod restarts
 </div>
 </div>
 
-<div v-click="4" class="mt-6 text-center text-lg">
-<carbon-requirement class="inline-block text-2xl text-purple-400" /> Requires headless Service (clusterIP: None)
+<div v-click="5" class="mt-8 text-center text-red-400 text-sm">
+<carbon-warning class="inline-block text-2xl" /> Requires headless Service (clusterIP: None)
 </div>
 
 ---
 layout: center
 ---
 
-# Ordered Deployment
+# The Mandatory Headless Service
+
+<div v-click="1">
+
+```yaml
+# Standard Service (NOT for StatefulSets)
+apiVersion: v1
+kind: Service
+spec:
+  clusterIP: 10.96.0.10  # Gets a cluster IP
+  selector:
+    app: web
+```
+
+</div>
+
+<div v-click="2">
+
+```yaml
+# Headless Service (REQUIRED for StatefulSets)
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  clusterIP: None  # Key difference!
+  selector:
+    app: web
+```
+
+</div>
+
+<div v-click="3">
+
+```yaml
+# StatefulSet references it
+apiVersion: apps/v1
+kind: StatefulSet
+spec:
+  serviceName: web  # Must match headless Service
+```
+
+</div>
+
+<div v-click="4" class="mt-6 text-center text-red-400">
+<carbon-warning class="inline-block text-2xl" /> Forgetting headless Service is a common exam pitfall!
+</div>
+
+---
+layout: center
+---
+
+# Ordered Deployment and Scaling
 
 <div v-click="1">
 
@@ -168,106 +225,55 @@ stateDiagram-v2
     Pod1_Running --> Pod1_Ready
     Pod1_Ready --> Pod2_Creating
     Pod2_Creating --> Pod2_Running
-    Pod2_Running --> Pod2_Ready
 ```
 
 </div>
 
-<div class="grid grid-cols-3 gap-4 mt-8 text-sm text-center">
-<div v-click="2">
-<carbon-number-1 class="text-4xl text-green-400 mb-2" />
-<strong>Pod-0 First</strong><br/>
-Wait for Ready
-</div>
-<div v-click="3">
-<carbon-number-2 class="text-4xl text-blue-400 mb-2" />
-<strong>Then Pod-1</strong><br/>
-Wait for Ready
-</div>
-<div v-click="4">
-<carbon-number-3 class="text-4xl text-purple-400 mb-2" />
-<strong>Then Pod-2</strong><br/>
-Wait for Ready
-</div>
-</div>
+<div v-click="2" class="mt-8">
 
-<div v-click="5" class="mt-8 text-center text-lg">
-<carbon-checkmark class="inline-block text-2xl text-green-400" /> Deletion happens in reverse order
-</div>
-
----
-layout: center
----
-
-# Scaling Behavior
-
-<div v-click="1">
-
-```mermaid
-graph TB
-    subgraph ScaleUp["Scale Up: 3 → 5"]
-        S0[Pod-0] --> S1[Pod-1] --> S2[Pod-2] --> S3[Pod-3] --> S4[Pod-4]
-    end
-    subgraph ScaleDown["Scale Down: 5 → 2"]
-        D4[Pod-4] --> D3[Pod-3] --> D2[Pod-2]
-        D1[Pod-1]
-        D0[Pod-0]
-    end
-    style S0 fill:#4ade80
-    style S1 fill:#4ade80
-    style S2 fill:#4ade80
-    style S3 fill:#60a5fa
-    style S4 fill:#60a5fa
-    style D0 fill:#4ade80
-    style D1 fill:#4ade80
-    style D2 fill:#ef4444
-    style D3 fill:#ef4444
-    style D4 fill:#ef4444
-```
+**Initial Deployment (3 replicas):**
+1. Pod-0 created → Wait for Running AND Ready
+2. Pod-1 created → Wait for Running AND Ready
+3. Pod-2 created
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8 text-sm">
-<div v-click="2">
-<carbon-add class="inline-block text-3xl text-green-400" />
-<strong>Scale Up:</strong><br/>
-Sequential from lowest ordinal
-</div>
-<div v-click="3">
-<carbon-subtract class="inline-block text-3xl text-red-400" />
-<strong>Scale Down:</strong><br/>
-Reverse order protects Pod-0
-</div>
+<div v-click="3" class="mt-6">
+
+**Scaling Down (5→2):**
+- Pod-4 deleted
+- Pod-3 deleted
+- Pod-2 deleted
+- **Reverse order protects primary (Pod-0)**
+
 </div>
 
 <div v-click="4" class="mt-6 text-center text-sm opacity-80">
-Can override with podManagementPolicy: Parallel
+Override with podManagementPolicy: Parallel (less common)
 </div>
 
 ---
 layout: center
 ---
 
-# Persistent Storage
+# Persistent Storage with volumeClaimTemplates
 
 <div v-click="1">
 
 ```mermaid
 graph TB
-    SS[StatefulSet<br/>volumeClaimTemplates]
-    SS --> PVC0[data-mysql-0]
-    SS --> PVC1[data-mysql-1]
-    SS --> PVC2[data-mysql-2]
-    PVC0 --> PV0[PersistentVolume]
-    PVC1 --> PV1[PersistentVolume]
-    PVC2 --> PV2[PersistentVolume]
-    PV0 --> P0[Pod: mysql-0]
-    PV1 --> P1[Pod: mysql-1]
-    PV2 --> P2[Pod: mysql-2]
+    SS[StatefulSet] --> VCT[volumeClaimTemplates]
+    VCT --> PVC0[data-mysql-0]
+    VCT --> PVC1[data-mysql-1]
+    VCT --> PVC2[data-mysql-2]
+    PVC0 --> PV0[PV]
+    PVC1 --> PV1[PV]
+    PVC2 --> PV2[PV]
+    P0[Pod-0] --> PVC0
+    P1[Pod-1] --> PVC1
+    P2[Pod-2] --> PVC2
     style SS fill:#60a5fa
-    style PVC0 fill:#fbbf24
-    style PVC1 fill:#fbbf24
-    style PVC2 fill:#fbbf24
+    style VCT fill:#fbbf24
 ```
 
 </div>
@@ -275,69 +281,24 @@ graph TB
 <div class="grid grid-cols-2 gap-6 mt-8 text-sm">
 <div v-click="2">
 <carbon-automatic class="text-4xl text-green-400 mb-2" />
-<strong>Auto-created</strong><br/>
-One PVC per Pod
+<strong>Automatic Creation</strong><br/>
+One PVC per Pod created automatically
 </div>
 <div v-click="3">
-<carbon-data-base class="text-4xl text-blue-400 mb-2" />
+<carbon-locked class="text-4xl text-blue-400 mb-2" />
 <strong>Stable Binding</strong><br/>
 Pod-0 always uses data-mysql-0
 </div>
-</div>
-
-<div v-click="4" class="mt-6 text-center text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> PVCs are NOT deleted when StatefulSet is deleted!
-</div>
-
----
-layout: center
----
-
-# The Mandatory Headless Service
-
-<div v-click="1" class="mb-4">
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: database
-spec:
-  clusterIP: None  # Headless!
-  selector:
-    app: postgres
-```
-
-</div>
-
-<div v-click="2" class="mb-4">
-
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres
-spec:
-  serviceName: database  # Must match Service name
-```
-
-</div>
-
-<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
-<div v-click="3">
-<carbon-dns-services class="text-4xl text-blue-400 mb-2" />
-<strong>Individual DNS</strong><br/>
-pod-0.database.default
-</div>
 <div v-click="4">
-<carbon-network-1 class="text-4xl text-green-400 mb-2" />
-<strong>Direct Access</strong><br/>
-No load balancing
+<carbon-data-base class="text-4xl text-purple-400 mb-2" />
+<strong>PVC Retention</strong><br/>
+PVCs NOT deleted with StatefulSet
 </div>
+<div v-click="5">
+<carbon-renew class="text-4xl text-yellow-400 mb-2" />
+<strong>Reattachment</strong><br/>
+Scale up reuses existing PVCs
 </div>
-
-<div v-click="5" class="mt-6 text-center text-red-400 text-sm">
-<carbon-close class="inline-block text-2xl" /> Forgetting headless Service is a common mistake!
 </div>
 
 ---
@@ -350,115 +311,105 @@ layout: center
 
 ```mermaid
 graph LR
-    P2[Pod-2<br/>Updated First] --> P1[Pod-1<br/>Updated Second]
-    P1 --> P0[Pod-0<br/>Updated Last]
+    RU[RollingUpdate<br/>Default] --> P2[Update Pod-2]
+    P2 --> P1[Update Pod-1]
+    P1 --> P0[Update Pod-0]
+    style RU fill:#4ade80
     style P2 fill:#fbbf24
-    style P1 fill:#60a5fa
-    style P0 fill:#4ade80
+    style P1 fill:#fbbf24
+    style P0 fill:#ef4444
 ```
 
 </div>
 
-<div v-click="2" class="mt-8 text-center">
-<strong class="text-xl">RollingUpdate Strategy (Default)</strong>
+<div v-click="2" class="mt-8">
+
+**RollingUpdate (default):**
+- Updates in reverse order (2→1→0)
+- Waits for each Pod to be Ready
+- Protects primary by updating it last
+
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
-<div v-click="3">
-<carbon-update-now class="inline-block text-3xl text-yellow-400" />
-<strong>Reverse Order</strong><br/>
-Highest ordinal first
-</div>
-<div v-click="4">
-<carbon-checkmark class="inline-block text-3xl text-green-400" />
-<strong>Wait for Ready</strong><br/>
-Before updating next
-</div>
+<div v-click="3" class="mt-6">
+
+**OnDelete Strategy:**
+- Update only when Pod manually deleted
+- Complete control over timing and order
+
 </div>
 
-<div v-click="5" class="mt-8">
+<div v-click="4" class="mt-6">
 
+**Partition Updates (canary):**
 ```yaml
 updateStrategy:
-  type: OnDelete  # Manual control
+  rollingUpdate:
+    partition: 2  # Only Pods >= 2 are updated
 ```
 
 </div>
 
-<div v-click="6" class="text-center text-xs opacity-80">
-OnDelete: Pods updated only when manually deleted
+<div v-click="5" class="mt-6 text-center text-blue-400">
+<carbon-idea class="inline-block text-2xl" /> Test updates on secondaries before primary
 </div>
 
 ---
 layout: center
 ---
 
-# Use Cases
+# StatefulSet Use Cases
 
-<div class="grid grid-cols-2 gap-6 mt-4">
+<div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
-<carbon-data-base class="text-5xl text-blue-400 mb-2" />
+<carbon-data-base class="text-4xl text-blue-400 mb-2" />
 <strong>Relational Databases</strong><br/>
-<span class="text-sm opacity-80">PostgreSQL, MySQL primary-replica</span>
+<span class="text-sm opacity-80">PostgreSQL, MySQL with replication</span>
 </div>
 <div v-click="2">
-<carbon-document-multiple class="text-5xl text-green-400 mb-2" />
+<carbon-document-multiple-01 class="text-4xl text-green-400 mb-2" />
 <strong>NoSQL Databases</strong><br/>
 <span class="text-sm opacity-80">MongoDB, Cassandra, Elasticsearch</span>
 </div>
 <div v-click="3">
-<carbon-network-3 class="text-5xl text-purple-400 mb-2" />
+<carbon-data-share class="text-4xl text-purple-400 mb-2" />
 <strong>Message Queues</strong><br/>
-<span class="text-sm opacity-80">RabbitMQ, Kafka with ordered IDs</span>
+<span class="text-sm opacity-80">RabbitMQ, Kafka, Redis</span>
 </div>
 <div v-click="4">
-<carbon-server class="text-5xl text-yellow-400 mb-2" />
+<carbon-network-cluster class="text-4xl text-yellow-400 mb-2" />
 <strong>Distributed Systems</strong><br/>
 <span class="text-sm opacity-80">Zookeeper, etcd, Consul</span>
 </div>
 </div>
 
-<div v-click="5" class="mt-8 text-center text-lg">
-<carbon-warning class="inline-block text-2xl text-red-400" /> Don't use just because app has state!
+<div v-click="5" class="mt-8 text-center text-red-400">
+<carbon-warning class="inline-block text-2xl" /> Don't use StatefulSets just because your app has state!
 </div>
 
-<div v-click="6" class="text-center text-sm opacity-80">
-Only when you need stable identities, ordered operations, per-Pod storage
+<div v-click="6" class="mt-6 text-center text-sm">
+Use when you need: Stable identities • Ordered operations • Per-Pod storage
 </div>
 
 ---
 layout: center
 ---
 
-# Init Containers Pattern
+# Init Containers with StatefulSets
 
 <div v-click="1">
-
-```mermaid
-graph TB
-    IC[Init Container<br/>Check hostname]
-    IC -->|If postgres-0| P0[Skip - I'm Primary]
-    IC -->|If postgres-1/2| W[Wait for DNS:<br/>postgres-0.postgres]
-    W --> C[Start Container]
-    P0 --> C
-    style IC fill:#fbbf24
-    style P0 fill:#4ade80
-    style W fill:#60a5fa
-```
-
-</div>
-
-<div v-click="2" class="mt-6">
 
 ```yaml
 initContainers:
 - name: wait-for-primary
+  image: busybox
   command:
   - sh
   - -c
   - |
     if [ "$(hostname)" != "postgres-0" ]; then
       until nslookup postgres-0.postgres; do
+        echo "Waiting for primary..."
         sleep 2
       done
     fi
@@ -466,8 +417,26 @@ initContainers:
 
 </div>
 
-<div v-click="3" class="mt-6 text-center text-sm">
-<carbon-idea class="inline-block text-2xl text-yellow-400" /> Hostname matches StatefulSet ordinal name
+<div v-click="2" class="mt-8">
+
+**How It Works:**
+- **Pod-0**: hostname = postgres-0, exits immediately
+- **Pod-1/2**: Wait for DNS resolution of postgres-0.postgres
+
+</div>
+
+<div v-click="3" class="mt-6">
+
+**Other Init Container Uses:**
+- Configure replication based on ordinal
+- Download configuration for Pod's role
+- Initialize schemas (Pod-0 only)
+- Set up directories and permissions
+
+</div>
+
+<div v-click="4" class="mt-6 text-center text-blue-400">
+<carbon-idea class="inline-block text-2xl" /> Pod hostname matches ordinal name for conditional logic
 </div>
 
 ---
@@ -476,39 +445,35 @@ layout: center
 
 # CKAD Exam Relevance
 
-<div v-click="1" class="text-center mb-6">
-<carbon-certificate class="inline-block text-6xl text-blue-400" />
+<div class="grid grid-cols-2 gap-6 mt-6">
+<div v-click="1">
+<carbon-education class="text-4xl text-blue-400 mb-2" />
+<strong>Core Concepts</strong><br/>
+<span class="text-sm opacity-80">Differences, headless Service, naming</span>
 </div>
-
-<div class="grid grid-cols-2 gap-4 text-sm">
 <div v-click="2">
-<carbon-checkmark class="inline-block text-2xl text-green-400" /> Core concepts
+<carbon-terminal class="text-4xl text-green-400 mb-2" />
+<strong>Practical Skills</strong><br/>
+<span class="text-sm opacity-80">Create from scratch, volumeClaimTemplates</span>
 </div>
 <div v-click="3">
-<carbon-network-3 class="inline-block text-2xl text-green-400" /> Headless Service requirement
+<carbon-document class="text-4xl text-purple-400 mb-2" />
+<strong>Exam Scenarios</strong><br/>
+<span class="text-sm opacity-80">Stateful apps, multi-replica databases</span>
 </div>
 <div v-click="4">
-<carbon-tag class="inline-block text-2xl text-green-400" /> Pod naming conventions
-</div>
-<div v-click="5">
-<carbon-data-volume class="inline-block text-2xl text-green-400" /> volumeClaimTemplates
-</div>
-<div v-click="6">
-<carbon-dns-services class="inline-block text-2xl text-green-400" /> DNS naming patterns
-</div>
-<div v-click="7">
-<carbon-debug class="inline-block text-2xl text-green-400" /> Troubleshoot issues
-</div>
-<div v-click="8">
-<carbon-enterprise class="inline-block text-2xl text-yellow-400" /> Deploy stateful app
-</div>
-<div v-click="9">
-<carbon-time class="inline-block text-2xl text-yellow-400" /> Sequential startup takes time
+<carbon-time class="text-4xl text-yellow-400 mb-2" />
+<strong>Time Management</strong><br/>
+<span class="text-sm opacity-80">Sequential startup takes longer</span>
 </div>
 </div>
 
-<div v-click="10" class="mt-8 text-center text-sm opacity-80">
-Approximately 1-2 exam questions may involve StatefulSets
+<div v-click="5" class="mt-8 text-center">
+<carbon-warning class="inline-block text-2xl text-yellow-400" /> Use --watch to monitor without re-running commands
+</div>
+
+<div v-click="6" class="mt-6 text-center text-sm opacity-80">
+Exam weight: 1-2 questions, typically deployment or storage context
 </div>
 
 ---
@@ -522,22 +487,23 @@ layout: center
 ```mermaid
 mindmap
   root((StatefulSets))
-    Stable Identity
-      Predictable names
-      Individual DNS
-      Persistent across restarts
-    Ordered Lifecycle
-      Sequential creation
-      Reverse deletion
+    Naming
+      Predictable: web-0, web-1
+      Stable DNS names
+      Survives restarts
+    Lifecycle
+      Ordered creation 0→1→2
+      Reverse deletion 2→1→0
       Wait for Ready
     Storage
       volumeClaimTemplates
-      Per-Pod PVC
-      Not auto-deleted
-    Requirements
-      Headless Service
+      Per-Pod PVCs
+      PVCs not deleted
+      Reattach on scale-up
+    Service
+      Headless required
       clusterIP: None
-      serviceName field
+      Individual Pod DNS
 ```
 
 </div>
@@ -550,27 +516,34 @@ layout: center
 
 <div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
-<carbon-order-details class="text-4xl text-blue-400 mb-2" />
+<carbon-tag class="text-4xl text-blue-400 mb-2" />
 <strong>Predictable names</strong><br/>
-<span class="text-sm opacity-80">web-0, web-1, web-2</span>
+<span class="text-sm opacity-80">Ordinal indices: web-0, web-1, web-2</span>
 </div>
 <div v-click="2">
-<carbon-datastore class="text-4xl text-green-400 mb-2" />
-<strong>Sequential lifecycle</strong><br/>
-<span class="text-sm opacity-80">Ordered creation and deletion</span>
+<carbon-order-details class="text-4xl text-green-400 mb-2" />
+<strong>Ordered lifecycle</strong><br/>
+<span class="text-sm opacity-80">Sequential creation, reverse deletion</span>
 </div>
 <div v-click="3">
 <carbon-dns-services class="text-4xl text-purple-400 mb-2" />
-<strong>Individual DNS</strong><br/>
-<span class="text-sm opacity-80">Requires headless Service</span>
+<strong>Stable identities</strong><br/>
+<span class="text-sm opacity-80">Individual Pod DNS names</span>
 </div>
 <div v-click="4">
-<carbon-data-volume-alt class="text-4xl text-yellow-400 mb-2" />
-<strong>Dedicated storage</strong><br/>
-<span class="text-sm opacity-80">One PVC per Pod</span>
+<carbon-data-volume class="text-4xl text-yellow-400 mb-2" />
+<strong>Per-Pod storage</strong><br/>
+<span class="text-sm opacity-80">volumeClaimTemplates create PVCs</span>
 </div>
 </div>
 
-<div v-click="5" class="mt-8 text-center text-lg">
-For stateful apps requiring stable identities! <carbon-arrow-right class="inline-block text-2xl" />
+<div v-click="5" class="mt-8 text-center text-xl">
+<strong>Important Gotchas:</strong>
+<div class="text-sm mt-4 opacity-80">
+PVCs not deleted • Sequential = slower • Headless Service mandatory • Label selectors must match
+</div>
+</div>
+
+<div v-click="6" class="mt-8 text-center">
+<carbon-certificate class="inline-block text-3xl text-green-400" /> Next: Hands-on StatefulSet deployments <carbon-arrow-right class="inline-block text-2xl" />
 </div>
