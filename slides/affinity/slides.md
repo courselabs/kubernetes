@@ -12,32 +12,39 @@ layout: cover
 Advanced control over Pod placement
 </div>
 
+<div v-click class="mt-4 text-lg opacity-60">
+Node affinity, Pod affinity, and anti-affinity
+</div>
+
 ---
 layout: center
 ---
 
 # Why Pod Placement Matters
 
-<div class="grid grid-cols-2 gap-6 mt-4">
+<div class="grid grid-cols-2 gap-6 mt-8">
 <div v-click="1">
-<carbon-dashboard class="text-5xl text-blue-400 mb-2" />
-<strong>Performance</strong><br/>
-<span class="text-sm opacity-80">GPUs, SSDs, specialized hardware</span>
+<carbon-dashboard class="text-5xl text-blue-400 mb-3" />
+<div class="font-semibold text-lg">Performance Optimization</div>
+<div class="text-sm opacity-80">GPU nodes, SSD storage<br/>ML workloads, databases</div>
 </div>
+
 <div v-click="2">
-<carbon-hybrid-networking class="text-5xl text-green-400 mb-2" />
-<strong>High Availability</strong><br/>
-<span class="text-sm opacity-80">Spread across failure zones</span>
+<carbon-network-overlay class="text-5xl text-green-400 mb-3" />
+<div class="font-semibold text-lg">High Availability</div>
+<div class="text-sm opacity-80">Spread replicas<br/>Survive infrastructure failures</div>
 </div>
+
 <div v-click="3">
-<carbon-location class="text-5xl text-purple-400 mb-2" />
-<strong>Co-location</strong><br/>
-<span class="text-sm opacity-80">Reduce latency between components</span>
+<carbon-location class="text-5xl text-purple-400 mb-3" />
+<div class="font-semibold text-lg">Co-location Efficiency</div>
+<div class="text-sm opacity-80">Cache near application<br/>Reduce network latency</div>
 </div>
+
 <div v-click="4">
-<carbon-security class="text-5xl text-red-400 mb-2" />
-<strong>Isolation</strong><br/>
-<span class="text-sm opacity-80">Compliance and security zones</span>
+<carbon-security class="text-5xl text-red-400 mb-3" />
+<div class="font-semibold text-lg">Isolation & Compliance</div>
+<div class="text-sm opacity-80">Dedicated nodes<br/>Security requirements</div>
 </div>
 </div>
 
@@ -45,18 +52,18 @@ layout: center
 layout: center
 ---
 
-# Scheduling Basics
+# Scheduling Basics Recap
 
 <div v-click="1">
 
 ```mermaid
 graph TD
-    P[Pod Created] --> S[Scheduler]
-    S --> C{Node Capacity?}
-    C --> T{Tolerates Taints?}
-    T --> NS{Node Selectors?}
-    NS --> A{Affinity Rules?}
-    A --> N[Schedule on Node]
+    P[Pod Created] --> S[Scheduler Evaluates]
+    S --> C[Node Capacity]
+    S --> T[Taints]
+    S --> NS[Node Selectors]
+    S --> A[Affinity Rules]
+    C & T & NS & A --> N[Schedule on Node]
     style P fill:#4ade80
     style S fill:#60a5fa
     style N fill:#a78bfa
@@ -64,19 +71,20 @@ graph TD
 
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-sm">
-<div v-click="2">
-<carbon-dashboard class="inline-block text-2xl text-blue-400" /> CPU & memory capacity
+<div v-click="2" class="mt-6 text-center">
+<carbon-dashboard class="inline-block text-3xl text-blue-400" /> Does node have capacity?
 </div>
-<div v-click="3">
-<carbon-close class="inline-block text-2xl text-red-400" /> Taints & tolerations
+
+<div v-click="3" class="text-center mt-2">
+<carbon-close class="inline-block text-3xl text-red-400" /> Does Pod tolerate taints?
 </div>
-<div v-click="4">
-<carbon-tag class="inline-block text-2xl text-green-400" /> Node selectors (simple)
+
+<div v-click="4" class="text-center mt-2">
+<carbon-tag class="inline-block text-3xl text-green-400" /> Do node labels match selectors?
 </div>
-<div v-click="5">
-<carbon-rule class="inline-block text-2xl text-purple-400" /> Affinity (expressive)
-</div>
+
+<div v-click="5" class="text-center mt-2">
+<carbon-rule class="inline-block text-3xl text-purple-400" /> Do affinity rules match?
 </div>
 
 ---
@@ -85,79 +93,79 @@ layout: center
 
 # Node Affinity Overview
 
-<div v-click="1">
+<div v-click="1" class="text-center mb-6">
+Node selectors on steroids
+</div>
+
+<div v-click="2">
 
 ```mermaid
 graph LR
-    P[Pod] --> R[Required<br/>Hard Constraint]
-    P --> PR[Preferred<br/>Soft Preference]
-    R --> N1[Matching Nodes]
-    PR --> N2[Weighted Score]
+    P[Pod] --> R[Required Affinity]
+    P --> PR[Preferred Affinity]
+    R --> H[Hard Constraint]
+    PR --> W[Weighted Preference]
     style P fill:#60a5fa
     style R fill:#ef4444
     style PR fill:#fbbf24
-    style N1 fill:#4ade80
-    style N2 fill:#a78bfa
+    style H fill:#4ade80
+    style W fill:#a78bfa
 ```
 
 </div>
 
-<div v-click="2" class="mt-6 text-center text-sm opacity-80">
-Like node selectors, but much more powerful
-</div>
-
-<div class="grid grid-cols-2 gap-6 mt-6">
+<div class="grid grid-cols-2 gap-6 mt-8">
 <div v-click="3">
-<carbon-rule class="text-4xl text-red-400 mb-2" />
-<strong>Required</strong><br/>
-<span class="text-sm opacity-80">Must match or Pod stays Pending</span>
+<carbon-locked class="text-4xl text-red-400 mb-2" />
+<div class="font-semibold">Required</div>
+<div class="text-sm opacity-80">Must be met</div>
 </div>
 <div v-click="4">
 <carbon-star class="text-4xl text-yellow-400 mb-2" />
-<strong>Preferred</strong><br/>
-<span class="text-sm opacity-80">Weighted preferences (1-100)</span>
+<div class="font-semibold">Preferred</div>
+<div class="text-sm opacity-80">Try to honor</div>
 </div>
+</div>
+
+<div v-click="5" class="mt-6 text-center text-sm opacity-60">
+*DuringSchedulingIgnoredDuringExecution = rules only apply at scheduling
 </div>
 
 ---
 layout: center
 ---
 
-# Required vs Preferred
+# Required vs Preferred Affinity
 
 <div v-click="1" class="mb-4">
 
 ```yaml
-affinity:
-  nodeAffinity:
-    required:
+nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    - matchExpressions:
       - key: kubernetes.io/os
         operator: In
         values: [linux]
-    preferred:
-      - weight: 80
-        key: disktype
-        operator: In
-        values: [ssd]
+  preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 80
+      preference:
+        - key: disktype
+          operator: In
+          values: [ssd]
 ```
 
 </div>
 
-<div class="grid grid-cols-2 gap-6">
-<div v-click="2" class="text-center">
-<carbon-checkmark class="text-5xl text-red-400 mb-2" />
-<strong>Required: Linux</strong><br/>
-<span class="text-sm opacity-80">Non-negotiable</span>
-</div>
-<div v-click="3" class="text-center">
-<carbon-star class="text-5xl text-yellow-400 mb-2" />
-<strong>Preferred: SSD</strong><br/>
-<span class="text-sm opacity-80">Nice to have</span>
-</div>
+<div v-click="2" class="text-center mb-4">
+<carbon-locked class="inline-block text-4xl text-red-400" /> Required: Must run on Linux
 </div>
 
-<div v-click="4" class="mt-6 text-center text-sm">
-Scheduler filters by required, then scores by preferred
+<div v-click="3" class="text-center mb-4">
+<carbon-star class="inline-block text-4xl text-yellow-400" /> Preferred: Would like SSD (weight 80)
+</div>
+
+<div v-click="4" class="mt-6 text-center text-lg">
+Filter by required → Score by preferred
 </div>
 
 ---
@@ -170,12 +178,12 @@ layout: center
 
 ```mermaid
 graph TB
-    O[Operators]
-    O --> In[In<br/>value in list]
-    O --> NotIn[NotIn<br/>value not in list]
-    O --> Exists[Exists<br/>label present]
-    O --> DNE[DoesNotExist<br/>label absent]
-    O --> Gt[Gt/Lt<br/>numeric compare]
+    O[Rich Operators]
+    O --> In[In: value in list]
+    O --> NotIn[NotIn: value not in list]
+    O --> Exists[Exists: label present]
+    O --> DNE[DoesNotExist: label absent]
+    O --> Gt[Gt/Lt: numeric compare]
     style O fill:#60a5fa
     style In fill:#4ade80
     style NotIn fill:#4ade80
@@ -186,38 +194,42 @@ graph TB
 
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-xs">
-<div v-click="2">
-<carbon-checkmark class="inline-block text-xl text-green-400" /> zone <strong>In</strong> [us-west-1a, us-west-1b]
+<div class="mt-6">
+<div v-click="2" class="mb-3">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> zone <strong>In</strong> [us-west-1a, us-west-1b]
 </div>
-<div v-click="3">
-<carbon-close class="inline-block text-xl text-red-400" /> disktype <strong>NotIn</strong> [hdd]
+<div v-click="3" class="mb-3">
+<carbon-close class="inline-block text-2xl text-red-400" /> disktype <strong>NotIn</strong> [hdd]
 </div>
-<div v-click="4">
-<carbon-tag class="inline-block text-xl text-blue-400" /> gpu <strong>Exists</strong> (any value)
+<div v-click="4" class="mb-3">
+<carbon-tag class="inline-block text-2xl text-blue-400" /> gpu <strong>Exists</strong>
 </div>
-<div v-click="5">
-<carbon-subtract class="inline-block text-xl text-yellow-400" /> spot <strong>DoesNotExist</strong>
+<div v-click="5" class="mb-3">
+<carbon-subtract class="inline-block text-2xl text-yellow-400" /> spot <strong>DoesNotExist</strong>
 </div>
+</div>
+
+<div v-click="6" class="mt-6 text-center text-sm opacity-80">
+Multiple expressions = AND | Multiple terms = OR
 </div>
 
 ---
 layout: center
 ---
 
-# Node Topology Labels
+# Node Topology & Standard Labels
 
 <div v-click="1">
 
 ```mermaid
 graph TB
-    C[Cluster Topology]
-    C --> R[Region<br/>us-west-1]
-    R --> Z1[Zone<br/>us-west-1a]
-    R --> Z2[Zone<br/>us-west-1b]
-    Z1 --> N1[Node<br/>node-1]
-    Z1 --> N2[Node<br/>node-2]
-    Z2 --> N3[Node<br/>node-3]
+    C[Cluster] --> R[Region: us-west-1]
+    R --> Z1[Zone: us-west-1a]
+    R --> Z2[Zone: us-west-1b]
+    Z1 --> N1[Node: node-1]
+    Z1 --> N2[Node: node-2]
+    Z2 --> N3[Node: node-3]
+    Z2 --> N4[Node: node-4]
     style C fill:#60a5fa
     style R fill:#a78bfa
     style Z1 fill:#fbbf24
@@ -226,108 +238,110 @@ graph TB
 
 </div>
 
-<div class="grid grid-cols-3 gap-4 mt-6 text-xs">
+<div class="grid grid-cols-3 gap-4 mt-8 text-sm">
 <div v-click="2" class="text-center">
 <carbon-location class="text-3xl text-purple-400 mb-2" />
-<strong>Region</strong><br/>
-topology.kubernetes.io/region
+<div class="font-semibold">Region</div>
+<div class="text-xs opacity-80">topology.kubernetes.io/region</div>
 </div>
 <div v-click="3" class="text-center">
 <carbon-grid class="text-3xl text-yellow-400 mb-2" />
-<strong>Zone</strong><br/>
-topology.kubernetes.io/zone
+<div class="font-semibold">Zone</div>
+<div class="text-xs opacity-80">topology.kubernetes.io/zone</div>
 </div>
 <div v-click="4" class="text-center">
 <carbon-virtual-machine class="text-3xl text-blue-400 mb-2" />
-<strong>Hostname</strong><br/>
-kubernetes.io/hostname
+<div class="font-semibold">Hostname</div>
+<div class="text-xs opacity-80">kubernetes.io/hostname</div>
 </div>
+</div>
+
+<div v-click="5" class="mt-6 text-center text-lg">
+Zones = independent failure domains
 </div>
 
 ---
 layout: center
 ---
 
-# Pod Affinity
+# Pod Affinity Introduction
 
-<div v-click="1">
+<div v-click="1" class="text-center mb-6">
+Placement based on <strong>other Pods</strong>, not nodes
+</div>
+
+<div v-click="2">
 
 ```mermaid
 graph TB
-    subgraph Zone["Same Zone (topologyKey: zone)"]
+    subgraph Zone["topologyKey: zone"]
         subgraph Node1[Node 1]
-            P1[Cache Pod]
-            P2[App Pod]
+            Cache[Cache Pod<br/>app=cache]
+            App[App Pod<br/>wants: app=cache]
         end
         subgraph Node2[Node 2]
-            P3[Cache Pod]
+            Cache2[Cache Pod<br/>app=cache]
         end
     end
-    P2 -.->|affinity| P1
-    style P1 fill:#4ade80
-    style P2 fill:#60a5fa
-    style P3 fill:#4ade80
+    App -.affinity.-> Cache
+    style Cache fill:#4ade80
+    style App fill:#60a5fa
+    style Cache2 fill:#4ade80
 ```
 
 </div>
 
-<div v-click="2" class="mt-6 text-center">
-<carbon-network-3 class="inline-block text-4xl text-green-400" />
-<strong class="ml-2">Co-locate with other Pods</strong>
+<div v-click="3" class="mt-6 text-center">
+<carbon-location class="inline-block text-3xl text-green-400" /> topologyKey defines "near"
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
-<div v-click="3">
-<carbon-location class="text-3xl text-blue-400 mb-2" />
-<strong>topologyKey: hostname</strong><br/>
-Same physical node
-</div>
-<div v-click="4">
-<carbon-grid class="text-3xl text-purple-400 mb-2" />
-<strong>topologyKey: zone</strong><br/>
-Same availability zone
-</div>
+<div v-click="4" class="text-center mt-2">
+hostname = same node | zone = same zone
 </div>
 
 ---
 layout: center
 ---
 
-# Pod Anti-Affinity
+# Pod Anti-Affinity for HA
 
-<div v-click="1">
+<div v-click="1" class="text-center mb-6">
+Keep Pods <strong>away</strong> from each other
+</div>
+
+<div v-click="2">
 
 ```mermaid
 graph TB
-    subgraph Zone1[Zone A]
-        N1[Node 1]
-        R1[Replica 1]
+    subgraph Z1[Zone A]
+        N1[Node 1<br/>Replica 1]
     end
-    subgraph Zone2[Zone B]
-        N2[Node 2]
-        R2[Replica 2]
+    subgraph Z2[Zone B]
+        N2[Node 2<br/>Replica 2]
     end
-    subgraph Zone3[Zone C]
-        N3[Node 3]
-        R3[Replica 3]
+    subgraph Z3[Zone C]
+        N3[Node 3<br/>Replica 3]
     end
-    R1 -.X.-|anti-affinity| R2
-    R2 -.X.-|anti-affinity| R3
-    R1 -.X.-|anti-affinity| R3
-    style R1 fill:#60a5fa
-    style R2 fill:#60a5fa
-    style R3 fill:#60a5fa
+    N1 -.X anti-affinity.-> N2
+    N2 -.X anti-affinity.-> N3
+    N1 -.X anti-affinity.-> N3
+    style N1 fill:#60a5fa
+    style N2 fill:#60a5fa
+    style N3 fill:#60a5fa
 ```
 
 </div>
 
-<div v-click="2" class="mt-6 text-center">
-<carbon-arrows-horizontal class="inline-block text-4xl text-red-400" />
-<strong class="ml-2">Spread Pods for High Availability</strong>
+<div v-click="3" class="mt-6 text-center">
+<carbon-checkmark class="inline-block text-3xl text-green-400" /> Spreads replicas across nodes/zones
 </div>
 
-<div v-click="3" class="mt-4 text-center text-sm opacity-80">
-Don't schedule replicas together
+<div v-click="4" class="text-center mt-2">
+<carbon-network-overlay class="inline-block text-2xl text-blue-400" /> Single node failure doesn't kill app
+</div>
+
+<div v-click="5" class="mt-4 text-center text-sm opacity-80">
+Combine: required at region + preferred at zone
 </div>
 
 ---
@@ -336,36 +350,41 @@ layout: center
 
 # Practical Use Cases
 
-<div class="grid grid-cols-2 gap-6 mt-4">
+<div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
-<carbon-hybrid-networking class="text-4xl text-green-400 mb-2" />
-<strong>HA Deployments</strong><br/>
-<span class="text-sm opacity-80">Anti-affinity across zones</span>
+<carbon-network-overlay class="text-4xl text-green-400 mb-2" />
+<div class="font-semibold">HA Deployments</div>
+<div class="text-sm opacity-80">Anti-affinity across zones</div>
 </div>
+
 <div v-click="2">
 <carbon-lightning class="text-4xl text-yellow-400 mb-2" />
-<strong>Performance</strong><br/>
-<span class="text-sm opacity-80">Co-locate app with cache</span>
+<div class="font-semibold">Performance</div>
+<div class="text-sm opacity-80">Co-locate app with cache</div>
 </div>
+
 <div v-click="3">
 <carbon-chip class="text-4xl text-purple-400 mb-2" />
-<strong>Specialized Hardware</strong><br/>
-<span class="text-sm opacity-80">GPUs, high-IOPS storage</span>
+<div class="font-semibold">Resource Specialization</div>
+<div class="text-sm opacity-80">GPU nodes, high-IOPS storage</div>
 </div>
+
 <div v-click="4">
 <carbon-close class="text-4xl text-red-400 mb-2" />
-<strong>Avoid Noisy Neighbors</strong><br/>
-<span class="text-sm opacity-80">Separate latency-sensitive apps</span>
+<div class="font-semibold">Avoid Noisy Neighbors</div>
+<div class="text-sm opacity-80">Separate latency-sensitive apps</div>
 </div>
+
 <div v-click="5">
 <carbon-security class="text-4xl text-blue-400 mb-2" />
-<strong>Compliance</strong><br/>
-<span class="text-sm opacity-80">Dedicated security zones</span>
+<div class="font-semibold">Compliance & Security</div>
+<div class="text-sm opacity-80">Dedicated compliance zones</div>
 </div>
+
 <div v-click="6">
 <carbon-user-multiple class="text-4xl text-orange-400 mb-2" />
-<strong>Multi-tenancy</strong><br/>
-<span class="text-sm opacity-80">Team-specific nodes</span>
+<div class="font-semibold">Multi-tenancy</div>
+<div class="text-sm opacity-80">Team-specific nodes</div>
 </div>
 </div>
 
@@ -379,10 +398,14 @@ layout: center
 
 ```mermaid
 graph TB
-    NS[Node Selectors<br/>Simple equality]
-    T[Taints & Tolerations<br/>Node repels Pods]
-    NA[Node Affinity<br/>Expressive rules]
-    PA[Pod Affinity<br/>Pod relationships]
+    NS[Node Selectors]
+    T[Taints & Tolerations]
+    NA[Node Affinity]
+    PA[Pod Affinity/Anti]
+    NS --> NST[Simple equality]
+    T --> TT[Nodes repel Pods]
+    NA --> NAT[Rich expressions]
+    PA --> PAT[Pod relationships]
     style NS fill:#4ade80
     style T fill:#fbbf24
     style NA fill:#60a5fa
@@ -391,18 +414,18 @@ graph TB
 
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-sm">
-<div v-click="2">
+<div class="mt-8">
+<div v-click="2" class="mb-3">
 <carbon-tag class="inline-block text-2xl text-green-400" /> <strong>Node Selectors:</strong> Simple, equality only
 </div>
-<div v-click="3">
+<div v-click="3" class="mb-3">
 <carbon-close class="inline-block text-2xl text-yellow-400" /> <strong>Taints:</strong> Nodes repel, Pods tolerate
 </div>
-<div v-click="4">
-<carbon-rule class="inline-block text-2xl text-blue-400" /> <strong>Node Affinity:</strong> Complex, preferred + required
+<div v-click="4" class="mb-3">
+<carbon-rule class="inline-block text-2xl text-blue-400" /> <strong>Node Affinity:</strong> Flexible with preferences
 </div>
-<div v-click="5">
-<carbon-network-3 class="inline-block text-2xl text-purple-400" /> <strong>Pod Affinity:</strong> Relationships between Pods
+<div v-click="5" class="mb-3">
+<carbon-network-3 class="inline-block text-2xl text-purple-400" /> <strong>Pod Affinity:</strong> Based on other Pods
 </div>
 </div>
 
@@ -423,21 +446,24 @@ mindmap
   root((Pod<br/>Scheduling))
     Node Affinity
       Required
+        Must match
       Preferred
+        Weighted 1-100
       Operators
-      Weights
+        In NotIn Exists
     Pod Affinity
       Co-location
       topologyKey
-      Same zone/host
+        hostname
+        zone
+        region
     Pod Anti-Affinity
       Spreading
       High availability
       Failure domains
     Topology
-      Region
-      Zone
-      Hostname
+      Standard labels
+      Region Zone Host
 ```
 
 </div>
@@ -451,26 +477,41 @@ layout: center
 <div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
 <carbon-rule class="text-4xl text-blue-400 mb-2" />
-<strong>Node Affinity</strong><br/>
-<span class="text-sm opacity-80">Expressive node selection rules</span>
+<div class="font-semibold">Node Affinity</div>
+<div class="text-sm opacity-80">Expressive control, required + preferred</div>
 </div>
+
 <div v-click="2">
 <carbon-network-3 class="text-4xl text-green-400 mb-2" />
-<strong>Pod Affinity</strong><br/>
-<span class="text-sm opacity-80">Co-location strategies</span>
+<div class="font-semibold">Pod Affinity</div>
+<div class="text-sm opacity-80">Co-location based on topology</div>
 </div>
+
 <div v-click="3">
 <carbon-arrows-horizontal class="text-4xl text-red-400 mb-2" />
-<strong>Pod Anti-Affinity</strong><br/>
-<span class="text-sm opacity-80">Spreading for HA</span>
+<div class="font-semibold">Pod Anti-Affinity</div>
+<div class="text-sm opacity-80">Spreading for resilience</div>
 </div>
+
 <div v-click="4">
 <carbon-location class="text-4xl text-purple-400 mb-2" />
-<strong>Topology Key</strong><br/>
-<span class="text-sm opacity-80">Defines "near" or "far"</span>
+<div class="font-semibold">Topology Key</div>
+<div class="text-sm opacity-80">Defines scope of near/far</div>
+</div>
+
+<div v-click="5">
+<carbon-locked class="text-4xl text-yellow-400 mb-2" />
+<div class="font-semibold">Required</div>
+<div class="text-sm opacity-80">Hard constraints, Pending if not met</div>
+</div>
+
+<div v-click="6">
+<carbon-star class="text-4xl text-orange-400 mb-2" />
+<div class="font-semibold">Preferred</div>
+<div class="text-sm opacity-80">Best effort with weights</div>
 </div>
 </div>
 
-<div v-click="5" class="mt-8 text-center text-lg">
-Combine multiple affinity types for sophisticated placement! <carbon-arrow-right class="inline-block text-2xl" />
+<div v-click="7" class="mt-8 text-center text-lg">
+Next: Hands-on affinity practice <carbon-arrow-right class="inline-block text-2xl" />
 </div>

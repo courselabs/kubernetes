@@ -8,8 +8,24 @@ layout: cover
   <carbon-partition-auto class="text-6xl text-blue-400" />
 </div>
 
-<div v-click class="mt-8 text-xl opacity-80">
+<div v-click="1" class="mt-8 text-xl opacity-80">
 Isolating workloads in virtual clusters
+</div>
+
+<div v-click="2" class="mt-6 text-lg">
+<carbon-partition-auto class="inline-block text-xl text-green-400" /> Run multiple environments on one cluster
+</div>
+
+<div v-click="3" class="mt-2 text-lg">
+<carbon-rule class="inline-block text-xl text-purple-400" /> Apply resource quotas and limits
+</div>
+
+<div v-click="4" class="mt-2 text-lg">
+<carbon-locked class="inline-block text-xl text-blue-400" /> Manage access controls per namespace
+</div>
+
+<div v-click="5" class="mt-6 text-sm opacity-60">
+Core CKAD exam topic
 </div>
 
 ---
@@ -48,10 +64,13 @@ graph TB
 <div v-click="5">
 <carbon-unlocked class="inline-block text-3xl text-red-400" /> No access control
 </div>
+<div v-click="6">
+<carbon-currency-dollar class="inline-block text-3xl text-red-400" /> No cost tracking
+</div>
 </div>
 
-<div v-click="6" class="mt-6 text-center text-lg">
-<carbon-partition-auto class="inline-block text-3xl text-green-400" /> Namespaces solve these problems
+<div v-click="7" class="mt-6 text-center text-lg">
+<carbon-partition-auto class="inline-block text-3xl text-green-400" /> Namespaces provide logical isolation
 </div>
 
 ---
@@ -64,7 +83,7 @@ layout: center
 
 ```mermaid
 graph TB
-    subgraph Cluster
+    subgraph Cluster[Physical Cluster]
         subgraph NS1[dev namespace]
             P1[Pod: web]
             S1[Service: web]
@@ -126,7 +145,7 @@ graph TB
 
 <div class="grid grid-cols-2 gap-4 mt-8 text-sm">
 <div v-click="2">
-<carbon-document class="inline-block text-2xl text-green-400" /> <strong>default:</strong> Where resources go without -n flag
+<carbon-document class="inline-block text-2xl text-green-400" /> <strong>default:</strong> Resources without -n flag
 </div>
 <div v-click="3">
 <carbon-kubernetes class="inline-block text-2xl text-yellow-400" /> <strong>kube-system:</strong> DNS, dashboard, controllers
@@ -135,7 +154,7 @@ graph TB
 <carbon-view class="inline-block text-2xl text-purple-400" /> <strong>kube-public:</strong> Publicly readable data
 </div>
 <div v-click="5">
-<carbon-activity class="inline-block text-2xl text-red-400" /> <strong>kube-node-lease:</strong> Node health tracking
+<carbon-activity class="inline-block text-2xl text-red-400" /> <strong>kube-node-lease:</strong> Node health (1.13+)
 </div>
 </div>
 
@@ -152,8 +171,8 @@ graph LR
     R[Resources]
     R --> NS[Namespace-Scoped]
     R --> CS[Cluster-Scoped]
-    NS --> P[Pods<br/>Services<br/>ConfigMaps<br/>Secrets]
-    CS --> N[Nodes<br/>Namespaces<br/>PersistentVolumes<br/>StorageClasses]
+    NS --> P[Pods<br/>Services<br/>ConfigMaps<br/>Secrets<br/>PVCs]
+    CS --> N[Nodes<br/>Namespaces<br/>PersistentVolumes<br/>StorageClasses<br/>ClusterRoles]
     style R fill:#60a5fa
     style NS fill:#4ade80
     style CS fill:#fbbf24
@@ -207,16 +226,19 @@ graph TB
 Limit total resources consumed in a namespace
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+<div class="grid grid-cols-3 gap-4 mt-6 text-sm">
 <div v-click="3">
-<carbon-dashboard class="inline-block text-2xl text-blue-400" /> Compute: CPU & memory totals
+<carbon-dashboard class="inline-block text-2xl text-blue-400" /> Compute resources
 </div>
 <div v-click="4">
-<carbon-rule class="inline-block text-2xl text-green-400" /> Objects: Pod, Service counts
+<carbon-rule class="inline-block text-2xl text-green-400" /> Object counts
+</div>
+<div v-click="5">
+<carbon-data-base class="inline-block text-2xl text-purple-400" /> Storage limits
 </div>
 </div>
 
-<div v-click="5" class="mt-6 text-center text-red-400">
+<div v-click="6" class="mt-6 text-center text-red-400">
 <carbon-warning class="inline-block text-2xl" /> With quotas, Pods MUST specify resources!
 </div>
 
@@ -257,13 +279,13 @@ Auto-apply when not specified
 </div>
 <div v-click="4">
 <carbon-rule class="text-3xl text-yellow-400 mb-2" />
-<strong>Constraints</strong><br/>
-Min/max per container
+<strong>Min/Max Constraints</strong><br/>
+Enforce resource boundaries
 </div>
 </div>
 
 <div v-click="5" class="mt-6 text-center text-sm opacity-80">
-ResourceQuota = namespace total | LimitRange = per-container
+ResourceQuota = namespace total • LimitRange = per-container
 </div>
 
 ---
@@ -315,7 +337,11 @@ web.prod.svc.cluster.local<br/>
 </div>
 </div>
 
-<div v-click="6" class="mt-6 text-center text-sm text-yellow-400">
+<div v-click="6" class="mt-6 text-center text-sm opacity-80">
+Kubernetes networking is flat - any Pod can reach any Pod by IP
+</div>
+
+<div v-click="7" class="mt-2 text-center text-sm text-yellow-400">
 <carbon-security class="inline-block text-2xl" /> For network isolation, use NetworkPolicies
 </div>
 
@@ -356,9 +382,13 @@ Create in each namespace
 </div>
 <div v-click="4">
 <carbon-network-3 class="text-3xl text-blue-400 mb-2" />
-<strong>Use FQDN</strong><br/>
-Reference services across namespaces
+<strong>Use FQDN for services</strong><br/>
+db.backend.svc.cluster.local
 </div>
+</div>
+
+<div v-click="5" class="mt-6 text-center text-sm opacity-80">
+Use Kustomize/Helm to manage duplicates
 </div>
 
 ---
@@ -404,7 +434,7 @@ metadata: namespace: prod<br/>
 </div>
 
 <div v-click="5" class="mt-8 text-center text-sm">
-<carbon-idea class="inline-block text-2xl text-blue-400" /> CKAD tip: Use -n flag to avoid mistakes
+<carbon-idea class="inline-block text-2xl text-blue-400" /> CKAD tip: Use -n flag when switching to avoid mistakes
 </div>
 
 ---
@@ -465,51 +495,31 @@ mindmap
     Virtual Clusters
       Logical isolation
       Multi-tenancy
+      Flat structure
     Scoping
       Namespace-scoped
       Cluster-scoped
+      PV vs PVC
     Resource Control
-      ResourceQuota
-      LimitRange
+      ResourceQuota total
+      LimitRange per-container
+      Enforce limits
     Communication
       DNS FQDN
+      Flat networking
       NetworkPolicy
     Lifecycle
       Create delete
+      Async termination
       Deletes all inside
 ```
 
 </div>
 
----
-layout: center
----
-
-# Key Takeaways
-
-<div class="grid grid-cols-2 gap-6 mt-6">
-<div v-click="1">
-<carbon-partition-auto class="text-4xl text-blue-400 mb-2" />
-<strong>Logical isolation</strong><br/>
-<span class="text-sm opacity-80">Virtual clusters within physical cluster</span>
-</div>
-<div v-click="2">
-<carbon-rule class="text-4xl text-green-400 mb-2" />
-<strong>Resource control</strong><br/>
-<span class="text-sm opacity-80">Quotas and limits per namespace</span>
-</div>
-<div v-click="3">
-<carbon-network-3 class="text-4xl text-purple-400 mb-2" />
-<strong>DNS discovery</strong><br/>
-<span class="text-sm opacity-80">Access services via FQDN</span>
-</div>
-<div v-click="4">
-<carbon-warning class="text-4xl text-red-400 mb-2" />
-<strong>Careful deletion</strong><br/>
-<span class="text-sm opacity-80">Deletes all resources inside</span>
-</div>
+<div v-click="2" class="mt-8 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Partition cluster into virtual clusters
 </div>
 
-<div v-click="5" class="mt-8 text-center text-lg">
-<carbon-education class="inline-block text-3xl text-blue-400" /> Essential CKAD topic - practice context switching!
+<div v-click="3" class="mt-2 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Control resources per namespace
 </div>

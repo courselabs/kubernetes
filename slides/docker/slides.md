@@ -8,8 +8,20 @@ layout: cover
   <carbon-container-software class="text-6xl text-blue-400" />
 </div>
 
-<div v-click class="mt-8 text-xl opacity-80">
-Building custom application images for Kubernetes
+<div v-click="1" class="mt-8 text-xl opacity-80">
+Application Design and Build • 20% of CKAD exam
+</div>
+
+<div v-click="2" class="mt-6 text-lg">
+<carbon-edit class="inline-block text-xl text-green-400" /> Dockerfile structure and multi-stage builds
+</div>
+
+<div v-click="3" class="mt-2 text-lg">
+<carbon-image class="inline-block text-xl text-purple-400" /> Image optimization and build context
+</div>
+
+<div v-click="4" class="mt-2 text-lg">
+<carbon-tag class="inline-block text-xl text-yellow-400" /> Tagging and using custom images in Kubernetes
 </div>
 
 ---
@@ -108,7 +120,7 @@ layout: center
 
 # Multi-Stage Builds
 
-<div v-click="1">
+<div v-click="1" class="mb-6">
 
 ```mermaid
 graph LR
@@ -123,20 +135,24 @@ graph LR
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8">
-<div v-click="2">
+<div v-click="2" class="text-center mb-4 opacity-80">
+Multiple FROM statements • Each FROM starts a new stage
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+<div v-click="3">
 <carbon-tool-box class="text-4xl text-red-400 mb-2" />
 <strong>Build Stage</strong><br/>
 <span class="text-sm opacity-80">Large SDK with compilers</span>
 </div>
-<div v-click="3">
+<div v-click="4">
 <carbon-container-software class="text-4xl text-green-400 mb-2" />
 <strong>Runtime Stage</strong><br/>
 <span class="text-sm opacity-80">Minimal image with artifacts</span>
 </div>
 </div>
 
-<div v-click="4" class="mt-6 text-center text-lg">
+<div v-click="5" class="mt-6 text-center text-lg">
 <carbon-arrow-down class="inline-block text-2xl text-yellow-400" /> Result: 800MB → 50MB
 </div>
 
@@ -175,7 +191,7 @@ CMD ["myapp"]
 </div>
 
 <div v-click="4" class="mt-6 text-center">
-<carbon-lightning class="inline-block text-3xl text-yellow-400" /> BuildKit: Skip unused stages
+<carbon-lightning class="inline-block text-3xl text-yellow-400" /> BuildKit: Skip unused stages, run in parallel
 </div>
 
 ---
@@ -188,13 +204,13 @@ layout: center
 
 ```mermaid
 graph TB
-    subgraph SDK["SDK Images (Build)"]
+    subgraph SDK["SDK Images (Build Stage)"]
         G[golang:1.16<br/>300-800MB]
         M[maven:3.8-openjdk-11]
         N[node:16]
         P[python:3.9]
     end
-    subgraph Runtime["Runtime Images (Final)"]
+    subgraph Runtime["Runtime Images (Final Stage)"]
         A[alpine:3.14<br/>10-100MB]
         S[scratch<br/>0MB]
         J[openjdk:11-jre-slim]
@@ -207,8 +223,17 @@ graph TB
 
 </div>
 
-<div v-click="2" class="mt-8 text-center text-xl">
-<carbon-arrow-down class="inline-block text-3xl text-blue-400" /> SDK: Build tools · Runtime: Only what's needed
+<div class="grid grid-cols-2 gap-6 mt-6">
+<div v-click="2">
+<carbon-tool-box class="text-4xl text-red-400 mb-2" />
+<strong>SDK: 300-800MB</strong><br/>
+<span class="text-sm opacity-80">Compilers and build tools</span>
+</div>
+<div v-click="3">
+<carbon-container-software class="text-4xl text-green-400 mb-2" />
+<strong>Runtime: 10-100MB</strong><br/>
+<span class="text-sm opacity-80">Only what's needed</span>
+</div>
 </div>
 
 ---
@@ -221,10 +246,10 @@ layout: center
 
 ```mermaid
 graph TB
-    L1["Layer 1: FROM node:16<br/><carbon-checkmark/> Cached"] --> L2["Layer 2: COPY package.json<br/><carbon-checkmark/> Cached"]
-    L2 --> L3["Layer 3: RUN npm install<br/><carbon-checkmark/> Cached"]
-    L3 --> L4["Layer 4: COPY . .<br/><carbon-close/> Changed"]
-    L4 --> L5["Layer 5: CMD<br/><carbon-close/> Rebuild"]
+    L1["Layer 1: FROM node:16<br/>✓ Cached"] --> L2["Layer 2: COPY package.json<br/>✓ Cached"]
+    L2 --> L3["Layer 3: RUN npm install<br/>✓ Cached"]
+    L3 --> L4["Layer 4: COPY . .<br/>✗ Changed"]
+    L4 --> L5["Layer 5: CMD<br/>✗ Rebuild"]
     style L1 fill:#4ade80
     style L2 fill:#4ade80
     style L3 fill:#4ade80
@@ -234,21 +259,21 @@ graph TB
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8">
-<div v-click="2">
+<div v-click="2" class="mt-6 text-center opacity-80">
+Layers cached based on content • Order matters!
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6">
+<div v-click="3">
 <carbon-checkmark class="text-4xl text-green-400 mb-2" />
 <strong>Good Pattern</strong><br/>
 <span class="text-sm opacity-80">Copy dependencies first<br/>Source code last</span>
 </div>
-<div v-click="3">
+<div v-click="4">
 <carbon-close class="text-4xl text-red-400 mb-2" />
 <strong>Bad Pattern</strong><br/>
 <span class="text-sm opacity-80">Copy all files first<br/>Invalidates cache</span>
 </div>
-</div>
-
-<div v-click="4" class="mt-6 text-center text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> Order matters for cache efficiency!
 </div>
 
 ---
@@ -271,11 +296,15 @@ graph LR
 
 </div>
 
-<div v-click="2" class="mt-8 mb-4 text-center text-lg">
+<div v-click="2" class="mt-6 text-center opacity-80">
+All files in context are sent • Large contexts slow builds
+</div>
+
+<div v-click="3" class="mt-6 mb-4 text-center text-lg">
 <carbon-document class="inline-block text-3xl text-blue-400" /> .dockerignore
 </div>
 
-<div v-click="3" class="text-sm">
+<div v-click="4" class="text-sm">
 
 ```
 node_modules/
@@ -287,8 +316,8 @@ node_modules/
 
 </div>
 
-<div v-click="4" class="mt-6 text-center text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> Large contexts slow builds!
+<div v-click="5" class="mt-6 text-center text-yellow-400">
+<carbon-warning class="inline-block text-2xl" /> COPY . . copies from context, not arbitrary locations
 </div>
 
 ---
@@ -297,32 +326,33 @@ layout: center
 
 # Image Tagging for Kubernetes
 
-<div v-click="1" class="mb-6">
+<div v-click="1" class="mb-6 text-center text-lg opacity-80">
+Tag format: [registry/][namespace/]name:tag
+</div>
+
+<div v-click="2" class="mb-6">
 
 ```mermaid
 graph TB
-    T["Image Tag Format"] --> R["[registry/][namespace/]name:tag"]
-    R --> E1["nginx:1.21"]
-    R --> E2["myapp:v1.0.0"]
-    R --> E3["gcr.io/project/app:latest"]
-    R --> E4["myregistry.io/team/app:sha-abc123"]
-    style T fill:#60a5fa
-    style R fill:#fbbf24
+    E1["nginx:1.21<br/>Docker Hub, official"]
+    E2["myapp:v1.0.0<br/>Local, semantic version"]
+    E3["gcr.io/project/app:latest<br/>Google Container Registry"]
+    E4["myregistry.io/team/app:sha-abc123<br/>Private registry, commit hash"]
     style E1 fill:#4ade80
-    style E2 fill:#4ade80
-    style E3 fill:#4ade80
-    style E4 fill:#4ade80
+    style E2 fill:#60a5fa
+    style E3 fill:#a78bfa
+    style E4 fill:#fbbf24
 ```
 
 </div>
 
 <div class="grid grid-cols-2 gap-6">
-<div v-click="2">
+<div v-click="3">
 <carbon-checkmark class="text-4xl text-green-400 mb-2" />
 <strong>Best Practices</strong><br/>
 <span class="text-sm opacity-80">Specific versions<br/>Semantic versioning<br/>Commit SHAs</span>
 </div>
-<div v-click="3">
+<div v-click="4">
 <carbon-close class="text-4xl text-red-400 mb-2" />
 <strong>Avoid</strong><br/>
 <span class="text-sm opacity-80">Using :latest<br/>No version tags<br/>Overwriting tags</span>
@@ -392,7 +422,7 @@ layout: center
 <div v-click="1">
 <carbon-warning class="text-4xl text-red-400 mb-2" />
 <strong>Common Issues</strong><br/>
-<span class="text-sm opacity-80">• Large image sizes<br/>• Slow builds<br/>• ImagePullBackOff<br/>• Large build context</span>
+<span class="text-sm opacity-80">• Large image sizes<br/>• Slow builds<br/>• ImagePullBackOff<br/>• Build context too large</span>
 </div>
 <div v-click="2">
 <carbon-lightning class="text-4xl text-green-400 mb-2" />
@@ -413,6 +443,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 ```
 
+</div>
+
+<div v-click="5" class="mt-4 text-center opacity-80">
+Don't install unnecessary packages
 </div>
 
 ---
@@ -450,6 +484,14 @@ mindmap
 
 </div>
 
+<div v-click="2" class="mt-8 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Multi-stage builds separate build/runtime environments
+</div>
+
+<div v-click="3" class="mt-2 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Layer order matters for cache efficiency
+</div>
+
 ---
 layout: center
 ---
@@ -482,34 +524,5 @@ layout: center
 </div>
 
 <div v-click="8" class="mt-8 text-center text-lg">
-<carbon-terminal class="inline-block text-3xl text-purple-400" /> Practice multi-stage builds!
-</div>
-
----
-layout: center
----
-
-# Next Steps
-
-<div v-click="1" class="text-center mb-8">
-<carbon-education class="inline-block text-6xl text-blue-400" />
-</div>
-
-<div v-click="2">
-
-```mermaid
-graph LR
-    C[Concepts] --> H[Build<br/>Multi-stage Images]
-    H --> K[Deploy to<br/>Kubernetes]
-    H --> T[Optimize<br/>Image Size]
-    style C fill:#4ade80
-    style H fill:#60a5fa
-    style K fill:#a78bfa
-    style T fill:#fbbf24
-```
-
-</div>
-
-<div v-click="3" class="mt-8 text-center text-xl">
-Let's build some images! <carbon-arrow-right class="inline-block text-2xl" />
+<carbon-terminal class="inline-block text-3xl text-purple-400" /> Practice: Build multi-stage images for your language!
 </div>
