@@ -12,6 +12,10 @@ layout: cover
 Controlling network traffic flow between Pods
 </div>
 
+<div v-click class="mt-4 text-sm text-yellow-400">
+<carbon-information class="inline-block text-xl" /> CKAD Supplementary Topic
+</div>
+
 ---
 layout: center
 ---
@@ -71,39 +75,42 @@ layout: center
 ```mermaid
 graph LR
     NP[NetworkPolicy] --> PS[Pod Selector<br/>Which Pods?]
+    NP --> PT[Policy Types<br/>Ingress/Egress]
     NP --> IN[Ingress Rules<br/>Traffic in]
     NP --> EG[Egress Rules<br/>Traffic out]
     style NP fill:#60a5fa
     style PS fill:#4ade80
-    style IN fill:#fbbf24
-    style EG fill:#a78bfa
+    style PT fill:#fbbf24
+    style IN fill:#a78bfa
+    style EG fill:#ef4444
 ```
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8">
-<div v-click="2">
-<carbon-tag class="text-4xl text-blue-400 mb-2" />
-<strong>Namespace-scoped</strong><br/>
-<span class="text-sm opacity-80">Applied within namespace</span>
-</div>
-<div v-click="3">
-<carbon-rule class="text-4xl text-green-400 mb-2" />
-<strong>Additive</strong><br/>
-<span class="text-sm opacity-80">Multiple policies combine</span>
-</div>
+<div v-click="2" class="mt-8 text-center text-lg">
+Firewall for Pods using label selectors
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-6">
+<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
+<div v-click="3">
+<carbon-tag class="text-4xl text-blue-400 mb-2" />
+<strong>Namespace-scoped</strong><br/>
+<span class="text-xs opacity-80">Applied within namespace</span>
+</div>
 <div v-click="4">
-<carbon-checkmark class="text-4xl text-purple-400 mb-2" />
-<strong>Whitelist model</strong><br/>
-<span class="text-sm opacity-80">Deny by default, allow explicitly</span>
+<carbon-rule class="text-4xl text-green-400 mb-2" />
+<strong>Additive</strong><br/>
+<span class="text-xs opacity-80">Multiple policies combine</span>
 </div>
 <div v-click="5">
+<carbon-checkmark class="text-4xl text-purple-400 mb-2" />
+<strong>Whitelist model</strong><br/>
+<span class="text-xs opacity-80">Deny by default, allow explicitly</span>
+</div>
+<div v-click="6">
 <carbon-network-3 class="text-4xl text-yellow-400 mb-2" />
 <strong>CNI dependent</strong><br/>
-<span class="text-sm opacity-80">Requires supporting plugin</span>
+<span class="text-xs opacity-80">Requires supporting plugin</span>
 </div>
 </div>
 
@@ -111,7 +118,7 @@ graph LR
 layout: center
 ---
 
-# Policy Structure
+# Policy Structure & Components
 
 <div v-click="1" class="mb-4">
 
@@ -153,14 +160,14 @@ spec:
 </div>
 
 <div v-click="6" class="mt-6 text-center text-sm text-red-400">
-<carbon-warning class="inline-block text-2xl" /> Empty rules = deny all for that direction!
+<carbon-warning class="inline-block text-2xl" /> Empty rules with policyTypes = deny all for that direction!
 </div>
 
 ---
 layout: center
 ---
 
-# Pod Selectors
+# Pod Selectors - Choosing Your Target
 
 <div v-click="1">
 
@@ -198,11 +205,15 @@ Select Pods by labels within the namespace
 </div>
 </div>
 
+<div v-click="5" class="mt-6 text-center text-sm opacity-80">
+podSelector operates within current namespace only
+</div>
+
 ---
 layout: center
 ---
 
-# Ingress Rules
+# Ingress Rules - Controlling Incoming Traffic
 
 <div v-click="1">
 
@@ -247,14 +258,18 @@ From IP ranges<br/>
 </div>
 
 <div v-click="6" class="mt-6 text-center text-sm">
-<carbon-rule class="inline-block text-2xl text-yellow-400" /> Combine sources: OR (separate items) | AND (same item)
+<carbon-rule class="inline-block text-2xl text-yellow-400" /> Combine: OR (separate items) | AND (same item)
+</div>
+
+<div v-click="7" class="mt-4 text-center text-xs opacity-80">
+Specify protocol (TCP/UDP) and ports
 </div>
 
 ---
 layout: center
 ---
 
-# Egress Rules
+# Egress Rules - Controlling Outgoing Traffic
 
 <div v-click="1">
 
@@ -297,6 +312,10 @@ Control traffic LEAVING selected Pods
 
 <div v-click="7" class="text-center text-lg mt-4">
 Must explicitly allow DNS (UDP port 53 to kube-system)!
+</div>
+
+<div v-click="8" class="text-center text-sm mt-4 opacity-80">
+Most common mistake when implementing NetworkPolicy
 </div>
 
 ---
@@ -347,11 +366,15 @@ Complete isolation
 Layer additional policies to selectively allow traffic
 </div>
 
+<div v-click="7" class="mt-4 text-center text-xs">
+Policies use empty podSelector ({}) to apply to all Pods in namespace
+</div>
+
 ---
 layout: center
 ---
 
-# Policy Evaluation
+# Policy Evaluation & Additivity
 
 <div v-click="1">
 
@@ -390,11 +413,15 @@ Policies are additive - combine to allow traffic
 Like RBAC: whitelist approach, enumerate allowed paths
 </div>
 
+<div v-click="6" class="mt-4 text-center text-xs">
+Check ALL policies that select a Pod when troubleshooting
+</div>
+
 ---
 layout: center
 ---
 
-# Common Patterns
+# Common Patterns & Best Practices
 
 <div v-click="1">
 
@@ -486,9 +513,10 @@ mindmap
     Firewall for Pods
       Namespace-scoped
       Label selectors
+      CNI dependent
     Direction
-      Ingress
-      Egress
+      Ingress incoming
+      Egress outgoing
     Selectors
       podSelector
       namespaceSelector
@@ -496,9 +524,11 @@ mindmap
     Evaluation
       Additive
       Whitelist model
+      No explicit deny
     Best Practices
       Default deny
       Always allow DNS
+      Document topology
 ```
 
 </div>

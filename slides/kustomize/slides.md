@@ -8,8 +8,16 @@ layout: cover
   <carbon-settings class="text-6xl text-blue-400" />
 </div>
 
-<div v-click class="mt-8 text-xl opacity-80">
+<div v-click="1" class="mt-8 text-xl opacity-80">
 Template-free configuration management for Kubernetes
+</div>
+
+<div v-click="2" class="mt-6 text-lg">
+<carbon-certificate class="inline-block text-xl text-green-400" /> Required topic for CKAD exam
+</div>
+
+<div v-click="3" class="mt-4 text-sm opacity-60">
+Built into kubectl • Essential for multi-environment configs
 </div>
 
 ---
@@ -25,9 +33,9 @@ graph TB
     A[Same Application] --> D[Dev: 1 replica, NodePort]
     A --> S[Staging: 3 replicas, LoadBalancer]
     A --> P[Prod: 5 replicas, limits]
-    D --> I1[<carbon-warning/> Duplicate YAML]
-    S --> I2[<carbon-warning/> Configuration drift]
-    P --> I3[<carbon-warning/> Manual sync]
+    D --> I1[Duplicate YAML]
+    S --> I2[Configuration drift]
+    P --> I3[Manual sync]
     style A fill:#60a5fa
     style D fill:#fbbf24
     style S fill:#fbbf24
@@ -52,6 +60,10 @@ Config drift
 <carbon-sync class="text-3xl text-purple-400 mb-1" />
 Manual sync
 </div>
+</div>
+
+<div v-click="5" class="mt-6 text-center text-green-400">
+<carbon-checkmark class="inline-block text-2xl" /> Kustomize solves with overlays
 </div>
 
 ---
@@ -81,21 +93,25 @@ graph LR
 
 </div>
 
-<div class="grid grid-cols-2 gap-6">
-<div v-click="2">
+<div v-click="2" class="mt-6 text-center opacity-80">
+Define base, then create overlays for environments
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6">
+<div v-click="3">
 <carbon-terminal class="text-4xl text-blue-400 mb-2" />
 <strong>Built into kubectl</strong><br/>
-<span class="text-sm opacity-80">No installation needed (v1.14+)</span>
+<span class="text-sm opacity-80">No installation (v1.14+)</span>
 </div>
-<div v-click="3">
+<div v-click="4">
 <carbon-document class="text-4xl text-green-400 mb-2" />
 <strong>Pure YAML</strong><br/>
-<span class="text-sm opacity-80">No template syntax to learn</span>
+<span class="text-sm opacity-80">No template syntax</span>
 </div>
 </div>
 
-<div v-click="4" class="mt-8 text-center text-xl">
-<carbon-layers class="inline-block text-3xl text-purple-400" /> Base + Overlays = Customization
+<div v-click="5" class="mt-6 text-center text-yellow-400">
+<carbon-virtual-machine class="inline-block text-2xl" /> Processes in memory, files stay clean
 </div>
 
 ---
@@ -108,7 +124,7 @@ layout: center
 <div v-click="1">
 <carbon-settings class="text-5xl text-blue-400 mb-2" />
 <strong>Kustomize</strong><br/>
-<span class="text-sm opacity-80">• Template-free<br/>• Built into kubectl<br/>• Environment configs<br/>• GitOps friendly<br/>• <strong>CKAD required</strong></span>
+<span class="text-sm opacity-80">• Simpler learning curve<br/>• Built into kubectl<br/>• Template-free<br/>• Environment configs<br/>• <strong>CKAD required</strong></span>
 </div>
 <div v-click="2">
 <carbon-container-software class="text-5xl text-green-400 mb-2" />
@@ -118,11 +134,11 @@ layout: center
 </div>
 
 <div v-click="3" class="mt-8 text-center text-lg">
-<carbon-checkmark class="inline-block text-3xl text-purple-400" /> Many teams use both!
+<carbon-flow class="inline-block text-3xl text-purple-400" /> Many teams use both!
 </div>
 
 <div v-click="4" class="mt-4 text-center text-sm opacity-80">
-Helm for third-party, Kustomize for own apps
+Helm for third-party apps • Kustomize for own applications
 </div>
 
 ---
@@ -195,7 +211,7 @@ overlays/
 
 </div>
 
-<div v-click="2" class="text-xs">
+<div v-click="2" class="text-xs mb-4">
 
 ```yaml
 # overlays/prod/kustomization.yaml
@@ -212,7 +228,7 @@ replicas:
 
 </div>
 
-<div v-click="3" class="mt-6">
+<div v-click="3">
 
 ```mermaid
 graph LR
@@ -225,6 +241,10 @@ graph LR
     style OP fill:#ef4444
 ```
 
+</div>
+
+<div v-click="4" class="mt-6 text-center text-green-400">
+<carbon-checkmark class="inline-block text-2xl" /> Each overlay: small, focused on differences
 </div>
 
 ---
@@ -254,14 +274,28 @@ spec:
 
 </div>
 
-<div v-click="2">
+<div v-click="2" class="text-xs mb-4">
+
+```yaml
+# JSON Patch (RFC 6902)
+- op: replace
+  path: /spec/replicas
+  value: 3
+- op: add
+  path: /spec/template/spec/containers/0/env/-
+  value:
+    name: LOG_LEVEL
+    value: debug
+```
+
+</div>
+
+<div v-click="3">
 
 ```mermaid
 graph LR
-    P[Patch Types] --> S[Strategic Merge<br/>Simple YAML]
-    P --> J[JSON Patch<br/>RFC 6902]
-    S --> U[Most common]
-    J --> C[Complex scenarios]
+    P[Patch Types] --> S[Strategic Merge<br/>Simple, common]
+    P --> J[JSON Patch<br/>Complex scenarios]
     style P fill:#60a5fa
     style S fill:#4ade80
     style J fill:#fbbf24
@@ -269,15 +303,15 @@ graph LR
 
 </div>
 
-<div v-click="3" class="mt-6 text-center">
-<carbon-edit class="inline-block text-3xl text-green-400" /> Only specify fields to change
+<div v-click="4" class="mt-4 text-center text-yellow-400">
+<carbon-warning class="inline-block text-2xl" /> Focus on strategic merge for CKAD
 </div>
 
 ---
 layout: center
 ---
 
-# Kustomization Features: Transformations
+# Kustomization Features
 
 <div v-click="1" class="text-xs mb-4">
 
@@ -322,11 +356,15 @@ replicas:
 </div>
 </div>
 
+<div v-click="7" class="mt-6 text-center text-green-400">
+<carbon-checkmark class="inline-block text-2xl" /> Prefer built-in features over patches
+</div>
+
 ---
 layout: center
 ---
 
-# Generators: ConfigMaps and Secrets
+# ConfigMap and Secret Generators
 
 <div v-click="1" class="text-xs mb-4">
 
@@ -368,7 +406,7 @@ graph LR
 </div>
 
 <div v-click="3" class="mt-6 text-center text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> Auto-generates hash suffix for versioning
+<carbon-warning class="inline-block text-2xl" /> Generates unique hash suffix for versioning
 </div>
 
 ---
@@ -386,12 +424,12 @@ sequenceDiagram
     participant B as Base
     participant O as Overlay
     participant A as API Server
-    U->>K: Process
-    K->>B: Read base
-    K->>O: Read overlay
-    K->>K: Apply transformations
-    K->>K: Generate final YAML
-    K->>A: kubectl apply
+    U->>K: 1. Process
+    K->>B: 2. Read base
+    K->>O: 3. Read overlay
+    K->>K: 4. Apply transformations
+    K->>K: 5. Generate final YAML
+    K->>A: 6. kubectl apply
 ```
 
 </div>
@@ -401,7 +439,7 @@ sequenceDiagram
 </div>
 
 <div v-click="3" class="mt-4 text-center text-sm opacity-80">
-Source files remain unchanged
+Source files remain unchanged • Safe for version control
 </div>
 
 ---
@@ -441,11 +479,15 @@ graph LR
 <carbon-view class="inline-block text-3xl text-green-400" /> Always preview before applying!
 </div>
 
+<div v-click="4" class="mt-4 text-center text-sm opacity-80">
+Perfect for debugging and validation
+</div>
+
 ---
 layout: center
 ---
 
-# Common Directory Structure
+# Kustomize in Practice
 
 <div v-click="1" class="mb-4">
 
@@ -470,63 +512,23 @@ layout: center
 
 </div>
 
-<div v-click="2">
-
-```mermaid
-graph TB
-    B[Base<br/>Common config] --> D[Dev overlay]
-    B --> S[Staging overlay]
-    B --> P[Prod overlay]
-    style B fill:#60a5fa
-    style D fill:#4ade80
-    style S fill:#fbbf24
-    style P fill:#ef4444
-```
-
-</div>
-
----
-layout: center
----
-
-# Deployment Workflow
-
-<div v-click="1" class="mb-4">
+<div v-click="2" class="text-sm mb-4">
 
 ```bash
 # Deploy to different environments
 kubectl apply -k overlays/dev
-
 kubectl apply -k overlays/staging
-
 kubectl apply -k overlays/prod
 ```
 
 </div>
 
-<div v-click="2">
-
-```mermaid
-graph TB
-    G[Git Repository] --> B[Base + Overlays]
-    B --> D[Dev Cluster]
-    B --> S[Staging Cluster]
-    B --> P[Prod Cluster]
-    style G fill:#60a5fa
-    style B fill:#4ade80
-    style D fill:#fbbf24
-    style S fill:#fbbf24
-    style P fill:#ef4444
-```
-
+<div v-click="3" class="mt-6 text-center">
+<carbon-version class="inline-block text-2xl text-purple-400" /> Everything in Git
 </div>
 
-<div v-click="3" class="mt-6 text-center text-xl">
-<carbon-version class="inline-block text-3xl text-purple-400" /> Everything in Git
-</div>
-
-<div v-click="4" class="mt-4 text-center text-sm">
-<carbon-flow class="inline-block text-2xl text-blue-400" /> Perfect for GitOps (ArgoCD, Flux)
+<div v-click="4" class="mt-2 text-center text-sm">
+<carbon-flow class="inline-block text-xl text-blue-400" /> Perfect for GitOps (ArgoCD, Flux)
 </div>
 
 ---
@@ -543,7 +545,7 @@ layout: center
 </div>
 <div v-click="2">
 <carbon-layers class="text-4xl text-blue-400 mb-2" />
-<strong>Small overlays</strong><br/>
+<strong>Small, focused overlays</strong><br/>
 <span class="text-sm opacity-80">Only define differences</span>
 </div>
 <div v-click="3">
@@ -553,7 +555,7 @@ layout: center
 </div>
 <div v-click="4">
 <carbon-view class="text-4xl text-yellow-400 mb-2" />
-<strong>Preview locally</strong><br/>
+<strong>Test locally</strong><br/>
 <span class="text-sm opacity-80">kubectl kustomize before apply</span>
 </div>
 <div v-click="5">
@@ -563,7 +565,7 @@ layout: center
 </div>
 <div v-click="6">
 <carbon-tag class="text-4xl text-teal-400 mb-2" />
-<strong>Consistent labels</strong><br/>
+<strong>Consistent labeling</strong><br/>
 <span class="text-sm opacity-80">Use commonLabels</span>
 </div>
 </div>
@@ -572,44 +574,41 @@ layout: center
 layout: center
 ---
 
-# Real-World Example
+# Kustomize and CKAD
 
-<div v-click="1" class="text-xs mb-4">
+<div v-click="1" class="text-center mb-6">
+<carbon-certificate class="inline-block text-6xl text-blue-400" />
+</div>
 
-```yaml
-# overlays/prod/kustomization.yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div v-click="2">
+<carbon-edit class="inline-block text-2xl text-green-400" /> Create kustomization.yaml from scratch
+</div>
+<div v-click="3">
+<carbon-terminal class="inline-block text-2xl text-green-400" /> kubectl apply -k
+</div>
+<div v-click="4">
+<carbon-layers class="inline-block text-2xl text-green-400" /> Base/overlay pattern
+</div>
+<div v-click="5">
+<carbon-settings class="inline-block text-2xl text-green-400" /> Common transformations
+</div>
+<div v-click="6">
+<carbon-document class="inline-block text-2xl text-green-400" /> Strategic merge patches
+</div>
+<div v-click="7">
+<carbon-view class="inline-block text-2xl text-green-400" /> kubectl kustomize preview
+</div>
+<div v-click="8">
+<carbon-warning class="inline-block text-2xl text-yellow-400" /> Required topic!
+</div>
+<div v-click="9">
+<carbon-timer class="inline-block text-2xl text-red-400" /> Practice creating overlays quickly
+</div>
+</div>
 
-bases:
-  - ../../base
-
-namePrefix: prod-
-namespace: production
-
-commonLabels:
-  environment: production
-  managed-by: kustomize
-
-replicas:
-  - name: web-app
-    count: 5
-
-images:
-  - name: web-app
-    newTag: v2.1.0
-
-configMapGenerator:
-  - name: app-config
-    behavior: merge
-    literals:
-      - LOG_LEVEL=error
-      - CACHE_TTL=3600
-
-patchesStrategicMerge:
-  - resources-patch.yaml
-```
-
+<div v-click="10" class="mt-8 text-center text-xl">
+<carbon-checkmark class="inline-block text-3xl text-blue-400" /> More likely than Helm on exam
 </div>
 
 ---
@@ -635,10 +634,10 @@ mindmap
       namePrefix namespace
       replicas images
       commonLabels
-    Generators
-      ConfigMaps
-      Secrets
-      Auto hash
+    Patches
+      Strategic merge
+      JSON patches
+      Fine-grained control
     GitOps
       Everything in Git
       ArgoCD Flux
@@ -647,138 +646,10 @@ mindmap
 
 </div>
 
----
-layout: center
----
-
-# Kustomize and CKAD
-
-<div v-click="1" class="text-center mb-6">
-<carbon-certificate class="inline-block text-6xl text-blue-400" />
+<div v-click="2" class="mt-8 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Configuration management without templates
 </div>
 
-<div class="grid grid-cols-2 gap-4 text-sm">
-<div v-click="2">
-<carbon-edit class="inline-block text-2xl text-green-400" /> Create kustomization.yaml
-</div>
-<div v-click="3">
-<carbon-terminal class="inline-block text-2xl text-green-400" /> kubectl apply -k
-</div>
-<div v-click="4">
-<carbon-layers class="inline-block text-2xl text-green-400" /> Base/overlay pattern
-</div>
-<div v-click="5">
-<carbon-settings class="inline-block text-2xl text-green-400" /> Common transformations
-</div>
-<div v-click="6">
-<carbon-document class="inline-block text-2xl text-green-400" /> Strategic merge patches
-</div>
-<div v-click="7">
-<carbon-view class="inline-block text-2xl text-green-400" /> kubectl kustomize preview
-</div>
-<div v-click="8">
-<carbon-warning class="inline-block text-2xl text-yellow-400" /> Required topic!
-</div>
-<div v-click="9">
-<carbon-timer class="inline-block text-2xl text-red-400" /> Practice speed
-</div>
-</div>
-
-<div v-click="10" class="mt-8 text-center text-xl">
-<carbon-checkmark class="inline-block text-3xl text-blue-400" /> More likely than Helm on exam
-</div>
-
----
-layout: center
----
-
-# Common Commands
-
-<div v-click="1" class="mb-6">
-
-```bash
-# Preview generated YAML
-kubectl kustomize overlays/prod/
-
-# Apply to cluster
-kubectl apply -k overlays/prod/
-
-# Delete resources
-kubectl delete -k overlays/dev/
-
-# Validate kustomization
-kubectl kustomize overlays/staging/ --enable-helm
-```
-
-</div>
-
-<div v-click="2" class="grid grid-cols-2 gap-6">
-<div class="text-center">
-<carbon-view class="text-4xl text-blue-400 mb-2" />
-<strong>Preview</strong><br/>
-<span class="text-sm opacity-80">Check before applying</span>
-</div>
-<div class="text-center">
-<carbon-checkmark class="text-4xl text-green-400 mb-2" />
-<strong>Apply</strong><br/>
-<span class="text-sm opacity-80">Deploy to cluster</span>
-</div>
-</div>
-
----
-layout: center
----
-
-# Troubleshooting Tips
-
-<div class="grid grid-cols-2 gap-6 mt-4">
-<div v-click="1">
-<carbon-debug class="text-4xl text-red-400 mb-2" />
-<strong>Path Issues</strong><br/>
-<span class="text-sm opacity-80">Check bases path relative to overlay</span>
-</div>
-<div v-click="2">
-<carbon-rule class="text-4xl text-yellow-400 mb-2" />
-<strong>Name Mismatches</strong><br/>
-<span class="text-sm opacity-80">Patch name must match base resource</span>
-</div>
-<div v-click="3">
-<carbon-view class="text-4xl text-blue-400 mb-2" />
-<strong>Preview First</strong><br/>
-<span class="text-sm opacity-80">Always kustomize before apply</span>
-</div>
-<div v-click="4">
-<carbon-document class="text-4xl text-green-400 mb-2" />
-<strong>Validate YAML</strong><br/>
-<span class="text-sm opacity-80">Check kustomization.yaml syntax</span>
-</div>
-</div>
-
----
-layout: center
----
-
-# Next Steps
-
-<div v-click="1" class="text-center mb-8">
-<carbon-education class="inline-block text-6xl text-blue-400" />
-</div>
-
-<div v-click="2">
-
-```mermaid
-graph LR
-    C[Concepts] --> B[Create<br/>Base]
-    B --> O[Add<br/>Overlays]
-    B --> P[Apply<br/>Patches]
-    style C fill:#4ade80
-    style B fill:#60a5fa
-    style O fill:#a78bfa
-    style P fill:#fbbf24
-```
-
-</div>
-
-<div v-click="3" class="mt-8 text-center text-xl">
-Let's kustomize! <carbon-arrow-right class="inline-block text-2xl" />
+<div v-click="3" class="mt-2 text-center text-lg">
+<carbon-checkmark class="inline-block text-2xl text-green-400" /> Base + overlays for environments
 </div>

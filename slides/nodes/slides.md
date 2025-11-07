@@ -2,33 +2,33 @@
 layout: cover
 ---
 
-# Examining Nodes
+# Understanding Nodes
 
 <div class="abs-br m-6 flex gap-2">
-  <carbon-kubernetes class="text-6xl text-blue-400" />
+  <carbon-server class="text-6xl text-blue-400" />
 </div>
 
 <div v-click class="mt-8 text-xl opacity-80">
-Understanding the machines that run your containers
+The worker machines that run your containers
 </div>
 
 ---
 layout: center
 ---
 
-# What Are Nodes?
+# What is a Node?
 
 <div v-click="1">
 
 ```mermaid
 graph TB
-    C[Kubernetes Cluster]
-    C --> N1[Node 1]
-    C --> N2[Node 2]
-    C --> N3[Node 3]
+    C[Cluster] --> N1[Node 1<br/>Worker Machine]
+    C --> N2[Node 2<br/>Worker Machine]
+    C --> N3[Node 3<br/>Worker Machine]
     N1 --> P1[Pods]
-    N2 --> P2[Pods]
-    N3 --> P3[Pods]
+    N1 --> P2[Pods]
+    N2 --> P3[Pods]
+    N3 --> P4[Pods]
     style C fill:#60a5fa
     style N1 fill:#4ade80
     style N2 fill:#4ade80
@@ -38,22 +38,24 @@ graph TB
 </div>
 
 <div v-click="2" class="mt-8 text-center text-lg">
-Worker machines that run containers
+Physical or virtual machines that run containerized workloads
 </div>
 
-<div class="grid grid-cols-3 gap-4 mt-6 text-sm">
-<div v-click="3" class="text-center">
-<carbon-container-software class="text-4xl text-green-400 mb-2" />
-<strong>Physical servers</strong>
+<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
+<div v-click="3">
+<carbon-server class="text-4xl text-blue-400 mb-2" />
+<strong>Worker nodes</strong><br/>
+Run application Pods
 </div>
-<div v-click="4" class="text-center">
-<carbon-virtual-machine class="text-4xl text-blue-400 mb-2" />
-<strong>Virtual machines</strong>
+<div v-click="4">
+<carbon-cloud-services class="text-4xl text-purple-400 mb-2" />
+<strong>Control plane</strong><br/>
+Manages the cluster
 </div>
-<div v-click="5" class="text-center">
-<carbon-cloud class="text-4xl text-purple-400 mb-2" />
-<strong>Cloud instances</strong>
 </div>
+
+<div v-click="5" class="mt-6 text-center text-sm opacity-80">
+Nodes are the compute resources of your cluster
 </div>
 
 ---
@@ -66,305 +68,270 @@ layout: center
 
 ```mermaid
 graph TB
-    N[Node]
-    N --> K[kubelet<br/>Container manager]
-    N --> C[Container Runtime<br/>Docker, containerd, CRI-O]
-    N --> P[kube-proxy<br/>Network proxy]
+    N[Node] --> K[kubelet<br/>Pod lifecycle]
+    N --> CR[Container Runtime<br/>containerd, CRI-O]
+    N --> KP[kube-proxy<br/>Network rules]
+    K --> API[Talks to<br/>API Server]
+    CR --> C[Runs containers]
+    KP --> NET[Manages<br/>networking]
     style N fill:#60a5fa
     style K fill:#4ade80
-    style C fill:#fbbf24
-    style P fill:#a78bfa
+    style CR fill:#fbbf24
+    style KP fill:#a78bfa
 ```
 
 </div>
 
-<div class="grid grid-cols-3 gap-6 mt-8 text-sm">
-<div v-click="2" class="text-center">
-<carbon-settings class="text-4xl text-green-400 mb-2" />
+<div class="grid grid-cols-3 gap-4 mt-8 text-sm">
+<div v-click="2">
+<carbon-application class="text-3xl text-green-400 mb-2" />
 <strong>kubelet</strong><br/>
-Manages containers
+Manages Pods
 </div>
-<div v-click="3" class="text-center">
-<carbon-container-software class="text-4xl text-yellow-400 mb-2" />
-<strong>Runtime</strong><br/>
+<div v-click="3">
+<carbon-container-software class="text-3xl text-yellow-400 mb-2" />
+<strong>Container runtime</strong><br/>
 Runs containers
 </div>
-<div v-click="4" class="text-center">
-<carbon-network-3 class="text-4xl text-purple-400 mb-2" />
+<div v-click="4">
+<carbon-network-3 class="text-3xl text-purple-400 mb-2" />
 <strong>kube-proxy</strong><br/>
 Network routing
 </div>
 </div>
 
-<div v-click="5" class="mt-8 text-center text-sm opacity-80">
-Kubernetes stores node information queryable via kubectl
-</div>
-
 ---
 layout: center
 ---
 
-# Basic Node Commands
+# Node Status
 
-<div v-click="1" class="mb-6">
+<div v-click="1" class="text-sm">
 
 ```bash
 kubectl get nodes
-kubectl get nodes -o wide
-kubectl describe nodes
-kubectl describe node <name>
+# Shows: Ready or NotReady
 ```
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8">
 <div v-click="2">
-<carbon-list class="text-4xl text-blue-400 mb-2" />
-<strong>get nodes</strong><br/>
-<span class="text-sm opacity-80">List all nodes with status</span>
-</div>
-<div v-click="3">
-<carbon-view class="text-4xl text-green-400 mb-2" />
-<strong>get nodes -o wide</strong><br/>
-<span class="text-sm opacity-80">Extended information</span>
-</div>
-<div v-click="4">
-<carbon-document class="text-4xl text-purple-400 mb-2" />
-<strong>describe nodes</strong><br/>
-<span class="text-sm opacity-80">Detailed info for all</span>
-</div>
-<div v-click="5">
-<carbon-view class="text-4xl text-yellow-400 mb-2" />
-<strong>describe node</strong><br/>
-<span class="text-sm opacity-80">Details for specific node</span>
-</div>
-</div>
-
----
-layout: center
----
-
-# Node Status & Conditions
-
-<div v-click="1">
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Ready: Node healthy
-    Ready --> NotReady: Issues detected
-    NotReady --> Ready: Issues resolved
-    Ready --> Unknown: Connection lost
+    [*] --> Ready
+    [*] --> NotReady
+    Ready --> NotReady: Kubelet stops<br/>Network fails<br/>Disk pressure
+    NotReady --> Ready: Issue resolved
+    NotReady --> [*]: Node removed
 ```
 
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-8 text-sm">
-<div v-click="2">
-<carbon-checkmark class="inline-block text-3xl text-green-400" /> <strong>Ready:</strong> Healthy, can accept Pods
-</div>
+<div class="grid grid-cols-2 gap-6 mt-8 text-sm">
 <div v-click="3">
-<carbon-dashboard class="inline-block text-3xl text-yellow-400" /> <strong>MemoryPressure:</strong> Low on memory
+<carbon-checkmark class="text-4xl text-green-400 mb-2" />
+<strong>Ready</strong><br/>
+Accepting workloads
 </div>
 <div v-click="4">
-<carbon-data-volume class="inline-block text-3xl text-yellow-400" /> <strong>DiskPressure:</strong> Low on disk space
+<carbon-close class="text-4xl text-red-400 mb-2" />
+<strong>NotReady</strong><br/>
+Cannot run Pods
 </div>
-<div v-click="5">
-<carbon-activity class="inline-block text-3xl text-yellow-400" /> <strong>PIDPressure:</strong> Too many processes
-</div>
-<div v-click="6">
-<carbon-network-3 class="inline-block text-3xl text-red-400" /> <strong>NetworkUnavailable:</strong> Network not configured
-</div>
-</div>
-
-<div v-click="7" class="mt-8 text-center text-sm">
-<carbon-terminal class="inline-block text-2xl text-blue-400" /> kubectl describe node &lt;name&gt; | grep Conditions -A 5
 </div>
 
 ---
 layout: center
 ---
 
-# Node Capacity vs Allocatable
+# Node Conditions
+
+<div v-click="1" class="text-sm mb-4">
+
+```bash
+kubectl describe node <node-name>
+```
+
+</div>
+
+<div class="text-xs">
+
+| Condition | Meaning |
+|-----------|---------|
+| <span v-click="2">Ready</span> | <span v-click="2">Node is healthy and ready for Pods</span> |
+| <span v-click="3">DiskPressure</span> | <span v-click="3">Disk capacity low</span> |
+| <span v-click="4">MemoryPressure</span> | <span v-click="4">Memory capacity low</span> |
+| <span v-click="5">PIDPressure</span> | <span v-click="5">Too many processes</span> |
+| <span v-click="6">NetworkUnavailable</span> | <span v-click="6">Network not configured</span> |
+
+</div>
+
+<div v-click="7" class="mt-8 text-center text-sm">
+<carbon-information class="inline-block text-2xl text-blue-400" /> Conditions provide health insights
+</div>
+
+---
+layout: center
+---
+
+# Node Capacity and Allocatable
 
 <div v-click="1">
 
 ```mermaid
 graph TB
-    T[Total Node Resources] --> C[Capacity<br/>Total hardware]
-    C --> R[Reserved<br/>System components]
-    C --> A[Allocatable<br/>Available for Pods]
-    style T fill:#60a5fa
-    style C fill:#fbbf24
+    C[Node Capacity<br/>Total resources] --> R[Reserved<br/>System daemons]
+    C --> A[Allocatable<br/>For Pods]
+    A --> P1[Pod 1]
+    A --> P2[Pod 2]
+    A --> P3[Pod 3]
+    style C fill:#60a5fa
     style R fill:#ef4444
     style A fill:#4ade80
 ```
 
 </div>
 
-<div v-click="2" class="mt-6 mb-4">
-
-```yaml
-Capacity:
-  cpu: 4
-  memory: 16Gi
-Allocatable:
-  cpu: 3800m
-  memory: 15Gi
-```
-
-</div>
-
-<div class="grid grid-cols-2 gap-6 mt-6">
-<div v-click="3" class="text-center">
-<carbon-dashboard class="text-4xl text-yellow-400 mb-2" />
+<div class="grid grid-cols-2 gap-6 mt-8 text-sm">
+<div v-click="2">
+<carbon-server class="text-4xl text-blue-400 mb-2" />
 <strong>Capacity</strong><br/>
-<span class="text-sm opacity-80">Total node resources</span>
+Total node resources
 </div>
-<div v-click="4" class="text-center">
-<carbon-checkmark class="text-4xl text-green-400 mb-2" />
+<div v-click="3">
+<carbon-application class="text-4xl text-green-400 mb-2" />
 <strong>Allocatable</strong><br/>
-<span class="text-sm opacity-80">Available for Pods</span>
+Available for Pods
 </div>
 </div>
 
-<div v-click="5" class="mt-6 text-center text-sm text-yellow-400">
-<carbon-warning class="inline-block text-2xl" /> Pods can only use allocatable resources!
+<div v-click="4" class="mt-6 text-center text-sm opacity-80">
+Allocatable = Capacity - Reserved for system
 </div>
 
 ---
 layout: center
 ---
 
-# Node Labels
+# Node Selectors
 
 <div v-click="1">
 
-```mermaid
-graph TB
-    N[Node] --> L1["kubernetes.io/hostname<br/>Node name"]
-    N --> L2["kubernetes.io/os<br/>Operating system"]
-    N --> L3["kubernetes.io/arch<br/>CPU architecture"]
-    N --> L4["topology.kubernetes.io/zone<br/>Availability zone"]
-    style N fill:#60a5fa
-    style L1 fill:#4ade80
-    style L2 fill:#4ade80
-    style L3 fill:#4ade80
-    style L4 fill:#4ade80
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  nodeSelector:
+    disktype: ssd
+    gpu: "true"
+  containers:
+  - name: app
+    image: myapp
 ```
 
 </div>
 
 <div v-click="2" class="mt-8 text-center text-lg">
-Key-value pairs providing node metadata
+Schedule Pods to specific nodes using labels
 </div>
 
-<div class="grid grid-cols-2 gap-4 mt-6 text-xs">
-<div v-click="3">
-<carbon-terminal class="inline-block text-2xl text-blue-400" /> kubectl get nodes --show-labels
-</div>
-<div v-click="4">
-<carbon-terminal class="inline-block text-2xl text-green-400" /> kubectl get nodes -L os,arch
-</div>
-</div>
-
-<div v-click="5" class="mt-8 text-center text-sm opacity-80">
-Labels used for Pod scheduling with nodeSelector or affinity
-</div>
-
----
-layout: center
----
-
-# Output Formatting
-
-<div v-click="1" class="mb-6 text-sm">
-
-```bash
-kubectl get nodes           # Table (default)
-kubectl get nodes -o wide   # Extended table
-kubectl get nodes -o yaml   # YAML format
-kubectl get nodes -o json   # JSON format
-kubectl get nodes -o name   # Just names
-```
-
-</div>
-
-<div v-click="2" class="mb-6">
+<div v-click="3" class="mt-6">
 
 ```mermaid
 graph LR
-    K[kubectl get] --> T[Table]
-    K --> W[Wide]
-    K --> Y[YAML]
-    K --> J[JSON]
-    K --> JP[JSONPath]
-    style K fill:#60a5fa
-    style T fill:#4ade80
-    style W fill:#4ade80
-    style Y fill:#fbbf24
-    style J fill:#fbbf24
-    style JP fill:#a78bfa
-```
-
-</div>
-
-<div v-click="3" class="text-sm">
-
-```bash
-# JSONPath for specific fields
-kubectl get node <name> -o jsonpath='{.status.capacity.cpu}'
-kubectl get node <name> -o jsonpath='{.status.nodeInfo.containerRuntimeVersion}'
+    P[Pod<br/>nodeSelector:<br/>disktype: ssd] --> N1[Node 1<br/>disktype: ssd]
+    P -.->|No match| N2[Node 2<br/>disktype: hdd]
+    style P fill:#60a5fa
+    style N1 fill:#4ade80
+    style N2 fill:#ef4444
 ```
 
 </div>
 
 <div v-click="4" class="mt-6 text-center text-sm opacity-80">
-Useful for scripting and automation
+Simple key-value label matching
 </div>
 
 ---
 layout: center
 ---
 
-# kubectl explain
+# Node Affinity
 
-<div v-click="1" class="mb-6">
+<div v-click="1" class="text-xs">
 
-```bash
-kubectl explain node
-kubectl explain node.status
-kubectl explain node.status.capacity
+```yaml
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/arch
+            operator: In
+            values:
+            - amd64
+            - arm64
 ```
 
 </div>
 
-<div v-click="2">
+<div v-click="2" class="mt-8 text-center text-lg">
+More expressive than nodeSelector
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
+<div v-click="3">
+<carbon-rule class="text-4xl text-red-400 mb-2" />
+<strong>Required</strong><br/>
+Must match
+</div>
+<div v-click="4">
+<carbon-information class="text-4xl text-blue-400 mb-2" />
+<strong>Preferred</strong><br/>
+Try to match
+</div>
+</div>
+
+<div v-click="5" class="mt-6 text-center text-xs">
+Operators: In, NotIn, Exists, DoesNotExist, Gt, Lt
+</div>
+
+---
+layout: center
+---
+
+# Taints and Tolerations
+
+<div v-click="1">
 
 ```mermaid
 graph TB
-    E[kubectl explain] --> D[Documentation]
-    D --> F[Field descriptions]
-    D --> T[Types]
-    D --> S[Structure]
-    style E fill:#60a5fa
-    style D fill:#fbbf24
-    style F fill:#4ade80
-    style T fill:#4ade80
-    style S fill:#4ade80
+    N[Node with Taint<br/>node=special:NoSchedule] --> B{Pod has<br/>toleration?}
+    B -->|Yes| A[Pod scheduled]
+    B -->|No| D[Pod rejected]
+    style N fill:#fbbf24
+    style A fill:#4ade80
+    style D fill:#ef4444
 ```
 
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-8">
+<div v-click="2" class="mt-8 text-center text-lg">
+Nodes repel Pods unless Pods tolerate the taint
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6 text-sm">
 <div v-click="3">
-<carbon-document class="text-4xl text-blue-400 mb-2" />
-<strong>Works offline</strong><br/>
-<span class="text-sm opacity-80">No internet needed</span>
+<carbon-warning class="text-4xl text-yellow-400 mb-2" />
+<strong>Taint</strong><br/>
+Applied to node
 </div>
 <div v-click="4">
-<carbon-education class="text-4xl text-green-400 mb-2" />
-<strong>CKAD essential</strong><br/>
-<span class="text-sm opacity-80">Understand resource structure</span>
+<carbon-checkmark class="text-4xl text-green-400 mb-2" />
+<strong>Toleration</strong><br/>
+Added to Pod
 </div>
 </div>
 
@@ -372,67 +339,108 @@ graph TB
 layout: center
 ---
 
-# Common Node Operations
+# Taint Effects
+
+<div class="grid grid-cols-3 gap-6 mt-6">
+<div v-click="1">
+<carbon-close class="text-4xl text-red-400 mb-2" />
+<strong>NoSchedule</strong><br/>
+<span class="text-sm opacity-80">Don't schedule new Pods</span>
+</div>
+<div v-click="2">
+<carbon-warning class="text-4xl text-yellow-400 mb-2" />
+<strong>PreferNoSchedule</strong><br/>
+<span class="text-sm opacity-80">Try not to schedule</span>
+</div>
+<div v-click="3">
+<carbon-delete class="text-4xl text-purple-400 mb-2" />
+<strong>NoExecute</strong><br/>
+<span class="text-sm opacity-80">Evict existing Pods</span>
+</div>
+</div>
+
+<div v-click="4" class="mt-8">
+
+```bash
+# Add taint
+kubectl taint nodes node1 key=value:NoSchedule
+
+# Remove taint
+kubectl taint nodes node1 key=value:NoSchedule-
+```
+
+</div>
+
+<div v-click="5" class="mt-6 text-center text-sm">
+<carbon-information class="inline-block text-2xl text-blue-400" /> NoExecute evicts Pods without matching toleration
+</div>
+
+---
+layout: center
+---
+
+# Cordon and Drain
+
+<div v-click="1">
+
+```mermaid
+graph LR
+    N[Node] -->|cordon| C[Cordoned<br/>No new Pods]
+    C -->|drain| D[Drained<br/>All Pods evicted]
+    D -->|uncordon| N
+    style N fill:#4ade80
+    style C fill:#fbbf24
+    style D fill:#ef4444
+```
+
+</div>
+
+<div v-click="2" class="mt-8">
+
+```bash
+# Mark node as unschedulable
+kubectl cordon <node-name>
+
+# Evict all Pods and mark unschedulable
+kubectl drain <node-name> --ignore-daemonsets
+
+# Mark node as schedulable again
+kubectl uncordon <node-name>
+```
+
+</div>
+
+<div v-click="3" class="mt-6 text-center text-sm">
+<carbon-tools class="inline-block text-2xl text-yellow-400" /> Used for maintenance
+</div>
+
+---
+layout: center
+---
+
+# Node Management Best Practices
 
 <div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
 <carbon-tag class="text-4xl text-blue-400 mb-2" />
-<strong>Label a node</strong><br/>
-<span class="text-xs opacity-80">kubectl label node &lt;name&gt; key=value</span>
+<strong>Label nodes</strong><br/>
+<span class="text-sm opacity-80">For scheduling and organization</span>
 </div>
 <div v-click="2">
-<carbon-rule class="text-4xl text-yellow-400 mb-2" />
-<strong>Taint a node</strong><br/>
-<span class="text-xs opacity-80">kubectl taint node &lt;name&gt; key=value:NoSchedule</span>
+<carbon-chart-line class="text-4xl text-green-400 mb-2" />
+<strong>Monitor capacity</strong><br/>
+<span class="text-sm opacity-80">Watch resource usage</span>
 </div>
 <div v-click="3">
-<carbon-close class="text-4xl text-red-400 mb-2" />
-<strong>Cordon</strong><br/>
-<span class="text-xs opacity-80">kubectl cordon &lt;name&gt; - Mark unschedulable</span>
+<carbon-warning class="text-4xl text-yellow-400 mb-2" />
+<strong>Use taints wisely</strong><br/>
+<span class="text-sm opacity-80">Dedicated nodes for special workloads</span>
 </div>
 <div v-click="4">
-<carbon-arrow-down class="text-4xl text-orange-400 mb-2" />
-<strong>Drain</strong><br/>
-<span class="text-xs opacity-80">kubectl drain &lt;name&gt; - Evict Pods</span>
+<carbon-tools class="text-4xl text-purple-400 mb-2" />
+<strong>Drain before maintenance</strong><br/>
+<span class="text-sm opacity-80">Graceful Pod eviction</span>
 </div>
-<div v-click="5">
-<carbon-checkmark class="text-4xl text-green-400 mb-2" />
-<strong>Uncordon</strong><br/>
-<span class="text-xs opacity-80">kubectl uncordon &lt;name&gt; - Re-enable</span>
-</div>
-</div>
-
-<div v-click="6" class="mt-8 text-center text-lg">
-Essential for node maintenance operations
-</div>
-
----
-layout: center
----
-
-# Node Maintenance Flow
-
-<div v-click="1">
-
-```mermaid
-sequenceDiagram
-    participant A as Admin
-    participant N as Node
-    participant P as Pods
-    A->>N: kubectl cordon
-    N->>N: Mark unschedulable
-    A->>N: kubectl drain
-    N->>P: Evict Pods
-    P->>P: Reschedule elsewhere
-    A->>N: Perform maintenance
-    A->>N: kubectl uncordon
-    N->>N: Mark schedulable
-```
-
-</div>
-
-<div v-click="2" class="mt-6 text-center text-sm">
-<carbon-idea class="inline-block text-2xl text-blue-400" /> Safe pattern for node updates and repairs
 </div>
 
 ---
@@ -446,23 +454,19 @@ layout: center
 ```mermaid
 mindmap
   root((Nodes))
-    Worker Machines
-      Physical servers
-      VMs
-      Cloud instances
     Components
       kubelet
-      Runtime
+      Container runtime
       kube-proxy
     Status
-      Ready
+      Ready NotReady
       Conditions
       Capacity
-    Labels
-      Standard labels
-      Custom labels
-      Scheduling
-    Operations
+    Scheduling
+      nodeSelector
+      Node affinity
+      Taints tolerations
+    Management
       Cordon
       Drain
       Uncordon
@@ -478,27 +482,27 @@ layout: center
 
 <div class="grid grid-cols-2 gap-6 mt-6">
 <div v-click="1">
-<carbon-kubernetes class="text-4xl text-blue-400 mb-2" />
-<strong>Worker machines</strong><br/>
-<span class="text-sm opacity-80">Run containers in cluster</span>
+<carbon-server class="text-4xl text-blue-400 mb-2" />
+<strong>Nodes are workers</strong><br/>
+<span class="text-sm opacity-80">Run your containerized workloads</span>
 </div>
 <div v-click="2">
-<carbon-dashboard class="text-4xl text-green-400 mb-2" />
-<strong>Capacity vs allocatable</strong><br/>
-<span class="text-sm opacity-80">Understand resource limits</span>
+<carbon-tag class="text-4xl text-green-400 mb-2" />
+<strong>Use labels</strong><br/>
+<span class="text-sm opacity-80">For flexible scheduling</span>
 </div>
 <div v-click="3">
-<carbon-tag class="text-4xl text-purple-400 mb-2" />
-<strong>Labels</strong><br/>
-<span class="text-sm opacity-80">Metadata for scheduling</span>
+<carbon-warning class="text-4xl text-purple-400 mb-2" />
+<strong>Taints control placement</strong><br/>
+<span class="text-sm opacity-80">Dedicated or restricted nodes</span>
 </div>
 <div v-click="4">
-<carbon-terminal class="text-4xl text-yellow-400 mb-2" />
-<strong>kubectl commands</strong><br/>
-<span class="text-sm opacity-80">get, describe, explain</span>
+<carbon-tools class="text-4xl text-yellow-400 mb-2" />
+<strong>Drain for maintenance</strong><br/>
+<span class="text-sm opacity-80">Graceful workload migration</span>
 </div>
 </div>
 
 <div v-click="5" class="mt-8 text-center text-lg">
-<carbon-education class="inline-block text-3xl text-blue-400" /> CKAD focus: Query nodes, understand capacity, troubleshoot!
+<carbon-information class="inline-block text-3xl text-blue-400" /> Understand node management for CKAD!
 </div>
